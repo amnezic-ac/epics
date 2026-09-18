@@ -1,7 +1,12 @@
+from datetime import datetime
+
 class Component():
 
+    uid = 1
+
     def __init__(self):
-        self.uid = None
+        self.uid = Component.uid
+        Component.uid += 1
 
 
     def __str__(self, name: str):
@@ -15,13 +20,15 @@ class Component():
         for attr, value in self.__dict__.items():
             if (not value):
                 continue
-            if (attr in ["recurrid", "relatedto"]):
+            elif (attr in ["recurrid", "relatedto"]):
                 if (attr == "recurrid"):
                     result += f"RECURRENCE"
-            elif (type(value) is str):
-                result += f"{attr.upper()}:{value}\n"
+            elif (type(value) is datetime):
+                result += f"{attr.upper()}:{value.strftime("%Y%m%dT%H%M%SZ%z")}\n"
+            elif (attr == "uid"):
+                result += f"UID:{self.uid}\n"
             else:
-                result += f"{attr.upper()}:{value}\n"
+                result += f"{value}\n"
 
         result += f"END:{name}"
         return result

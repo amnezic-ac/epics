@@ -18,13 +18,13 @@ class Attachement(Property):
         if (typename and subtypename):
             self.fmttype = Fmttype(typename, subtypename)
 
-    def __str__():
+    def __str__(self):
         result = "ATTACH"
 
         if (self.fmttype):
             result += f";{str(self.fmttype)}"
 
-        if (encoding):
+        if (self.encoding):
             result += f";ENCODING=BASE64;VALUE=BINARY"
         
         result += f":{self.value}"
@@ -60,16 +60,16 @@ class Categories(Property):
 
 class Classification(Property):
 
-    def __init__(value: str = "PUBLIC"):
+    def __init__(self, value: str = "PUBLIC"):
         self.value = str.upper(value)
         # possible values of Class are: Public, Private and Confidential
 
-    def __str__():
+    def __str__(self):
         return f"CLASS:{self.value}"
 
 class Comment(Property):
 
-    def __init__(value: str, altrep: str = None, language: str = None):
+    def __init__(self, value: str, altrep: str = None, language: str = None):
         self.value = value
         self.altrep = None
         if (altrep):
@@ -78,7 +78,7 @@ class Comment(Property):
         if (language):
             self.language = Language(language)
 
-    def __str__():
+    def __str__(self):
         result = f"COMMENT"
 
         if (self.altrep):
@@ -92,12 +92,12 @@ class Comment(Property):
 
 class Description(Property):
     
-    def __init__(value: str, altrep: str = None, language: str = None):
+    def __init__(self, value: str, altrep: str = None, language: str = None):
         self.value = value
         self.altrep = Altrep(altrep, value) if altrep else None
         self.language = Language(language) if language else None
 
-    def __str__():
+    def __str__(self):
         result = "DESCRIPTION"
 
         if (self.altrep):
@@ -111,26 +111,26 @@ class Description(Property):
 
 class Geo(Property):
 
-    def __init__(latitude: float, longitude: float):
-        if (not (self.latitude >= -90 and self.latitude <= 90)):
+    def __init__(self, latitude: float, longitude: float):
+        if (not (latitude >= -90 and latitude <= 90)):
             raise Exception(f"Invalid latitude value ({self.latitude}), should be between -90 and 90")
-        if (not (self.longitude >= -180 and self.longitude <= 180)):
+        if (not (longitude >= -180 and longitude <= 180)):
             raise Exception(f"Invalid latitude value ({self.latitude}), should be between -90 and 90")
 
         self.latitude = latitude
         self.longitude = longitude
 
-    def __str__():
+    def __str__(self):
         return f"GEO:{str(self.latitude)};{str(self.longitude)}"
             
 class Location(Property):
 
-    def __init__(value: str, altrep: str = None, language: str = None):
+    def __init__(self, value: str, altrep: str = None, language: str = None):
         self.value = value
         self.altrep = Altrep(altrep, value) if altrep else None
         self.language = Language(language) if language else None
 
-    def __str__():
+    def __str__(self):
         result = "LOCATION"
 
         if (self.altrep):
@@ -144,32 +144,32 @@ class Location(Property):
 
 class Percent(Property):
 
-    def __init__(value: int):
+    def __init__(self, value: int):
         if (not (self.value >= 0 and self.value <= 100)):
             raise Exception(f"Percentage have to be between 0 and 100 (current value: {self.value})")
         self.value = value
 
-        def __str__():
+        def __str__(self):
             return f"PERCENT-COMPLETE:{self.value}"
 
 class Priority(Property):
 
-    def __init__(value: int = 0):
+    def __init__(self, value: int = 0):
         if (value < 0 or value > 9):
             raise Exception(f"Priority value have to be include between 0 and 9")
 
         self.value = value
 
-    def __str__():
+    def __str__(self):
         return f"PRIORITY:{self.value}"
 
 class Resources(Property):
-    def __init__(value: str, altrep: str = None, language: str = None):
+    def __init__(self, value: str, altrep: str = None, language: str = None):
         self.value = value
         self.altrep = Altrep(altrep, value) if altrep else None
         self.language = Language(language) if language else None
 
-    def __str__():
+    def __str__(self):
         result = "RESOURCES"
 
         if (self.altrep):
@@ -182,19 +182,19 @@ class Resources(Property):
         return result
 
 class Status(Property):
-    def __init__(value: str):
+    def __init__(self, value: str):
         self.value = value
 
-    def __str__():
+    def __str__(self):
         return f"STATUS:{self.value}"
 
 class Summary(Property):
-    def __init__(value: str, altrep: str, language: str):
+    def __init__(self, value: str, altrep: str = None, language: str = None):
         self.value = value
         self.altrep = Altrep(altrep, value) if altrep else None
         self.language = Language(language) if language else None
 
-    def __str__():
+    def __str__(self):
         result = "SUMMARY"
 
         if (self.altrep):
@@ -420,5 +420,5 @@ class Organizer(Property):
         if (self.languageparam):
             result += f";{str(self.languageparam)}"
 
-        result += f":{self.vaue}"
+        result += f":{self.value}"
         return result
