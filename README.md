@@ -160,22 +160,41 @@ Chaque propriété prend une valeur, voire plusieurs pour certaines. Ces valeurs
 ### Paramètres de propriétés
 Chaque propriété peut être complétée par des paramètres afin d'ajouter des informations aux différentes composantes. Les tableaux ci-dessous représentent les paramètres possibles pour chaque propriété. Pour des raisons de lisibilité, seules les colonnes et lignes qui contiennent au moins une case différente de Non seront conservées
 
-|           |ATTACHEMENT|CATEGORIES|CLASS|COMMENT|DESCRIPTION|GEO|LOCATION|PERCENT-COMPLETE|PRIORITY|RESOURCES|STATUS|SUMMARY|
-|:-         |:-:        |:-:       |:-:  |:-:    |:-:        |:-:|:-:     |:-:             |:-:     |:-:      |:-:   |:-:    |
-|ALTREP     |Non        |Non       |Non  |?      |?          |Non|?       |Non             |Non     |?        |Non   |?      |
-|LANGUAGE   |Non        |?         |Non  |?      |?          |Non|?       |Non             |Non     |?        |Non   |?      |
+|           |ATTACHEMENT|CATEGORIES|COMMENT|DESCRIPTION|LOCATION|RESOURCES|SUMMARY|
+|:-         |:-:        |:-:       |:-:    |:-:        |:-:     |:-:      |:-:    |
+|ALTREP     |Non        |Non       |?      |?          |?       |?        |?      |
+|FMTTYPE    |?          |Non       |Non    |Non        |Non     |Non      |Non    |
+|LANGUAGE   |Non        |?         |?      |?          |?       |?        |?      |
 
-|           |COMPLETED |DTEND|DUE|DTSTART|DURATION|FREEBUSY|TRANSP|
-|:-         |:-:       |:-:  |:-:|:-:    |:-:     |:-:     |:-:   |
-|FBTYPE     |Non       |Non  |Non|Non    |Non     |?       |Non   |
-|TZID       |Non       |?    |?  |?      |Non     |Non     |Non   |
+|           |DTEND|DUE|DTSTART|FREEBUSY|
+|:-         |:-:  |:-:|:-:    |:-:     |
+|FBTYPE     |Non  |Non|Non    |?       |
+|TZID       |?    |?  |?      |Non     |
+|VALUE      |Non  |?  |?      |Non     |
 
 |           |TZID   |TZNAME|TZOFFSETFROM |TZOFFSETTO|TZURL  |
 |:-         |:-:    |:-:   |:-:          |:-:       |:-:    |
 |LANGUAGE   |Non    |?     |Non          |Non       |Non    |
 
+|           |ATTENDEE|CONTACT|ORGANIZER|RECURRENCE-ID|RELATED-TO|
+|:-         |:-:     |:-:    |:-:      |:-:          |:-:       |
+|ALTREP     |Non     |?      |Non      |Non          |Non       |
+|CN         |?       |Non    |?        |Non          |Non       |
+|CUTYPE     |?       |Non    |Non      |Non          |Non       |
+|DELFROM    |?       |Non    |Non      |Non          |Non       |
+|DELTO      |?       |Non    |Non      |Non          |Non       |
+|DIR        |?       |Non    |?        |Non          |Non       |
+|LANGUAGE   |?       |?      |?        |Non          |Non       |
+|RANGE      |Non     |Non    |Non      |?            |Non       |
+|RELTYPE    |Non     |Non    |Non      |Non          |?         |
+|ROLE       |?       |Non    |Non      |Non          |Non       |
+|RSVP       |?       |Non    |Non      |Non          |Non       |
+|SENTBY     |?       |Non    |?        |Non          |Non       |
+|TZID       |Non     |Non    |Non      |?            |Non       |
 
-
+|           |EX-DATE|RDATE|
+|:-         |:-:    |:-:  |
+|TZID       |?      |?    |
 
 
 Description des différents paramètres de propriétés:
@@ -223,19 +242,8 @@ Description des différents paramètres de propriétés:
 * SENTBY: indique la personne qui a envoyé ce calendrier
 * TZID (3.2.19): indique le fuseau horaire (à revoir)
 
-
-
-
-
-
-- valeur énumérée: valeur qui ne peut prendre qu'un nombre réduit et défini de valeurs et sont écrites en majuscules
-
-Propriétés disponibles pour un composant:
-- DESCRIPTION: permet d'ajouter une description (pas détecté par Thunderbird)
-- ORGANIZER: indique l'organisateur d'un évènement
-    * CN: permet d'avoir le nom habituel d'une personne
-
-Une ligne ne doit jamais faire plus de 75 caractères. Si une ligne dépasse cette limite, elle doit être coupée en deux avec un léger décalage de la deuxième ligne vers la droite par rapport à la première.
-
-L'ordre des éléments dans une liste n'influe pas sur son traitement. (revoir pargraphe 3.1.1)
-
+Notes à garder en tête:
+- Une ligne ne doit jamais faire plus de 75 caractères. Si une ligne dépasse cette limite, elle doit être coupée en deux avec un léger décalage de la deuxième ligne vers la droite par rapport à la première.
+- L'ordre des éléments dans une liste n'influe pas sur son traitement. (revoir pargraphe 3.1.1)
+- altrep ne peut pas être utilisé seul, il faut toujours sa représentation initiale
+- pour FBTYPE: il faudra gérer le duo UTC/Period

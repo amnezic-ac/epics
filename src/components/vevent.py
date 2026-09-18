@@ -1,6 +1,7 @@
 from parameters.description import Categories, Classification, Comment, Description, Geo, Location, Priority, Resources, Status, Summary
+from component import Component
 
-class Vevent():
+class Vevent(Component):
     # for further information, please refer to 3.6.1
 
     uid = 1
@@ -42,3 +43,6 @@ class Vevent():
         self.exdate = exdate
         self.rdate = rdate
         self.rrule = rrule
+
+    def __str__(self):
+        super().__str__("VEVENT")
