@@ -1,4 +1,4 @@
-from datatypes import Caladress, Uri
+from src.datatypes import Caladress, Uri
 
 class Parameter():
     def __str__(classe: str, value: str, quoted: bool = True):

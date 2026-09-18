@@ -1,7 +1,7 @@
 # section 3.8.1
 
-from parameters import *
-from datatypes import *
+from src.parameters import *
+from src.datatypes import *
 
 DEFAULT_DURATION_HOUR = 2
 
@@ -32,7 +32,7 @@ class Attachement(Property):
 
 class Categories(Property):
     # on considère que la langue donnée est correcte
-    def __init__(categories: [str], language : str = None):
+    def __init__(self, categories: [str], language : str = None):
         self.categories = set(categories)
         self.language = language # needs to comply with RFC 5646
 
@@ -43,7 +43,7 @@ class Categories(Property):
         self.categories.remove(category)
 
 
-    def __str__():
+    def __str__(self):
         result = f"CATEGORIES"
 
         if (self.language):
@@ -73,7 +73,7 @@ class Comment(Property):
         self.value = value
         self.altrep = None
         if (altrep):
-            self.altrep = Altrep(altrep)
+            self.altrep = Altrep(altrep, value)
         self.language = None
         if (language):
             self.language = Language(language)
@@ -94,7 +94,7 @@ class Description(Property):
     
     def __init__(value: str, altrep: str = None, language: str = None):
         self.value = value
-        self.altrep = Altrep(altrep) if altrep else None
+        self.altrep = Altrep(altrep, value) if altrep else None
         self.language = Language(language) if language else None
 
     def __str__():
@@ -127,7 +127,7 @@ class Location(Property):
 
     def __init__(value: str, altrep: str = None, language: str = None):
         self.value = value
-        self.altrep = Altrep(altrep) if altrep else None
+        self.altrep = Altrep(altrep, value) if altrep else None
         self.language = Language(language) if language else None
 
     def __str__():
@@ -166,7 +166,7 @@ class Priority(Property):
 class Resources(Property):
     def __init__(value: str, altrep: str = None, language: str = None):
         self.value = value
-        self.altrep = Altrep(altrep) if altrep else None
+        self.altrep = Altrep(altrep, value) if altrep else None
         self.language = Language(language) if language else None
 
     def __str__():
@@ -191,7 +191,7 @@ class Status(Property):
 class Summary(Property):
     def __init__(value: str, altrep: str, language: str):
         self.value = value
-        self.altrep = Altrep(altrep) if altrep else None
+        self.altrep = Altrep(altrep, value) if altrep else None
         self.language = Language(language) if language else None
 
     def __str__():
@@ -304,14 +304,11 @@ class Transparency(Property):
 class Atttendee(Property):
     # un peu plus complexe que ça (3.8.4.1)
 
-    def __init__(self, attendees: [Caladress]|Caladress, cutypeparam: Cutype = None, memberparam: Member = None, roleparam: Role = None, parstatparam: Partstat = None, rsvpparam: Rsvp = None, deltoparam: Delto = None, delfromparam: Delfrom = None, sentbyparam: Sentby = None, cnparam: Cn = None, dirparam: Dir = None, languageparam: Language = None):
+    def __init__(self, attendees: str, cutypeparam: str = None, memberparam: str = None, roleparam: str = None, parstatparam: str = None, rsvpparam: str = None, deltoparam: str = None, delfromparam: str = None, sentbyparam: str = None, cnparam: str = None, dirparam: str = None, languageparam: str = None):
         if (not attendees):
             raise Exception(f"Attendee value can't be None")
 
-        if (type(attendees) is [Caladress]):
-            self.persons = attendees
-        else:
-            self.persons = [attendees]
+        self.persons = [attendees]
         
         if cutypeparam is None:
             raise ValueError("cutypeparam cannot be None")
@@ -336,69 +333,92 @@ class Atttendee(Property):
         if languageparam is None:
             raise ValueError("languageparam cannot be None")
 
-        self.cutypeparam = cutypeparam
-        self.memberparam = memberparam
-        self.roleparam = roleparam
-        self.partstatparam = partstatparam
-        self.rsvpparam = rsvpparam
-        self.deltoparam = deltoparam
-        self.delfromparam = delfromparam
-        self.sentbyparam = sentbyparam
-        self.cnparam = cnparam
-        self.dirparam = dirparam
-        self.languageparam = languageparam
+        self.cutypeparam = Cutype(cutypeparam) if cutypeparam else None
+        self.memberparam = Member(memberparam) if memberparam else None
+        self.roleparam = Role(roleparam) if roleparam else None
+        self.partstatparam = Partstat(parstatparam) if parstatparam else None
+        self.rsvpparam = Rsvp(rsvpparam) if rsvpparam else None
+        # the following attributes have to be Caladress
+        self.deltoparam = Delto(deltoparam) if deltoparam else None
+        self.delfromparam = Delfrom(delfromparam) if delfromparam else None
+        self.sentbyparam = Sentby(sentbyparam) if sentbyparam else None
+        ########
+        self.cnparam = Cn(cnparam) if cnparam else None
+        self.dirparam = Dir(dirparam) if dirparam else None
+        self.languageparam = Language(languageparam) if languageparam else None
 
-    def add_cutypeparam(self, value):
-        if value is None:
-            raise ValueError("cutypeparam cannot be None")
-        self.cutypeparam = value
+    def __str__(self):
+        result = "Attendee"
 
-    def add_memberparam(self, value : Member):
-        if value is None:
-            raise ValueError("memberparam cannot be None")
-        self.memberparam = value
+        if (self.cutypeparam):
+            result += f";{str(self.cutypeparam)}"
+        if (self.memberparam):
+            result += f";{str(self.memberparam)}"
+        if (self.roleparam):
+            result += f";{str(self.roleparam)}"
+        if (self.partstatparam):
+            result += f";{str(self.partstatparam)}"
+        if (self.rsvpparam):
+            result += f";{str(self.rsvpparam)}"
+        if (self.deltoparam):
+            result += f";{str(self.deltoparam)}"
+        if (self.delfromparam):
+            result += f";{str(self.delfromparam)}"
+        if (self.sentbyparam):
+            result += f";{str(self.sentbyparam)}"
+        if (self.cnparam):
+            result += f";{str(self.cnparam)}"
+        if (self.dirparam):
+            result += f";{str(self.dirparam)}"
+        if (self.languageparam):
+            result += f";{str(self.languageparam)}"
 
-    def add_roleparam(self, value: Role):
-        if value is None:
-            raise ValueError("roleparam cannot be None")
-        self.roleparam = value
+        result += f":{str(self.value)}"
+        
+        return result
 
-    def add_partstatparam(self, value: Partstat):
-        if value is None:
-            raise ValueError("partstatparam cannot be None")
-        self.partstatparam = value
+class Contact(Property):
+    def __init__(self, value: str, altrep: str = None, language: str = None):
+        if (not value):
+            raise Exception (f"Contact value can't be None")
 
-    def add_rsvpparam(self, value: Rsvp):
-        if value is None:
-            raise ValueError("rsvpparam cannot be None")
-        self.rsvpparam = value
+        self.value = value
+        self.altrep = Altrep(altrep, value) if altrep else None
+        self.language = Language(language) if language else None
 
-    def add_deltoparam(self, value: Delto):
-        if value is None:
-            raise ValueError("deltoparam cannot be None")
-        self.deltoparam = value
+    def __str__(self):
+        result = "CONTACT"
 
-    def add_delfromparam(self, value: Delfrom):
-        if value is None:
-            raise ValueError("delfromparam cannot be None")
-        self.delfromparam = value
+        if (self.altrep):
+            result += f";{str(self.altrep)}"
+        if (self.language):
+            result += f";{str(self.language)}"
 
-    def add_sentbyparam(self, value: Sentby):
-        if value is None:
-            raise ValueError("sentbyparam cannot be None")
-        self.sentbyparam = value
+        result += f":{self.value}"
+        return result
 
-    def add_cnparam(self, value: Cn):
-        if value is None:
-            raise ValueError("cnparam cannot be None")
-        self.cnparam = value
+class Organizer(Property):
+    def __init__(self, value: str, cnparam: str = None, dirparam: str = None, sentbyparam: str = None, languageparam: str = None):
+        if (not value):
+            raise Exception(f"Organizer value can't be None")
 
-    def add_dirparam(self, value: Dir):
-        if value is None:
-            raise ValueError("dirparam cannot be None")
-        self.dirparam = value
+        self.value = value
+        self.cnparam = Cn(cnparam) if cnparam else None
+        self.dirparam = Dir(dirparam) if dirparam else None
+        self.sentbyparam = Sentby(sentbyparam) if sentbyparam else None
+        self.languageparam = Language(languageparam) if languageparam else None
 
-    def add_languageparam(self, value: Language):
-        if value is None:
-            raise ValueError("languageparam cannot be None")
-        self.languageparam = value
+    def __str__(self):
+        result = "Organizer"
+
+        if (self.cnparam):
+            result += f";{str(self.cnparam)}"
+        if (self.dirparam):
+            result += f";{str(self.dirparam)}"
+        if (self.sentbyparam):
+            result += f";{str(self.sentbyparam)}"
+        if (self.languageparam):
+            result += f";{str(self.languageparam)}"
+
+        result += f":{self.vaue}"
+        return result

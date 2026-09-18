@@ -1,9 +1,4 @@
-from vevent import Vevent
-from valarm import Valarm
-from vfreebusy import Vfreebusy
-from vjournal import Vjournal
-from vtimezone import Vtimezone
-from vtodo import Vtodo
+from src.components.vevent import Vevent
 
 class Calendar():
 
@@ -16,9 +11,9 @@ class Calendar():
         for component in self.components:
             result += f"{component}\n"
 
-        result += "END:VEVENT\nEND:VCALENDAR"
+        result += "END:VCALENDAR"
 
         return result
 
-    def add_component(component):
+    def add_component(self, component : Component):
         self.components.append(component)

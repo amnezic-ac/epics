@@ -13,13 +13,15 @@ class Component():
         result += f"{name}\n"
 
         for attr, value in self.__dict__.items():
+            if (not value):
+                continue
             if (attr in ["recurrid", "relatedto"]):
                 if (attr == "recurrid"):
                     result += f"RECURRENCE"
             elif (type(value) is str):
                 result += f"{attr.upper()}:{value}\n"
             else:
-                esult += f"{attr.upper()}:{value}\n"
+                result += f"{attr.upper()}:{value}\n"
 
         result += f"END:{name}"
         return result

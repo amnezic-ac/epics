@@ -1,8 +1,16 @@
 from src.components.calendar import Calendar
+from src.components.vevent import Vevent
+from src.properties import *
 
 def main():
     cal = Calendar()
-    print(f"Hello World!")
-    print(f"{str(cal)}")
+
+    my_event = Vevent(["work", "link"])
+    cal.add_component(my_event)
+
+    print(cal)
+
+
+
 
 main()

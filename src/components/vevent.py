@@ -1,12 +1,12 @@
-from parameters.description import Categories, Classification, Comment, Description, Geo, Location, Priority, Resources, Status, Summary
-from component import Component
+from src.properties import Categories, Classification, Comment, Description, Geo, Location, Priority, Resources, Status, Summary, Dtend, Dtstart, Duration, Transparency
+from src.components.component import Component
 
 class Vevent(Component):
     # for further information, please refer to 3.6.1
 
     uid = 1
 
-    def __init__(self, categories: [str] = None, classification: str = None, comment: str = None, description: str = None, geo: (float, float) = None, location: str = None, priority: int = None, resources: str = None, status: str = None, summary: str = None, attendee: str = None, contact: str = None, organizer: str = None, recurrid: str = None, relatedto: str = None, url: str = None, exdate: str = None, rdate: str = None, rrule: str = None):
+    def __init__(self, categories: [str] = None, classification: str = None, comment: str = None, description: str = None, geo: (float, float) = None, location: str = None, priority: int = None, resources: str = None, status: str = None, summary: str = None, attendee: str = None, contact: str = None, organizer: str = None):
         self.uid = Vevent.uid
         Vevent.uid += 1
 
@@ -26,10 +26,9 @@ class Vevent(Component):
 
         self.location = location
 
+        self.priority = None
         if (self.priority):
             self.priority = priority
-        else:
-            self.priority = None
 
         self.resources = None
         self.status = None
@@ -37,12 +36,6 @@ class Vevent(Component):
         self.attendee = attendee
         self.contact = contact
         self.organizer = organizer
-        self.recurrid = recurrid
-        self.relatedto = relatedto
-        self.url = url
-        self.exdate = exdate
-        self.rdate = rdate
-        self.rrule = rrule
 
     def __str__(self):
-        super().__str__("VEVENT")
+        return super().__str__("VEVENT")
