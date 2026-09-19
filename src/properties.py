@@ -8,7 +8,15 @@ DEFAULT_DURATION_HOUR = 2
 class Property():
     pass
 
+class Uid(Property):
+    def __init__(self, value: str):
+        self.value = value
+
+    def __str__(self):
+        return f"UID:{self.value}"
+
 class Attachement(Property):
+    # not displayed on thunderbird
     
     # now (sub)typename is considered always valid, need work on that
     def __init__(self, value: str, encoding: str = None, typename: str = None, subtypename: str = None):
@@ -59,6 +67,7 @@ class Categories(Property):
         return result
 
 class Classification(Property):
+    # not displayed on thunderbird (for event)
 
     def __init__(self, value: str = "PUBLIC"):
         self.value = str.upper(value)
@@ -110,6 +119,7 @@ class Description(Property):
         return result
 
 class Geo(Property):
+    # not displayed on thunderbird (for event)
 
     def __init__(self, latitude: float, longitude: float):
         if (not (latitude >= -90 and latitude <= 90)):
@@ -153,7 +163,7 @@ class Percent(Property):
             return f"PERCENT-COMPLETE:{self.value}"
 
 class Priority(Property):
-
+    # not displayed on thunderbird (for event)
     def __init__(self, value: int = 0):
         if (value < 0 or value > 9):
             raise Exception(f"Priority value have to be include between 0 and 9")
@@ -182,6 +192,7 @@ class Resources(Property):
         return result
 
 class Status(Property):
+    # not displayed on thunderbird
     def __init__(self, value: str):
         self.value = value
 
@@ -214,71 +225,9 @@ class Completed(Property, datetime):
     def __str__(self):
         return f"COMPLETED:{self.date_time.strftime("%Y%m%dT%zZ")}"
 
-class Dtend(Property, datetime):
-    # needs to check if it's a date or a datetime
-    # needs to be on the same format as DTSTART
-    def __init__(self, date_time: datetime = datetime.now(), valuetype: str = "DATE-TIME", tzid: str = ""):
-        self.date_time = date_time
-        if (valuetype not in ["DATE-TIME", "DATE"]):
-            raise Exception(f"DTEND property can be DATETIME or DATE only, {valuetype} is invalid")
-        else:
-            self.valuetype = valuetype
-        self.tzid
-
-    def __str__(self):
-        result = "DTEND;VALUE="
-
-        value = f"{self.date_time.strftime("%Y%m%d")}"
-        if (self.valuetype == "DATE-TIME"):
-            value += f"DATE-TIME:{self.date_time.strftime("T%zZ")}"
-        else:
-            value += f"DATE:{value}"
-
-        return f":{value}"
-
-class Due(Property, datetime):
-    def __init__(self, date_time: datetime = datetime.now(), valuetype: str = "DATE-TIME"):
-        self.date_time = date_time
-        if (valuetype not in ["DATE-TIME", "DATE"]):
-            raise Exception(f"DUE property can be DATE-TIME or DATE only, {valuetype} is invalid")
-        else:
-            self.valuetype = valuetype
-        self.tzid
-
-    def __str__(self):
-        result = "DUE;VALUE="
-
-        value = f"{self.date_time.strftime("%Y%m%d")}"
-        if (self.valuetype == "DATE-TIME"):
-            value += f"DATE-TIME:{self.date_time.strftime("T%zZ")}"
-        else:
-            value += f"DATE:{value}"
-
-        return f":{value}"
-
-class Dtstart(Property, datetime):
-    def __init__(self, date_time: datetime = datetime.now(), valuetype: str = "DATE-TIME"):
-        self.date_time = date_time
-        if (valuetype not in ["DATE-TIME", "DATE"]):
-            raise Exception(f"DTSTART property can be DATE-TIME or DATE only, {valuetype} is invalid")
-        else:
-            self.valuetype = valuetype
-        self.tzid
-
-    def __str__(self):
-        result = "DUE;VALUE="
-
-        value = f"{self.date_time.strftime("%Y%m%d")}"
-        if (self.valuetype == "DATE-TIME"):
-            value += f"DATE-TIME:{self.date_time.strftime("T%zZ")}"
-        else:
-            value += f"DATE:{value}"
-
-        return f":{value}"
-
 class Duration(Property):
     def __init__(self, week: int = 0, day: int = 0, hour: int = DEFAULT_DURATION_HOUR, minute: int = 0, second: int = 0):
-        self.value = Duration(week, day, hour, minute, second)
+        self.value = DurationType(week, day, hour, minute, second)
 
     def __str__(self):
         return f"DURATION:{str(self.value)}"
@@ -292,6 +241,7 @@ class Freebusytime(Property):
         return f"DURATION;{str(self.status)}:{str(self.value)}"
 
 class Transparency(Property):
+    # not displayed on thunderbird
     def __init__(self, value: str = "OPAQUE"):
         if (value not in ["OPAQUE", "TRANSPARENT"]):
             raise Exception(f"Transparency property can only take OPAQUE o TRANSPARENT value, actual value: {value}")
@@ -304,40 +254,17 @@ class Transparency(Property):
 class Atttendee(Property):
     # un peu plus complexe que ça (3.8.4.1)
 
-    def __init__(self, attendees: str, cutypeparam: str = None, memberparam: str = None, roleparam: str = None, parstatparam: str = None, rsvpparam: str = None, deltoparam: str = None, delfromparam: str = None, sentbyparam: str = None, cnparam: str = None, dirparam: str = None, languageparam: str = None):
-        if (not attendees):
-            raise Exception(f"Attendee value can't be None")
+    def __init__(self, name: str, cutypeparam: str = None, memberparam: str = None, roleparam: str = None, parstatparam: str = None, rsvpparam: bool = None, deltoparam: str = None, delfromparam: str = None, sentbyparam: str = None, cnparam: str = None, dirparam: str = None, languageparam: str = None):
+        if (not name):
+            raise Exception(f"Attendee name can't be None")
 
-        self.persons = [attendees]
-        
-        if cutypeparam is None:
-            raise ValueError("cutypeparam cannot be None")
-        if memberparam is None:
-            raise ValueError("memberparam cannot be None")
-        if roleparam is None:
-            raise ValueError("roleparam cannot be None")
-        if partstatparam is None:
-            raise ValueError("partstatparam cannot be None")
-        if rsvpparam is None:
-            raise ValueError("rsvpparam cannot be None")
-        if deltoparam is None:
-            raise ValueError("deltoparam cannot be None")
-        if delfromparam is None:
-            raise ValueError("delfromparam cannot be None")
-        if sentbyparam is None:
-            raise ValueError("sentbyparam cannot be None")
-        if cnparam is None:
-            raise ValueError("cnparam cannot be None")
-        if dirparam is None:
-            raise ValueError("dirparam cannot be None")
-        if languageparam is None:
-            raise ValueError("languageparam cannot be None")
+        self.name = name
 
         self.cutypeparam = Cutype(cutypeparam) if cutypeparam else None
         self.memberparam = Member(memberparam) if memberparam else None
         self.roleparam = Role(roleparam) if roleparam else None
         self.partstatparam = Partstat(parstatparam) if parstatparam else None
-        self.rsvpparam = Rsvp(rsvpparam) if rsvpparam else None
+        self.rsvpparam = Rsvp(rsvpparam) if rsvpparam != None else None
         # the following attributes have to be Caladress
         self.deltoparam = Delto(deltoparam) if deltoparam else None
         self.delfromparam = Delfrom(delfromparam) if delfromparam else None
@@ -348,7 +275,7 @@ class Atttendee(Property):
         self.languageparam = Language(languageparam) if languageparam else None
 
     def __str__(self):
-        result = "Attendee"
+        result = "ATTENDEE"
 
         if (self.cutypeparam):
             result += f";{str(self.cutypeparam)}"
@@ -359,7 +286,7 @@ class Atttendee(Property):
         if (self.partstatparam):
             result += f";{str(self.partstatparam)}"
         if (self.rsvpparam):
-            result += f";{str(self.rsvpparam)}"
+            result += f";{str(self.rsvpparam).upper()}"
         if (self.deltoparam):
             result += f";{str(self.deltoparam)}"
         if (self.delfromparam):
@@ -373,11 +300,12 @@ class Atttendee(Property):
         if (self.languageparam):
             result += f";{str(self.languageparam)}"
 
-        result += f":{str(self.value)}"
+        result += f":{self.name}"
         
         return result
 
 class Contact(Property):
+    # not displayed on thunderbird
     def __init__(self, value: str, altrep: str = None, language: str = None):
         if (not value):
             raise Exception (f"Contact value can't be None")

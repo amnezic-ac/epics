@@ -161,6 +161,9 @@ class Role(Parameter, Caladress):
     def __init__(self, value: str = "REQ-PARTICIPANT"):
         self.value = value
 
+    def __str__(self):
+        return f"ROLE:{self.value}"
+
 class Rsvp(Parameter, Caladress):
     def __init__(self, value: bool = False):
         self.value = value

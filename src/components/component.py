@@ -2,11 +2,14 @@ from datetime import datetime
 
 class Component():
 
-    uid = 1
-
     def __init__(self):
-        self.uid = Component.uid
-        Component.uid += 1
+        pass
+
+    def display_list(attr_name: str, liste: [any], newline: bool = False) -> str:
+        result = f"{attr_name.upper()}"
+
+        return result
+
 
 
     def __str__(self, name: str):
@@ -20,13 +23,12 @@ class Component():
         for attr, value in self.__dict__.items():
             if (not value):
                 continue
-            elif (attr in ["recurrid", "relatedto"]):
-                if (attr == "recurrid"):
-                    result += f"RECURRENCE"
             elif (type(value) is datetime):
                 result += f"{attr.upper()}:{value.strftime("%Y%m%dT%H%M%SZ%z")}\n"
-            elif (attr == "uid"):
-                result += f"UID:{self.uid}\n"
+            elif (type(value) is list):
+                if (attr.upper() in ["ATTENDEE", "ATTACH"]):
+                    for elt in value:
+                        result += f"{str(elt)}\n"
             else:
                 result += f"{value}\n"
 

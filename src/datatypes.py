@@ -1,5 +1,7 @@
 from datetime import datetime
 
+DEFAULT_HOUR_DURATION = 2
+
 class Caladress():
     def __init__(self):
         self.value = "ERROR"
@@ -15,7 +17,7 @@ class Uri():
     def __str__(self):
         return self.value
 
-class Period():
+class DurationType():
     def __init__(self, week: int, day: int, hour: int, minute: int, second: int):
         for variable in [week, day, hour, minute, second]:
             if (not (variable >= 0)):
