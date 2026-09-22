@@ -1,7 +1,8 @@
 from properties import *
 from tkinter import *
+from components.component import Component
 
-def make_attachement_frame(master_frame):
+def make_attachement_frame(master_frame, component: Component):
     attachement_frame = Frame(master_frame)
 
     ### Attachment value
@@ -70,8 +71,50 @@ def make_attachement_frame(master_frame):
         subtypename = subtypeEntryValue.get() if subtypeEntryValue.get() != "" else None
         encoding = encodingEntryValue.get()
         attachement = Attachement(value_entry.get(), encoding=encoding, typename=typename, subtypename=subtypename)
-        print(attachement)
+        component.attachement = attachement
 
     Button(attachement_frame, text="Submit", command=submit_attachement).pack()
 
     return attachement_frame
+
+def make_categories_frame(master_frame):
+    categoriesFrame = Frame(master_frame)
+
+    checkbuttonValue = BooleanVar(value=False)
+    categoriesEntryValue = StringVar(value="")
+
+    def toggle_categories_entry():
+        if (checkbuttonValue.get()):
+            checkbutton.config(text="Categories : ")
+            categoriesEntryFrame.pack(side="right")
+        else:
+            checkbutton.config(text="Categories ? ")
+            categoriesEntryFrame.pack_forget()
+
+    checkbutton = Checkbutton(categoriesFrame, text="Categories ? ", variable=checkbuttonValue, onvalue=True, offvalue=False, command=toggle_categories_entry)
+    checkbutton.pack(side="left", anchor="w")
+
+    categoriesEntryFrame = Frame(categoriesFrame)
+    categoriesEntryField = Entry(categoriesEntryFrame, textvariable=categoriesEntryValue)
+    categoriesEntryField.pack(side="left")
+
+    def submit_categories():
+        choices = categoriesEntryValue.get().split(",")
+        result = []
+
+        for choice in choices:
+            if (choice.strip() == ""):
+                continue
+
+            result.append(choice.strip())
+
+        if (result == []):
+            return None
+
+        categoriesProperty = Categories(result)
+        print(categoriesProperty)
+
+    submitButton = Button(categoriesEntryFrame, text="Submit", command=submit_categories)
+    submitButton.pack(side="right", anchor="e")
+
+    return categoriesFrame
