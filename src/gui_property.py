@@ -2,6 +2,7 @@ from properties import *
 from tkinter import *
 from components.component import Component
 
+
 def make_attachement_frame(master_frame):
     attachement_frame = Frame(master_frame)
 
@@ -121,3 +122,72 @@ def make_categories_frame(master_frame):
     submitButton.pack(side="right", anchor="e")
 
     return categoriesFrame
+
+def make_classification_frame(master_frame, configuration):
+    classificationFrame = Frame(master_frame)
+
+    hiddableFrame = Frame(classificationFrame)
+
+    userInputFrame = Frame(hiddableFrame)
+    listbox = Listbox(userInputFrame)
+    for i in range(len(configuration["choices"])):
+        listbox.insert(i, configuration["choices"][i])
+    listbox.config(height=configuration["classification_view_height"])
+    listbox.pack(side="top")
+    entry = Entry(userInputFrame)
+    entry.pack(side="bottom")
+    userInputFrame.pack(side="left")
+
+    buttonsFrame = Frame(hiddableFrame)
+    def add():
+        if (entry.get().upper() not in listbox.get(0, listbox.size()-1) and entry.get().strip() != ""):
+            listbox.insert(listbox.size(), entry.get().upper())
+            entry.delete(0, END)
+
+    addButton = Button(buttonsFrame, text="Add", command=add)
+    addButton.pack()
+
+    def addToConfig():
+        add()
+        if (entry.get().upper() not in configuration["choices"] and entry.get().strip() != ""):
+            configuration["choices"].append(entry.get().upper())
+    addToConfigButton = Button(buttonsFrame, text="Add to configuration", command=addToConfig)
+    addToConfigButton.pack()
+
+    def delete():
+        choice = listbox.curselection()
+        listbox.delete(choice)
+        return choice
+    deleteButton = Button(buttonsFrame, text="Delete", command=delete)
+    deleteButton.pack()
+    
+    def deleteFromConfig():
+        choice = delete()
+        configuration["choices"].pop(choice[0])
+    deleteFromConfigButton = Button(buttonsFrame, text="Delete from configuration", command=deleteFromConfig)
+    deleteFromConfigButton.pack()
+
+    def submit():
+        choice = None
+        try:
+            choice = configuration["choices"][listbox.curselection()[0]]
+        except Exception as _:
+            pass
+        else:
+            if (choice and choice.strip() != ""):
+                classification = Classification(choice)
+    submitButton = Button(buttonsFrame, text="Submit", command=submit)
+    submitButton.pack()
+    buttonsFrame.pack(side="right")
+
+    checkbuttonState = BooleanVar(value=False)
+    def toggleClassificationMenu():
+        if (checkbuttonState.get()):
+            hiddableFrame.pack(side="right")
+        else:
+            hiddableFrame.pack_forget()
+
+    checkbutton = Checkbutton(classificationFrame, text="Classification ? ", variable=checkbuttonState, onvalue=True, offvalue=False, command=toggleClassificationMenu)
+    checkbutton.pack(side="left",anchor="w")
+
+    return classificationFrame
