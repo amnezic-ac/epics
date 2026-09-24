@@ -1,4 +1,4 @@
-from src.datatypes import Caladress, Uri
+from datatypes import Caladress, Uri
 
 class Parameter():
     def __str__(classe: str, value: str, quoted: bool = True):
@@ -13,16 +13,11 @@ class Parameter():
 
 class Altrep(Parameter):
 
-    def __init__(self, value: str, initial_value: str):
-        # altrep have to show its initial value
-        if (not initial_value):
-            raise Exception(f"ALTREP parameter needs the default representation of the text value (refer to 3.2.1)")
-
+    def __init__(self, value: str):
         self.value = value
-        self.initial_value = initial_value
 
     def __str__(self):
-        return f"ALTREP=\"{self.value}\":{self.initial_value}"
+        return f"ALTREP=\"{self.value}\""
 
 class Cn(Parameter, Caladress):
     def __init__(self, value: str):

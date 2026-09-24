@@ -216,3 +216,36 @@ def make_classification_frame(master_frame, configuration):
     checkbutton.pack(side="left",anchor="w")
 
     return classificationFrame
+
+def make_comment_frame(master_frame, configuration):
+    commentFrame = Frame(master_frame)
+
+    commentTextFrame = Frame(commentFrame)
+    commentTextInput = Text(commentTextFrame)
+    commentTextInput.config(
+        height=configuration["comment_view_height"],
+        width=configuration["comment_view_width"]
+    )
+    commentTextInput.pack()
+    
+    def submitComment():
+        commentTextInputValue = commentTextInput.get("1.0", "end-1c")
+        comment = Comment(commentTextInputValue)
+        print(comment)
+
+    submitButton = Button(commentTextFrame, text="Submit", command=submitComment)
+    submitButton.pack()
+
+    checkbuttonState = BooleanVar(value=False)
+    def toggleCommentText():
+        if (checkbuttonState.get()):
+            commentTextFrame.pack(side="right")
+            checkbutton.config(text="Comment : ")
+        else:
+            checkbutton.config(text="Comment ? ")
+            commentTextFrame.pack_forget()
+
+    checkbutton = Checkbutton(commentFrame, text="Comment ? ", variable=checkbuttonState, onvalue=True, offvalue=False, command=toggleCommentText)
+    checkbutton.pack(side="left")
+
+    return commentFrame
