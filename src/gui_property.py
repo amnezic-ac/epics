@@ -81,45 +81,70 @@ def make_attachement_frame(master_frame):
 
     return attachement_frame
 
-def make_categories_frame(master_frame):
+def make_categories_frame(master_frame, configuration):
     categoriesFrame = Frame(master_frame)
 
-    checkbuttonValue = BooleanVar(value=False)
-    categoriesEntryValue = StringVar(value="")
+    hiddableFrame = Frame(categoriesFrame)
 
-    def toggle_categories_entry():
-        if (checkbuttonValue.get()):
-            checkbutton.config(text="Categories : ")
-            categoriesEntryFrame.pack(side="right")
+    userInputFrame = Frame(hiddableFrame)
+    listbox = Listbox(userInputFrame, selectmode=MULTIPLE)
+    for i in range (len(configuration["choices"])):
+        listbox.insert(i, configuration["choices"][i])
+    listbox.config(height=min(len(configuration["choices"]), configuration["categories_view_height"]))
+    listbox.pack(side="top")
+    entry = Entry(userInputFrame)
+    entry.pack(side="bottom")
+    userInputFrame.pack(side="left")
+
+    buttonsFrame = Frame(hiddableFrame)
+    def add():
+        if (entry.get().upper() not in listbox.get(0, listbox.size()-1) and entry.get().strip() != ""):
+            listbox.insert(listbox.size(), entry.get().upper())
+            entry.delete(0, END)
+
+    addButton = Button(buttonsFrame, text="Add", command=add)
+    addButton.pack()
+
+    def addToConfig():
+        add()
+        if (entry.get().upper() not in configuration["choices"] and entry.get().strip() != ""):
+            configuration["choices"].append(entry.get().upper())
+    addToConfigButton = Button(buttonsFrame, text="Add to configuration", command=addToConfig)
+    addToConfigButton.pack()
+
+    def delete():
+        choices = listbox.curselection()
+        if (type(choices) is int):
+            listbox.delete(choices)
         else:
+            for choice in choices[::-1]:
+                listbox.delete(choice)
+        return choices
+    deleteButton = Button(buttonsFrame, text="Delete", command=delete)
+    deleteButton.pack()
+    
+    def deleteFromConfig():
+        choices = delete()
+        if (type(choices) is int):
+            configuration["choices"].pop(choices)
+        else:
+            for choice in choices[::-1]:
+                configuration["choices"].pop(choice)
+    deleteFromConfigButton = Button(buttonsFrame, text="Delete from configuration", command=deleteFromConfig)
+    deleteFromConfigButton.pack()
+
+    buttonsFrame.pack(side="right")
+
+    checkbuttonState = BooleanVar(value=False)
+    def toggleCategoriesMenu():
+        if (checkbuttonState.get()):
+            checkbutton.config(text="Categories : ")
+            hiddableFrame.pack(side="right")
+        else:
+            hiddableFrame.pack_forget()
             checkbutton.config(text="Categories ? ")
-            categoriesEntryFrame.pack_forget()
-
-    checkbutton = Checkbutton(categoriesFrame, text="Categories ? ", variable=checkbuttonValue, onvalue=True, offvalue=False, command=toggle_categories_entry)
-    checkbutton.pack(side="left", anchor="w")
-
-    categoriesEntryFrame = Frame(categoriesFrame)
-    categoriesEntryField = Entry(categoriesEntryFrame, textvariable=categoriesEntryValue)
-    categoriesEntryField.pack(side="left")
-
-    def submit_categories():
-        choices = categoriesEntryValue.get().split(",")
-        result = []
-
-        for choice in choices:
-            if (choice.strip() == ""):
-                continue
-
-            result.append(choice.strip())
-
-        if (result == []):
-            return None
-
-        categoriesProperty = Categories(result)
-        print(categoriesProperty)
-
-    submitButton = Button(categoriesEntryFrame, text="Submit", command=submit_categories)
-    submitButton.pack(side="right", anchor="e")
+    checkbutton = Checkbutton(categoriesFrame, text="Categories ? ", variable=checkbuttonState, onvalue=True, offvalue=False, command=toggleCategoriesMenu)
+    checkbutton.pack(side="left",anchor="w")
 
     return categoriesFrame
 
@@ -132,7 +157,7 @@ def make_classification_frame(master_frame, configuration):
     listbox = Listbox(userInputFrame)
     for i in range(len(configuration["choices"])):
         listbox.insert(i, configuration["choices"][i])
-    listbox.config(height=configuration["classification_view_height"])
+    listbox.config(height=min(len(configuration["choices"]), configuration["classification_view_height"]))
     listbox.pack(side="top")
     entry = Entry(userInputFrame)
     entry.pack(side="bottom")
