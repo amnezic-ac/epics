@@ -3,6 +3,13 @@ from tkinter import ttk
 import tkinter as tk
 from components.component import Component
 
+"""
+
+Disclaimer:
+Some functions (explicited in comments) are entirely written by AI (ChatGPT) on the basis of some human-written functions
+
+"""
+
 
 def make_attachement_frame(master_frame):
     attachement_frame = tk.Frame(master_frame)
@@ -284,6 +291,7 @@ def make_comment_frame(master_frame, configuration):
 
     return commentFrame
 
+# made by ChatGPT
 def make_description_frame(master_frame, configuration): # master_frame is the parent container of the entirely new frame and configuration a JSON object for minimal information
     descriptionFrame = tk.Frame(master_frame)
 
@@ -349,3 +357,46 @@ def make_description_frame(master_frame, configuration): # master_frame is the p
     checkbutton.pack(side="top")
 
     return descriptionFrame
+
+# AI generated
+def make_geo_frame(master_frame, configuration): # master_frame is the parent container of the entirely new frame and configuration a JSON object for minimal information
+    geoFrame = tk.Frame(master_frame)
+
+    hiddableFrame = tk.Frame(geoFrame)
+
+    latitudeFrame = tk.Frame(hiddableFrame)
+    latitudeLabel = tk.Label(latitudeFrame, text="Latitude : ")
+    latitudeInput = tk.Spinbox(
+        latitudeFrame,
+        from_=-90,
+        to=90,
+        increment=0.000001
+    )
+    latitudeLabel.pack(side="left")
+    latitudeInput.pack(side="right")
+    latitudeFrame.pack()
+
+    longitudeFrame = tk.Frame(hiddableFrame)
+    longitudeLabel = tk.Label(longitudeFrame, text="Longitude : ")
+    longitudeInput = tk.Spinbox(
+        longitudeFrame,
+        from_=-180,
+        to=180,
+        increment=0.000001
+    )
+    longitudeLabel.pack(side="left")
+    longitudeInput.pack(side="right")
+    longitudeFrame.pack()
+
+    checkbuttonState = tk.BooleanVar(value=False)
+    def toggleGeo():
+        if (checkbuttonState.get()):
+            checkbutton.config(text="Geo : ")
+            hiddableFrame.pack()
+        else:
+            checkbutton.config(text="Geo ? ")
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(geoFrame, text="Geo ? ", variable=checkbuttonState, onvalue=True, offvalue=False, command=toggleGeo)
+    checkbutton.pack(side="top")
+
+    return geoFrame
