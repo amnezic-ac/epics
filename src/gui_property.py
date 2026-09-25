@@ -1,25 +1,26 @@
 from properties import *
-from tkinter import *
+from tkinter import ttk
+import tkinter as tk
 from components.component import Component
 
 
 def make_attachement_frame(master_frame):
-    attachement_frame = Frame(master_frame)
+    attachement_frame = tk.Frame(master_frame)
 
     ### Attachment value
-    value_frame = Frame(attachement_frame)
-    value_label = Label(value_frame, text="value : ")
-    value_entry = Entry(value_frame)
+    value_frame = tk.Frame(attachement_frame)
+    value_label = tk.Label(value_frame, text="value : ")
+    value_entry = tk.Entry(value_frame)
     value_label.pack(side="left", anchor="w")
     value_entry.pack(side=RIGHT, anchor="e")
     value_frame.pack()
 
     ### If there is an encoding
-    encoding_frame = Frame(attachement_frame, padx=1, pady=1)
-    isEncodingCheckBoxChecked = BooleanVar(value=False)
-    isAlreadyAnEncodingValue = BooleanVar(value = False)
-    encodingEntryValue = StringVar(value=None)
-    encoding_entry_frame = Frame(encoding_frame)
+    encoding_frame = tk.Frame(attachement_frame, padx=1, pady=1)
+    isEncodingCheckBoxChecked = tk.BooleanVar(value=False)
+    isAlreadyAnEncodingValue = tk.BooleanVar(value = False)
+    encodingEntryValue = tk.StringVar(value=None)
+    encoding_entry_frame = tk.Frame(encoding_frame)
 
     def toggle_encoding_entry_frame():
         test_bool = isEncodingCheckBoxChecked.get()
@@ -27,7 +28,7 @@ def make_attachement_frame(master_frame):
             encoding_checkbox.pack(side=LEFT, anchor="w")
             if (not isAlreadyAnEncodingValue.get()):
                 encoding_checkbox.config(text="Encoding : ")
-                entry = Entry(encoding_entry_frame, textvariable=encodingEntryValue)
+                entry = tk.Entry(encoding_entry_frame, textvariable=encodingEntryValue)
                 entry.pack(side="right", anchor="e")
                 isAlreadyAnEncodingValue.set(True)
             encoding_entry_frame.pack()
@@ -35,38 +36,38 @@ def make_attachement_frame(master_frame):
             encoding_checkbox.config(text="Encoding ? ")
             encoding_entry_frame.pack_forget()
 
-    encoding_checkbox = Checkbutton(encoding_frame, text="Encoding ? ", variable=isEncodingCheckBoxChecked, onvalue=True, offvalue=False, command=toggle_encoding_entry_frame)
+    encoding_checkbox = tk.Checkbutton(encoding_frame, text="Encoding ? ", variable=isEncodingCheckBoxChecked, onvalue=True, offvalue=False, command=toggle_encoding_entry_frame)
     encoding_checkbox.pack(side="left", anchor="w")
     encoding_frame.pack()
     
     ### If there is (sub)type
-    type_frame = Frame(attachement_frame)
-    isTypeCheckBoxchecked = BooleanVar(value=False)
-    isAlreadyTypeValue = BooleanVar(value = False)
-    typeEntryValue = StringVar(value="")
-    subtypeEntryValue = StringVar(value="")
-    typesEntryFrame = Frame(type_frame)
+    type_frame = tk.Frame(attachement_frame)
+    isTypeCheckBoxchecked = tk.BooleanVar(value=False)
+    isAlreadyTypeValue = tk.BooleanVar(value = False)
+    typeEntryValue = tk.StringVar(value="")
+    subtypeEntryValue = tk.StringVar(value="")
+    typesEntryFrame = tk.Frame(type_frame)
 
     def toggle_type_entry_frame():
         if isTypeCheckBoxchecked.get():
             type_checkbox.pack(side="left")
             if (not isAlreadyTypeValue.get()):
                 type_checkbox.config(text="type/subtype : ")
-                Entry(typesEntryFrame, textvariable=typeEntryValue).pack(side=RIGHT, anchor="e")
-                Label(typesEntryFrame, text="/").pack(side=RIGHT)
-                Entry(typesEntryFrame, textvariable=subtypeEntryValue).pack(side=RIGHT)
+                tk.Entry(typesEntryFrame, textvariable=typeEntryValue).pack(side=RIGHT, anchor="e")
+                tk.Label(typesEntryFrame, text="/").pack(side=RIGHT)
+                tk.Entry(typesEntryFrame, textvariable=subtypeEntryValue).pack(side=RIGHT)
                 isAlreadyTypeValue.set(True)
             typesEntryFrame.pack()
         else:
             type_checkbox.config(text="Type ? ")
             typesEntryFrame.pack_forget()
 
-    type_checkbox = Checkbutton(type_frame, text="Type ? ", variable=isTypeCheckBoxchecked, onvalue=True, offvalue=False, command=toggle_type_entry_frame)
+    type_checkbox = tk.Checkbutton(type_frame, text="Type ? ", variable=isTypeCheckBoxchecked, onvalue=True, offvalue=False, command=toggle_type_entry_frame)
     type_checkbox.pack(side="left", anchor="w")
     type_frame.pack()
 
     def submit_attachement():
-        value_error_label = Label(value_frame, text="Unable to add an empty value, please put a value or unchecked the encoding checkbox")
+        value_error_label = tk.Label(value_frame, text="Unable to add an empty value, please put a value or unchecked the encoding checkbox")
         if (value_entry.get() == ""):
             value_error_label.pack(side="right")
             return None
@@ -77,39 +78,39 @@ def make_attachement_frame(master_frame):
         encoding = encodingEntryValue.get()
         attachement = Attachement(value_entry.get(), encoding=encoding, typename=typename, subtypename=subtypename)
 
-    Button(attachement_frame, text="Submit", command=submit_attachement).pack()
+    tk.Button(attachement_frame, text="Submit", command=submit_attachement).pack()
 
     return attachement_frame
 
 def make_categories_frame(master_frame, configuration):
-    categoriesFrame = Frame(master_frame)
+    categoriesFrame = tk.Frame(master_frame)
 
-    hiddableFrame = Frame(categoriesFrame)
+    hiddableFrame = tk.Frame(categoriesFrame)
 
-    userInputFrame = Frame(hiddableFrame)
+    userInputFrame = tk.Frame(hiddableFrame)
     listbox = Listbox(userInputFrame, selectmode=MULTIPLE)
     for i in range (len(configuration["choices"])):
         listbox.insert(i, configuration["choices"][i])
     listbox.config(height=min(len(configuration["choices"]), configuration["categories_view_height"]))
     listbox.pack(side="top")
-    entry = Entry(userInputFrame)
+    entry = tk.Entry(userInputFrame)
     entry.pack(side="bottom")
     userInputFrame.pack(side="left")
 
-    buttonsFrame = Frame(hiddableFrame)
+    buttonsFrame = tk.Frame(hiddableFrame)
     def add():
         if (entry.get().upper() not in listbox.get(0, listbox.size()-1) and entry.get().strip() != ""):
             listbox.insert(listbox.size(), entry.get().upper())
             entry.delete(0, END)
 
-    addButton = Button(buttonsFrame, text="Add", command=add)
+    addButton = tk.Button(buttonsFrame, text="Add", command=add)
     addButton.pack()
 
     def addToConfig():
         add()
         if (entry.get().upper() not in configuration["choices"] and entry.get().strip() != ""):
             configuration["choices"].append(entry.get().upper())
-    addToConfigButton = Button(buttonsFrame, text="Add to configuration", command=addToConfig)
+    addToConfigButton = tk.Button(buttonsFrame, text="Add to configuration", command=addToConfig)
     addToConfigButton.pack()
 
     def delete():
@@ -120,7 +121,7 @@ def make_categories_frame(master_frame, configuration):
             for choice in choices[::-1]:
                 listbox.delete(choice)
         return choices
-    deleteButton = Button(buttonsFrame, text="Delete", command=delete)
+    deleteButton = tk.Button(buttonsFrame, text="Delete", command=delete)
     deleteButton.pack()
     
     def deleteFromConfig():
@@ -130,12 +131,12 @@ def make_categories_frame(master_frame, configuration):
         else:
             for choice in choices[::-1]:
                 configuration["choices"].pop(choice)
-    deleteFromConfigButton = Button(buttonsFrame, text="Delete from configuration", command=deleteFromConfig)
+    deleteFromConfigButton = tk.Button(buttonsFrame, text="Delete from configuration", command=deleteFromConfig)
     deleteFromConfigButton.pack()
 
     buttonsFrame.pack(side="right")
 
-    checkbuttonState = BooleanVar(value=False)
+    checkbuttonState = tk.BooleanVar(value=False)
     def toggleCategoriesMenu():
         if (checkbuttonState.get()):
             checkbutton.config(text="Categories : ")
@@ -143,53 +144,53 @@ def make_categories_frame(master_frame, configuration):
         else:
             hiddableFrame.pack_forget()
             checkbutton.config(text="Categories ? ")
-    checkbutton = Checkbutton(categoriesFrame, text="Categories ? ", variable=checkbuttonState, onvalue=True, offvalue=False, command=toggleCategoriesMenu)
+    checkbutton = tk.Checkbutton(categoriesFrame, text="Categories ? ", variable=checkbuttonState, onvalue=True, offvalue=False, command=toggleCategoriesMenu)
     checkbutton.pack(side="left",anchor="w")
 
     return categoriesFrame
 
 def make_classification_frame(master_frame, configuration):
-    classificationFrame = Frame(master_frame)
+    classificationFrame = tk.Frame(master_frame)
 
-    hiddableFrame = Frame(classificationFrame)
+    hiddableFrame = tk.Frame(classificationFrame)
 
-    userInputFrame = Frame(hiddableFrame)
+    userInputFrame = tk.Frame(hiddableFrame)
     listbox = Listbox(userInputFrame)
     for i in range(len(configuration["choices"])):
         listbox.insert(i, configuration["choices"][i])
     listbox.config(height=min(len(configuration["choices"]), configuration["classification_view_height"]))
     listbox.pack(side="top")
-    entry = Entry(userInputFrame)
+    entry = tk.Entry(userInputFrame)
     entry.pack(side="bottom")
     userInputFrame.pack(side="left")
 
-    buttonsFrame = Frame(hiddableFrame)
+    buttonsFrame = tk.Frame(hiddableFrame)
     def add():
         if (entry.get().upper() not in listbox.get(0, listbox.size()-1) and entry.get().strip() != ""):
             listbox.insert(listbox.size(), entry.get().upper())
             entry.delete(0, END)
 
-    addButton = Button(buttonsFrame, text="Add", command=add)
+    addButton = tk.Button(buttonsFrame, text="Add", command=add)
     addButton.pack()
 
     def addToConfig():
         add()
         if (entry.get().upper() not in configuration["choices"] and entry.get().strip() != ""):
             configuration["choices"].append(entry.get().upper())
-    addToConfigButton = Button(buttonsFrame, text="Add to configuration", command=addToConfig)
+    addToConfigButton = tk.Button(buttonsFrame, text="Add to configuration", command=addToConfig)
     addToConfigButton.pack()
 
     def delete():
         choice = listbox.curselection()
         listbox.delete(choice)
         return choice
-    deleteButton = Button(buttonsFrame, text="Delete", command=delete)
+    deleteButton = tk.Button(buttonsFrame, text="Delete", command=delete)
     deleteButton.pack()
     
     def deleteFromConfig():
         choice = delete()
         configuration["choices"].pop(choice[0])
-    deleteFromConfigButton = Button(buttonsFrame, text="Delete from configuration", command=deleteFromConfig)
+    deleteFromConfigButton = tk.Button(buttonsFrame, text="Delete from configuration", command=deleteFromConfig)
     deleteFromConfigButton.pack()
 
     def submit():
@@ -201,51 +202,150 @@ def make_classification_frame(master_frame, configuration):
         else:
             if (choice and choice.strip() != ""):
                 classification = Classification(choice)
-    submitButton = Button(buttonsFrame, text="Submit", command=submit)
+    submitButton = tk.Button(buttonsFrame, text="Submit", command=submit)
     submitButton.pack()
     buttonsFrame.pack(side="right")
 
-    checkbuttonState = BooleanVar(value=False)
+    checkbuttonState = tk.BooleanVar(value=False)
     def toggleClassificationMenu():
         if (checkbuttonState.get()):
             hiddableFrame.pack(side="right")
         else:
             hiddableFrame.pack_forget()
 
-    checkbutton = Checkbutton(classificationFrame, text="Classification ? ", variable=checkbuttonState, onvalue=True, offvalue=False, command=toggleClassificationMenu)
+    checkbutton = tk.Checkbutton(classificationFrame, text="Classification ? ", variable=checkbuttonState, onvalue=True, offvalue=False, command=toggleClassificationMenu)
     checkbutton.pack(side="left",anchor="w")
 
     return classificationFrame
 
 def make_comment_frame(master_frame, configuration):
-    commentFrame = Frame(master_frame)
+    commentFrame = tk.Frame(master_frame)
 
-    commentTextFrame = Frame(commentFrame)
-    commentTextInput = Text(commentTextFrame)
+    hiddableFrame = tk.Frame(commentFrame)
+
+    commentTextFrame = tk.Frame(hiddableFrame)
+    commentTextInput = tk.Text(commentTextFrame)
     commentTextInput.config(
-        height=configuration["comment_view_height"],
-        width=configuration["comment_view_width"]
+        height=configuration["comment"]["comment_view_height"],
+        width=configuration["comment"]["comment_view_width"]
     )
     commentTextInput.pack()
-    
-    def submitComment():
-        commentTextInputValue = commentTextInput.get("1.0", "end-1c")
-        comment = Comment(commentTextInputValue)
-        print(comment)
+    commentTextFrame.pack()
 
-    submitButton = Button(commentTextFrame, text="Submit", command=submitComment)
-    submitButton.pack()
+    altrepFrame = tk.Frame(hiddableFrame)
+    altrepText = tk.Text(altrepFrame)
+    altrepText.config(
+        height=configuration["comment"]["comment_view_height"],
+        width=configuration["comment"]["comment_view_width"]
+    )
+    altrepCheckbuttonState = tk.BooleanVar(value=False)
+    def toggleAltrepEntry():
+        if (altrepCheckbuttonState.get()):
+            altrepCheckbutton.config(text="Alternative representation : ")
+            altrepText.pack()
+        else:
+            altrepCheckbutton.config(text="Alternative representation ? ")
+            altrepText.pack_forget()
+    altrepCheckbutton = tk.Checkbutton(altrepFrame, text="Alternative representation ? ", variable=altrepCheckbuttonState, onvalue=True, offvalue=False, command=toggleAltrepEntry)
+    altrepCheckbutton.pack()
+    altrepFrame.pack()
 
-    checkbuttonState = BooleanVar(value=False)
+    languageFrame = tk.Frame(hiddableFrame)
+    languageChoice = tk.StringVar(value="")
+    languageComboBox = ttk.Combobox(languageFrame, textvariable=languageChoice)
+    languageValues = []
+    for language in configuration["languages"]:
+        for language_id, description in language.items():
+            languageValues.append(f"{language_id} ({description})")
+    languageComboBox["values"] = languageValues
+    languageComboBox['state'] = 'readonly'
+    languageCheckbuttonState = tk.BooleanVar(value=False)
+    def toggleLanguageMenu():
+        if (languageCheckbuttonState.get()):
+            languageCheckbutton.config(text="Language : ")
+            languageComboBox.pack(side="right")
+        else:
+            languageCheckbutton.config(text="Language ? ")
+            languageComboBox.pack_forget()
+    languageCheckbutton = tk.Checkbutton(languageFrame, text="Language ? ", variable=languageCheckbuttonState, onvalue=True, offvalue=False, command=toggleLanguageMenu)
+    languageCheckbutton.pack(side="left")
+    languageFrame.pack()
+
+    checkbuttonState = tk.BooleanVar(value=False)
     def toggleCommentText():
         if (checkbuttonState.get()):
-            commentTextFrame.pack(side="right")
             checkbutton.config(text="Comment : ")
+            hiddableFrame.pack()
         else:
             checkbutton.config(text="Comment ? ")
-            commentTextFrame.pack_forget()
-
-    checkbutton = Checkbutton(commentFrame, text="Comment ? ", variable=checkbuttonState, onvalue=True, offvalue=False, command=toggleCommentText)
-    checkbutton.pack(side="left")
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(commentFrame, text="Comment ? ", variable=checkbuttonState, onvalue=True, offvalue=False, command=toggleCommentText)
+    checkbutton.pack(side="top")
 
     return commentFrame
+
+def make_description_frame(master_frame, configuration): # master_frame is the parent container of the entirely new frame and configuration a JSON object for minimal information
+    descriptionFrame = tk.Frame(master_frame)
+
+    hiddableFrame = tk.Frame(descriptionFrame)
+
+    descriptionTextFrame = tk.Frame(hiddableFrame)
+    descriptionTextInput = tk.Text(descriptionTextFrame)
+    descriptionTextInput.config(
+        height=configuration["description"]["description_view_height"],
+        width=configuration["description"]["description_view_width"]
+    )
+    descriptionTextInput.pack()
+    descriptionTextFrame.pack()
+
+    altrepFrame = tk.Frame(hiddableFrame)
+    altrepText = tk.Text(altrepFrame)
+    altrepText.config(
+        height=configuration["description"]["description_view_height"],
+        width=configuration["description"]["description_view_width"]
+    )
+    altrepCheckbuttonState = tk.BooleanVar(value=False)
+    def toggleAltrepEntry():
+        if (altrepCheckbuttonState.get()):
+            altrepCheckbutton.config(text="Alternative representation : ")
+            altrepText.pack()
+        else:
+            altrepCheckbutton.config(text="Alternative representation ? ")
+            altrepText.pack_forget()
+    altrepCheckbutton = tk.Checkbutton(altrepFrame, text="Alternative representation ? ", variable=altrepCheckbuttonState, onvalue=True, offvalue=False, command=toggleAltrepEntry)
+    altrepCheckbutton.pack()
+    altrepFrame.pack()
+
+    languageFrame = tk.Frame(hiddableFrame)
+    languageChoice = tk.StringVar(value="")
+    languageComboBox = ttk.Combobox(languageFrame, textvariable=languageChoice)
+    languageValues = []
+    for language in configuration["languages"]:
+        for language_id, description in language.items():
+            languageValues.append(f"{language_id} ({description})")
+    languageComboBox["values"] = languageValues
+    languageComboBox["state"] = "readonly"
+    languageCheckbuttonState = tk.BooleanVar(value=False)
+    def toggleLanguageMenu():
+        if (languageCheckbuttonState.get()):
+            languageCheckbutton.config(text="Language : ")
+            languageComboBox.pack(side="right")
+        else:
+            languageCheckbutton.config(text="Language ? ")
+            languageComboBox.pack_forget()
+    languageCheckbutton = tk.Checkbutton(languageFrame, text="Language ? ", variable=languageCheckbuttonState, onvalue=True, offvalue=False, command=toggleLanguageMenu)
+    languageCheckbutton.pack(side="left")
+    languageFrame.pack()
+
+    checkbuttonState = tk.BooleanVar(value=False)
+    def toggleDescriptionText():
+        if (checkbuttonState.get()):
+            checkbutton.config(text="Description : ")
+            hiddableFrame.pack()
+        else:
+            checkbutton.config(text="Description ? ")
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(descriptionFrame, text="Description ? ", variable=checkbuttonState, onvalue=True, offvalue=False, command=toggleDescriptionText)
+    checkbutton.pack(side="top")
+
+    return descriptionFrame
