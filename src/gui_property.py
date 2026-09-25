@@ -400,3 +400,69 @@ def make_geo_frame(master_frame, configuration): # master_frame is the parent co
     checkbutton.pack(side="top")
 
     return geoFrame
+
+# AI generated
+def make_location_frame(master_frame, configuration): # master_frame is the parent container of the entirely new frame and configuration a JSON object for minimal information
+    locationFrame = tk.Frame(master_frame)
+
+    hiddableFrame = tk.Frame(locationFrame)
+
+    locationTextFrame = tk.Frame(hiddableFrame)
+    locationTextInput = tk.Entry(locationTextFrame)
+    locationTextInput.config(
+        width=configuration["location"]["location_view_width"]
+    )
+    locationTextInput.pack()
+    locationTextFrame.pack()
+
+    altrepFrame = tk.Frame(hiddableFrame)
+    altrepText = tk.Text(altrepFrame)
+    altrepText.config(
+        width=configuration["location"]["location_view_width"],
+        height=configuration["location"]["location_view_height"]
+    )
+    altrepCheckbuttonState = tk.BooleanVar(value=False)
+    def toggleAltrepEntry():
+        if (altrepCheckbuttonState.get()):
+            altrepCheckbutton.config(text="Alternative representation : ")
+            altrepText.pack()
+        else:
+            altrepCheckbutton.config(text="Alternative representation ? ")
+            altrepText.pack_forget()
+    altrepCheckbutton = tk.Checkbutton(altrepFrame, text="Alternative representation ? ", variable=altrepCheckbuttonState, onvalue=True, offvalue=False, command=toggleAltrepEntry)
+    altrepCheckbutton.pack()
+    altrepFrame.pack()
+
+    languageFrame = tk.Frame(hiddableFrame)
+    languageChoice = tk.StringVar(value="")
+    languageComboBox = ttk.Combobox(languageFrame, textvariable=languageChoice)
+    languageValues = []
+    for language in configuration["languages"]:
+        for language_id, description in language.items():
+            languageValues.append(f"{language_id} ({description})")
+    languageComboBox["values"] = languageValues
+    languageComboBox["state"] = "readonly"
+    languageCheckbuttonState = tk.BooleanVar(value=False)
+    def toggleLanguageMenu():
+        if (languageCheckbuttonState.get()):
+            languageCheckbutton.config(text="Language : ")
+            languageComboBox.pack(side="right")
+        else:
+            languageCheckbutton.config(text="Language ? ")
+            languageComboBox.pack_forget()
+    languageCheckbutton = tk.Checkbutton(languageFrame, text="Language ? ", variable=languageCheckbuttonState, onvalue=True, offvalue=False, command=toggleLanguageMenu)
+    languageCheckbutton.pack(side="left")
+    languageFrame.pack()
+
+    checkbuttonState = tk.BooleanVar(value=False)
+    def toggleLocationText():
+        if (checkbuttonState.get()):
+            checkbutton.config(text="Location : ")
+            hiddableFrame.pack()
+        else:
+            checkbutton.config(text="Location ? ")
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(locationFrame, text="Location ? ", variable=checkbuttonState, onvalue=True, offvalue=False, command=toggleLocationText)
+    checkbutton.pack(side="top")
+
+    return locationFrame
