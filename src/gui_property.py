@@ -499,3 +499,35 @@ def make_percent_frame(master_frame, configuration): # master_frame is the paren
     checkbutton.pack(side="left")
 
     return percentFrame
+
+# AI generated
+def make_priority_frame(master_frame, configuration): # master_frame is the parent container of the entirely new frame and configuration a JSON object for minimal information
+    priorityFrame = tk.Frame(master_frame)
+
+    priorityInput = tk.Spinbox(
+        priorityFrame,
+        from_=0,
+        to=9,
+        increment=1
+    )
+
+    checkbuttonState = tk.BooleanVar(value=False)
+    def togglePriority():
+        if (checkbuttonState.get()):
+            checkbutton.config(text="Priority : ")
+            priorityInput.pack(side="right")
+        else:
+            checkbutton.config(text="Priority ? ")
+            priorityInput.pack_forget()
+
+    checkbutton = tk.Checkbutton(
+        priorityFrame,
+        text="Priority ? ",
+        variable=checkbuttonState,
+        onvalue=True,
+        offvalue=False,
+        command=togglePriority
+    )
+    checkbutton.pack(side="left")
+
+    return priorityFrame
