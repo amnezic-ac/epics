@@ -466,3 +466,36 @@ def make_location_frame(master_frame, configuration): # master_frame is the pare
     checkbutton.pack(side="top")
 
     return locationFrame
+
+# AI generated
+def make_percent_frame(master_frame, configuration): # master_frame is the parent container of the entirely new frame and configuration a JSON object for minimal information
+    percentFrame = tk.Frame(master_frame)
+
+    percentChoice = tk.IntVar(value=0)
+    percentInput = tk.Spinbox(
+        percentFrame,
+        from_=0,
+        to=100,
+        increment=1
+    )
+
+    checkbuttonState = tk.BooleanVar(value=False)
+    def togglePercent():
+        if (checkbuttonState.get()):
+            checkbutton.config(text="Percent : ")
+            percentInput.pack(side="right")
+        else:
+            checkbutton.config(text="Percent ? ")
+            percentInput.pack_forget()
+
+    checkbutton = tk.Checkbutton(
+        percentFrame,
+        text="Percent ? ",
+        variable=checkbuttonState,
+        onvalue=True,
+        offvalue=False,
+        command=togglePercent
+    )
+    checkbutton.pack(side="left")
+
+    return percentFrame
