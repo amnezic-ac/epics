@@ -1,7 +1,7 @@
 from tkinter import ttk
 import tkinter as tk
-from parameters import *
-from gui import configuration
+from src.backend.parameters import *
+from main_gui import configuration
 
 """
 Disclaimer

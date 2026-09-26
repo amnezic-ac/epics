@@ -1,7 +1,7 @@
 # section 3.8.1
 
-from parameters import *
-from datatypes import *
+from src.backend.parameters import *
+from src.backend.datatypes import *
 
 DEFAULT_DURATION_HOUR = 2
 

@@ -31,10 +31,10 @@
         "location_view_width": 40
     },
     "altrep": {
-        "height":3,
+        "height": 3,
         "width": 40
     },
-    "common-name": { },
+    "common-name": {},
     "cutype": {
         "choices": [
             "INDIVIDUAL",
@@ -45,7 +45,7 @@
         ]
     },
     "encoding": {
-        "choices":[]
+        "choices": []
     },
     "languages": {
         "choices": [
@@ -778,7 +778,7 @@
         ]
     },
     "rsvp": {
-        "choices" : [
+        "choices": [
             "TRUE",
             "FALSE"
         ]

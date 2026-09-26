@@ -1,4 +1,4 @@
-from src.components.vevent import Vevent
+from src.backend.components.vevent import Vevent
 
 class Calendar():
 

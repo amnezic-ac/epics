@@ -1,5 +1,5 @@
-from src.properties import Uid, Categories, Classification, Comment, Description, Geo, Location, Priority, Resources, Status, Summary, Dtend, Dtstart, Duration, Transparency, Attachement, Atttendee, Comment, Contact
-from src.components.component import Component
+from src.backend.properties import Uid, Categories, Classification, Comment, Description, Geo, Location, Priority, Resources, Status, Summary, Duration, Transparency, Attachement, Atttendee, Comment, Contact
+from src.backend.components.component import Component
 from datetime import datetime, timedelta
 
 class Vevent(Component):
