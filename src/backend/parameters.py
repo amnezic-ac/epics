@@ -13,7 +13,9 @@ class Parameter():
 
 class Altrep(Parameter):
 
-    def __init__(self, value: str):
+    def __init__(self, value: str, initial_value: str):
+        if (not initial_value):
+            raise Exception(f"Alternative representation needs an initial value")
         self.value = value
 
     def __str__(self):

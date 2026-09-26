@@ -1,7 +1,7 @@
 # section 3.8.1
 
-from src.parameters import *
-from src.datatypes import *
+from parameters import *
+from datatypes import *
 
 DEFAULT_DURATION_HOUR = 2
 
@@ -33,7 +33,7 @@ class Attachement(Property):
             result += f";{str(self.fmttype)}"
 
         if (self.encoding):
-            result += f";ENCODING=BASE64;VALUE=BINARY"
+            result += f";ENCODING={self.encoding.upper()};VALUE=BINARY"
         
         result += f":{self.value}"
         return result
