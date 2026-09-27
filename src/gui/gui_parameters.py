@@ -52,10 +52,12 @@ def makeCutypeFrame(masterFrame, configuration):
         if value and value not in values:
             values.append(value)
             cutypeInput["values"] = values
+            userInput.delete(0, tk.END)
 
     def addToConfiguration():
-        value = cutypeInput.get()
+        value = userInput.get()
         if value and value not in configuration["cutype"]["choices"]:
+            add()
             configuration["cutype"]["choices"].append(value)
 
     def remove():
@@ -64,10 +66,13 @@ def makeCutypeFrame(masterFrame, configuration):
         if value in values:
             values.remove(value)
             cutypeInput["values"] = values
+            userInput.delete(0, tk.END)
+            cutypeInput.set(values[0])
 
     def removeFromConfiguration():
         value = cutypeInput.get()
         if value in configuration["cutype"]["choices"]:
+            remove()
             configuration["cutype"]["choices"].remove(value)
 
     buttonsFrame = tk.Frame(cutypeFrame)
@@ -79,7 +84,6 @@ def makeCutypeFrame(masterFrame, configuration):
 
     return cutypeFrame, cutypeInput
 
-
 def makeDelegatedFromFrame(masterFrame):
     delegatedFromFrame = tk.Frame(masterFrame)
 
@@ -87,7 +91,6 @@ def makeDelegatedFromFrame(masterFrame):
     delegatedFromInput.pack()
 
     return delegatedFromFrame, delegatedFromInput
-
 
 def makeDelegatedToFrame(masterFrame):
     delegatedToFrame = tk.Frame(masterFrame)
@@ -105,15 +108,19 @@ def makeDirFrame(masterFrame):
 
     return dirFrame, dirInput
 
-def makeEncodingFrame(masterFrame):
+def makeEncodingFrame(masterFrame, configuration):
     encodingFrame = tk.Frame(masterFrame)
 
+    userFrame = tk.Frame(encodingFrame)
     encodingInput = ttk.Combobox(
-        encodingFrame,
+        userFrame,
         values=configuration["encoding"]["choices"],
         state="readonly"
     )
     encodingInput.pack()
+    userEntry = tk.Entry(userFrame)
+    userEntry.pack()
+    userFrame.pack(side="left")
 
     def addToCombobox():
         values = list(encodingInput["values"])
@@ -125,6 +132,7 @@ def makeEncodingFrame(masterFrame):
     def addToConfiguration():
         value = encodingInput.get()
         if value and value not in configuration["encoding"]["choices"]:
+            addToCombobox()
             configuration["encoding"]["choices"].append(value)
 
     def removeFromCombobox():
@@ -139,29 +147,31 @@ def makeEncodingFrame(masterFrame):
         if value in configuration["encoding"]["choices"]:
             configuration["encoding"]["choices"].remove(value)
 
+    buttonsFrame = tk.Frame(encodingFrame)
     tk.Button(
-        encodingFrame,
-        text="Add to combobox",
+        buttonsFrame,
+        text="Add",
         command=addToCombobox
     ).pack()
 
     tk.Button(
-        encodingFrame,
+        buttonsFrame,
         text="Add to configuration",
         command=addToConfiguration
     ).pack()
 
     tk.Button(
-        encodingFrame,
-        text="Remove from combobox",
+        buttonsFrame,
+        text="Remove",
         command=removeFromCombobox
     ).pack()
 
     tk.Button(
-        encodingFrame,
+        buttonsFrame,
         text="Remove from configuration",
         command=removeFromConfiguration
     ).pack()
+    buttonsFrame.pack(side="right")
 
     return encodingFrame, encodingInput
 
