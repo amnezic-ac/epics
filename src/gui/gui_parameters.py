@@ -1,14 +1,14 @@
 from tkinter import ttk
 import tkinter as tk
+
 from src.backend.parameters import *
-from main_gui import configuration
 
 """
 Disclaimer
     Except the first two functions, all the other one have been AI generated for convenience purpose
 """
 
-def makeAlternativeRepresentationFrame(masterFrame):
+def makeAlternativeRepresentationFrame(masterFrame, configuration):
     altrepFrame = tk.Frame(masterFrame)
 
     altrepInput = tk.Text(masterFrame)
@@ -18,7 +18,7 @@ def makeAlternativeRepresentationFrame(masterFrame):
     )
     altrepInput.pack()
 
-    return {altrepFrame, altrepInput}
+    return  altrepFrame, altrepInput
 
 def makeCommonNameFrame(masterFrame):
     commonNameFrame = tk.Frame(masterFrame)
@@ -26,20 +26,28 @@ def makeCommonNameFrame(masterFrame):
     commonNameInput = tk.Entry(commonNameFrame)
     commonNameInput.pack()
 
-    return {masterFrame, commonNameInput}
+    return  commonNameFrame, commonNameInput
 
-def makeCutypeFrame(masterFrame):
+def makeCutypeFrame(masterFrame, configuration):
     cutypeFrame = tk.Frame(masterFrame)
 
+    userFrame = tk.Frame(cutypeFrame)
     cutypeInput = ttk.Combobox(
-        cutypeFrame,
+        userFrame,
         values=configuration["cutype"]["choices"],
         state="readonly"
     )
+    cutypeInput.config(
+        height=min(configuration["cutype"]["height"], len(configuration["cutype"]["choices"]))
+    )
     cutypeInput.pack()
 
+    userInput = tk.Entry(userFrame)
+    userInput.pack()
+    userFrame.pack(side="left")
+
     def add():
-        value = cutypeInput.get()
+        value = userInput.get()
         values = list(cutypeInput["values"])
         if value and value not in values:
             values.append(value)
@@ -62,12 +70,14 @@ def makeCutypeFrame(masterFrame):
         if value in configuration["cutype"]["choices"]:
             configuration["cutype"]["choices"].remove(value)
 
-    tk.Button(cutypeFrame, text="Add", command=add).pack()
-    tk.Button(cutypeFrame, text="Add to configuration", command=addToConfiguration).pack()
-    tk.Button(cutypeFrame, text="Remove", command=remove).pack()
-    tk.Button(cutypeFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
+    buttonsFrame = tk.Frame(cutypeFrame)
+    tk.Button(buttonsFrame, text="Add", command=add).pack()
+    tk.Button(buttonsFrame, text="Add to configuration", command=addToConfiguration).pack()
+    tk.Button(buttonsFrame, text="Remove", command=remove).pack()
+    tk.Button(buttonsFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
+    buttonsFrame.pack(side="right")
 
-    return {cutypeFrame, cutypeInput}
+    return cutypeFrame, cutypeInput
 
 
 def makeDelegatedFromFrame(masterFrame):
@@ -76,7 +86,7 @@ def makeDelegatedFromFrame(masterFrame):
     delegatedFromInput = tk.Entry(delegatedFromFrame)
     delegatedFromInput.pack()
 
-    return {delegatedFromFrame, delegatedFromInput}
+    return delegatedFromFrame, delegatedFromInput
 
 
 def makeDelegatedToFrame(masterFrame):
@@ -85,7 +95,7 @@ def makeDelegatedToFrame(masterFrame):
     delegatedToInput = tk.Entry(delegatedToFrame)
     delegatedToInput.pack()
 
-    return {delegatedToFrame, delegatedToInput}
+    return delegatedToFrame, delegatedToInput
 
 def makeDirFrame(masterFrame):
     dirFrame = tk.Frame(masterFrame)
@@ -93,7 +103,7 @@ def makeDirFrame(masterFrame):
     dirInput = tk.Entry(dirFrame)
     dirInput.pack()
 
-    return {dirFrame, dirInput}
+    return dirFrame, dirInput
 
 def makeEncodingFrame(masterFrame):
     encodingFrame = tk.Frame(masterFrame)
@@ -153,7 +163,7 @@ def makeEncodingFrame(masterFrame):
         command=removeFromConfiguration
     ).pack()
 
-    return {encodingFrame, encodingInput}
+    return encodingFrame, encodingInput
 
 
 def makeFmtTypeFrame(masterFrame):
@@ -163,7 +173,7 @@ def makeFmtTypeFrame(masterFrame):
     fmtTypeInput = tk.Entry(fmtTypeFrame)
     fmtTypeInput.pack()
 
-    return {fmtTypeFrame, fmtTypeInput}
+    return fmtTypeFrame, fmtTypeInput
 
 def makeFreeBusyTimeFrame(masterFrame):
     freeBusyTimeFrame = tk.Frame(masterFrame)
@@ -204,7 +214,7 @@ def makeFreeBusyTimeFrame(masterFrame):
     tk.Button(freeBusyTimeFrame, text="Remove", command=remove).pack()
     tk.Button(freeBusyTimeFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
 
-    return {freeBusyTimeFrame, freeBusyTimeInput}
+    return freeBusyTimeFrame, freeBusyTimeInput
 
 
 def makeLanguageFrame(masterFrame):
@@ -247,7 +257,7 @@ def makeLanguageFrame(masterFrame):
     # tk.Button(languageFrame, text="Remove", command=remove).pack()
     # tk.Button(languageFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
 
-    return {languageFrame, languageInput}
+    return languageFrame, languageInput
 
 def makeMemberFrame(masterFrame):
     memberFrame = tk.Frame(masterFrame)
@@ -288,7 +298,7 @@ def makeMemberFrame(masterFrame):
     tk.Button(memberFrame, text="Remove", command=remove).pack()
     tk.Button(memberFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
 
-    return {memberFrame, memberInput}
+    return memberFrame, memberInput
 
 
 def makePartstatFrame(masterFrame, eventType: str):
@@ -334,7 +344,7 @@ def makePartstatFrame(masterFrame, eventType: str):
     tk.Button(partstatFrame, text="Remove", command=remove).pack()
     tk.Button(partstatFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
 
-    return {partstatFrame, partstatInput}
+    return partstatFrame, partstatInput
 
 def makeRoleFrame(masterFrame):
     roleFrame = tk.Frame(masterFrame)
@@ -375,7 +385,7 @@ def makeRoleFrame(masterFrame):
     tk.Button(roleFrame, text="Remove", command=remove).pack()
     tk.Button(roleFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
 
-    return {roleFrame, roleInput}
+    return roleFrame, roleInput
 
 
 def makeRsvpFrame(masterFrame):
@@ -417,7 +427,7 @@ def makeRsvpFrame(masterFrame):
     tk.Button(rsvpFrame, text="Remove", command=remove).pack()
     tk.Button(rsvpFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
 
-    return {rsvpFrame, rsvpInput}
+    return rsvpFrame, rsvpInput
 
 def makeSentByFrame(masterFrame):
     sentByFrame = tk.Frame(masterFrame)
@@ -425,4 +435,4 @@ def makeSentByFrame(masterFrame):
     sentByInput = tk.Entry(sentByFrame)
     sentByInput.pack()
 
-    return {sentByFrame, sentByInput}
+    return sentByFrame, sentByInput
