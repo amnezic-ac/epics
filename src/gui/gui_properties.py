@@ -6,12 +6,29 @@ from src.gui.gui_parameters import *
 
 def makeAttachmentFrame(masterFrame, configuration):
     attachmentFrame = tk.Frame(masterFrame)
-    attachmentParameters = {}
 
-    fmttypeFrame, fmttypeInput = makeFmtTypeFrame(attachmentFrame)
+    hiddableFrame = tk.Frame(attachmentFrame)
+    attachmentValue = tk.Entry(hiddableFrame)
+    attachmentValue.pack()
+    fmttypeFrame, fmttypeInput = makeFmtTypeFrame(hiddableFrame)
     fmttypeFrame.pack()
 
-    return attachmentFrame, attachmentParameters
+    buttonState = tk.BooleanVar(value=False)
+    def toggleHiddableFrame():
+        if (buttonState.get()):
+            hiddableFrame.pack(side="right")
+            checkbutton.config(text="Attachment : ")
+        else:
+            hiddableFrame.pack_forget()
+            checkbutton.config(text="Attachment ? ")
+    checkbutton = tk.Checkbutton(attachmentFrame, text="Attachment ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
+    checkbutton.pack(side="left")
+
+    attachmentDict = {
+        "value": attachmentValue,
+        "fmttype": fmttypeInput
+    }
+    return attachmentFrame, attachmentDict
 
 def makeCategoriesFrame(masterFrame, configuration):
     categoriesFrame = tk.Frame(masterFrame)
