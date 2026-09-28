@@ -26,7 +26,7 @@ def makeEventFrame(masterFrame, configuration):
     classificationFrame, classificationCombobox = makeClassificationFrame(eventFrame, configuration)
     classificationFrame.pack()
 
-    commentFrame, commentDict = makeCommentFrame(masterFrame, configuration)
+    commentFrame, commentDict = makeCommentFrame(eventFrame, configuration)
     commentFrame.pack()
 
     def createEvent():
