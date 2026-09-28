@@ -333,13 +333,13 @@ def makeMemberFrame(masterFrame, configuration):
 
     return memberFrame, memberInput
 
-
-def makePartstatFrame(masterFrame, eventType: str):
+def makePartstatFrame(masterFrame, configuration, eventType: str):
     if (eventType not in ["event", "todo", "journal"]):
         raise Exception(f"Partstat parameter could only be used on an event, a todo or a journal, not a {eventType}")
 
     partstatFrame = tk.Frame(masterFrame)
 
+    userFrame = tk.Frame(partstatFrame)
     parstatChoices = configuration["parstat"][f"{eventType}-choices"]
     partstatInput = ttk.Combobox(
         partstatFrame,
@@ -347,35 +347,39 @@ def makePartstatFrame(masterFrame, eventType: str):
         state="readonly"
     )
     partstatInput.pack()
+    userFrame.pack()
 
-    def add():
-        value = partstatInput.get()
-        values = list(partstatInput["values"])
-        if value and value not in values:
-            values.append(value)
-            partstatInput["values"] = values
+    # maybe useful for later development
+    # def add():
+    #     value = partstatInput.get()
+    #     values = list(partstatInput["values"])
+    #     if value and value not in values:
+    #         values.append(value)
+    #         partstatInput["values"] = values
 
-    def addToConfiguration():
-        value = partstatInput.get()
-        if value and value not in configuration["partstat"][f"{eventType}-choices"]:
-            configuration["partstat"][f"{eventType}-choices"].append(value)
+    # def addToConfiguration():
+    #     value = partstatInput.get()
+    #     if value and value not in configuration["partstat"][f"{eventType}-choices"]:
+    #         configuration["partstat"][f"{eventType}-choices"].append(value)
 
-    def remove():
-        value = partstatInput.get()
-        values = list(partstatInput["values"])
-        if value in values:
-            values.remove(value)
-            partstatInput["values"] = values
+    # def remove():
+    #     value = partstatInput.get()
+    #     values = list(partstatInput["values"])
+    #     if value in values:
+    #         values.remove(value)
+    #         partstatInput["values"] = values
 
-    def removeFromConfiguration():
-        value = partstatInput.get()
-        if value in configuration["partstat"][f"{eventType}-choices"]:
-            configuration["partstat"][f"{eventType}-choices"].remove(value)
+    # def removeFromConfiguration():
+    #     value = partstatInput.get()
+    #     if value in configuration["partstat"][f"{eventType}-choices"]:
+    #         configuration["partstat"][f"{eventType}-choices"].remove(value)
 
-    tk.Button(partstatFrame, text="Add", command=add).pack()
-    tk.Button(partstatFrame, text="Add to configuration", command=addToConfiguration).pack()
-    tk.Button(partstatFrame, text="Remove", command=remove).pack()
-    tk.Button(partstatFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
+    # buttonsFrame = tk.Frame(partstatFrame)
+    # tk.Button(partstatFrame, text="Add", command=add).pack()
+    # tk.Button(partstatFrame, text="Add to configuration", command=addToConfiguration).pack()
+    # tk.Button(partstatFrame, text="Remove", command=remove).pack()
+    # tk.Button(partstatFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
+    # buttonsFrame.pack(side="right")
 
     return partstatFrame, partstatInput
 
