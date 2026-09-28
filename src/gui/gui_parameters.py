@@ -11,20 +11,44 @@ Disclaimer
 def makeAlternativeRepresentationFrame(masterFrame, configuration):
     altrepFrame = tk.Frame(masterFrame)
 
-    altrepInput = tk.Text(masterFrame)
+    hiddableFrame = tk.Frame(altrepFrame)
+    altrepInput = tk.Text(hiddableFrame)
     altrepInput.config(
         height=configuration["altrep"]["height"],
         width=configuration["altrep"]["width"]
     )
     altrepInput.pack()
 
+    state = tk.BooleanVar(value=False)
+    def toggleUserInput():
+        if (state.get()):
+            hiddableFrame.pack(side="right")
+            button.config(text="Alternative representation")
+        else:
+            hiddableFrame.pack_forget()
+            button.config(text="Alternative configuration ? ")
+    button = tk.Checkbutton(altrepFrame, text="Alternative representation ? ", variable = state, offvalue=False, onvalue=True, command=toggleUserInput)
+    button.pack(side="left")
+
     return  altrepFrame, altrepInput
 
 def makeCommonNameFrame(masterFrame):
     commonNameFrame = tk.Frame(masterFrame)
 
-    commonNameInput = tk.Entry(commonNameFrame)
+    hiddableFrame = tk.Frame(commonNameFrame)
+    commonNameInput = tk.Entry(hiddableFrame)
     commonNameInput.pack()
+
+    state = tk.BooleanVar(value=False)
+    def toggleUserInput():
+        if (state.get()):
+            hiddableFrame.pack(side="right")
+            button.config(text="Common name : ")
+        else:
+            hiddableFrame.pack_forget()
+            button.config(text="Common name ? ")
+    button = tk.Checkbutton(commonNameFrame, text="Common name ? ", variable = state, offvalue=False, onvalue=True, command=toggleUserInput)
+    button.pack(side="left")
 
     return  commonNameFrame, commonNameInput
 
