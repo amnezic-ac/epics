@@ -383,44 +383,58 @@ def makePartstatFrame(masterFrame, configuration, eventType: str):
 
     return partstatFrame, partstatInput
 
-def makeRoleFrame(masterFrame):
+def makeRoleFrame(masterFrame, configuration):
     roleFrame = tk.Frame(masterFrame)
 
+    userFrame = tk.Frame(roleFrame)
     roleInput = ttk.Combobox(
-        roleFrame,
+        userFrame,
         values=configuration["role"]["choices"],
         state="readonly"
     )
     roleInput.pack()
+    userEntry = tk.Entry(userFrame)
+    userEntry.pack()
+    userFrame.pack(side="left")
 
-    def add():
-        value = roleInput.get()
-        values = list(roleInput["values"])
-        if value and value not in values:
-            values.append(value)
-            roleInput["values"] = values
+    # maybe useful for later development
+    # def add():
+    #     value = userEntry.get()
+    #     values = list(roleInput["values"])
+    #     if value and value not in values:
+    #         values.append(value)
+    #         roleInput["values"] = values
+    #         roleInput.set(roleInput["values"][-1])
 
-    def addToConfiguration():
-        value = roleInput.get()
-        if value and value not in configuration["role"]["choices"]:
-            configuration["role"]["choices"].append(value)
+    # def addToConfiguration():
+    #     value = userEntry.get()
+    #     if value and value not in configuration["role"]["choices"]:
+    #         add()
+    #         configuration["role"]["choices"].append(value)
 
-    def remove():
-        value = roleInput.get()
-        values = list(roleInput["values"])
-        if value in values:
-            values.remove(value)
-            roleInput["values"] = values
+    # def remove():
+    #     value = roleInput.get()
+    #     values = list(roleInput["values"])
+    #     if value in values:
+    #         values.remove(value)
+    #         roleInput["values"] = values
+    #         if (len(values) != 0):
+    #             roleInput.set(roleInput["values"][0])
+    #         else:
+    #             roleInput.set("")
 
-    def removeFromConfiguration():
-        value = roleInput.get()
-        if value in configuration["role"]["choices"]:
-            configuration["role"]["choices"].remove(value)
+    # def removeFromConfiguration():
+    #     value = roleInput.get()
+    #     if value in configuration["role"]["choices"]:
+    #         remove()
+    #         configuration["role"]["choices"].remove(value)
 
-    tk.Button(roleFrame, text="Add", command=add).pack()
-    tk.Button(roleFrame, text="Add to configuration", command=addToConfiguration).pack()
-    tk.Button(roleFrame, text="Remove", command=remove).pack()
-    tk.Button(roleFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
+    # buttonsFrame = tk.Frame(roleFrame)
+    # tk.Button(buttonsFrame, text="Add", command=add).pack()
+    # tk.Button(buttonsFrame, text="Add to configuration", command=addToConfiguration).pack()
+    # tk.Button(buttonsFrame, text="Remove", command=remove).pack()
+    # tk.Button(buttonsFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
+    # buttonsFrame.pack(side="right")
 
     return roleFrame, roleInput
 
