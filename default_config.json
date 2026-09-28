@@ -789,5 +789,11 @@
             "BUSY-UNAVAILABLE",
             "BUSY-TENTATIVE"
         ]
+    },
+    "relationship": {
+        "choices": [
+            "BOSS",
+            "EMPLOYEE"
+        ]
     }
 }

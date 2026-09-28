@@ -438,6 +438,59 @@ def makeRoleFrame(masterFrame, configuration):
 
     return roleFrame, roleInput
 
+def makeRelationshipFrame(masterFrame, configuration):
+    relationshipFrame = tk.Frame(masterFrame)
+
+    userFrame = tk.Frame(relationshipFrame)
+    relationshipInput = ttk.Combobox(
+        userFrame,
+        values=configuration["relationship"]["choices"],
+        state="readonly"
+    )
+    relationshipInput.pack()
+    userEntry = tk.Entry(userFrame)
+    userEntry.pack()
+    userFrame.pack(side="left")
+
+    def add():
+        value = userEntry.get()
+        values = list(roleInput["values"])
+        if value and value not in values:
+            values.append(value)
+            relationshipInput["values"] = values
+            relationshipInput.set(relationshipInput["values"][-1])
+
+    def addToConfiguration():
+        value = userEntry.get()
+        if value and value not in configuration["relationship"]["choices"]:
+            add()
+            configuration["relationship"]["choices"].append(value)
+
+    def remove():
+        value = relationshipInput.get()
+        values = list(relationshipInput["values"])
+        if value in values:
+            values.remove(value)
+            relationshipInput["values"] = values
+            if (len(values) != 0):
+                relationshipInput.set(relationshipInput["values"][0])
+            else:
+                relationshipInput.set("")
+
+    def removeFromConfiguration():
+        value = relationshipInput.get()
+        if value in configuration["relationship"]["choices"]:
+            remove()
+            configuration["relationship"]["choices"].remove(value)
+
+    buttonsFrame = tk.Frame(relationshipFrame)
+    tk.Button(buttonsFrame, text="Add", command=add).pack()
+    tk.Button(buttonsFrame, text="Add to configuration", command=addToConfiguration).pack()
+    tk.Button(buttonsFrame, text="Remove", command=remove).pack()
+    tk.Button(buttonsFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
+    buttonsFrame.pack(side="right")
+
+    return relationshipFrame, relationshipInput
 
 def makeRsvpFrame(masterFrame):
     rsvpFrame = tk.Frame(masterFrame)
