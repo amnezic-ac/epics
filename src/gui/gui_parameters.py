@@ -356,6 +356,7 @@ def makeLanguageFrame(masterFrame, configuration):
     languageFrame = tk.Frame(masterFrame)
 
     result = [f"{value}" for item in configuration["language"]["choices"] for _, value in item.items()]
+    result.sort()
 
     hiddableFrame = tk.Frame(languageFrame)
     languageInput = ttk.Combobox(

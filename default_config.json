@@ -1,7 +1,10 @@
 {
     "categories": {
-        "choices": [],
-        "categories_view_height": 5
+        "choices": [
+            "Sport",
+            "Work"
+        ],
+        "height": 5
     },
     "classification": {
         "choices": [
@@ -14,16 +17,16 @@
         "classification_view_height": 5
     },
     "comment": {
-        "comment_view_height": 3,
-        "comment_view_width": 40
+        "height": 3,
+        "width": 40
     },
     "description": {
-        "description_view_height": 3,
-        "description_view_width": 40
+        "height": 3,
+        "width": 40
     },
     "location": {
-        "location_view_height": 3,
-        "location_view_width": 40
+        "height": 3,
+        "width": 40
     },
     "altrep": {
         "height": 3,
