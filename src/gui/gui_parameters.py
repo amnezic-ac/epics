@@ -188,7 +188,20 @@ def makeFmtTypeFrame(masterFrame):
     fmtTypeFrame = tk.Frame(masterFrame)
 
     fmtTypeInput = tk.Entry(fmtTypeFrame)
-    fmtTypeInput.pack()
+
+    userFrame = tk.Frame(fmtTypeFrame)
+    buttonState = tk.BooleanVar(value=False)
+    def toggleFmttypeEntry():
+        if (buttonState.get()):
+            button.config(text="FMT type : ")
+            fmtTypeInput.pack(side="right")
+        else:
+            button.config(text="FMT type ? ")
+            fmtTypeInput.pack_forget()
+
+    button = tk.Checkbutton(userFrame, text="FMT type ?", variable=buttonState, offvalue=False, onvalue=True, command=toggleFmttypeEntry)
+    button.pack()
+    userFrame.pack(side="left")
 
     return fmtTypeFrame, fmtTypeInput
 
