@@ -252,12 +252,23 @@ def makeLanguageFrame(masterFrame, configuration):
 
     result = [f"{value}" for item in configuration["language"]["choices"] for _, value in item.items()]
 
+    hiddableFrame = tk.Frame(languageFrame)
     languageInput = ttk.Combobox(
-        languageFrame,
+        hiddableFrame,
         values=result,
         state="readonly"
     )
     languageInput.pack()
+
+
+    buttonState = tk.BooleanVar(value=False)
+    def toggleCombobox():
+        if (buttonState.get()):
+            hiddableFrame.pack(side="right")
+        else:
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(languageFrame, text="Language ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleCombobox)
+    checkbutton.pack(side="left")
 
     # could be useful for later
     # def add():
