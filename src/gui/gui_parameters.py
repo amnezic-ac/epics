@@ -492,7 +492,7 @@ def makeRelationshipFrame(masterFrame, configuration):
 
     return relationshipFrame, relationshipInput
 
-def makeRsvpFrame(masterFrame):
+def makeRsvpFrame(masterFrame, configuration):
     rsvpFrame = tk.Frame(masterFrame)
 
     rsvpInput = ttk.Combobox(
@@ -502,34 +502,35 @@ def makeRsvpFrame(masterFrame):
     )
     rsvpInput.pack()
 
-    def add():
-        value = rsvpInput.get()
-        values = list(rsvpInput["values"])
-        if value and value not in values:
-            values.append(value)
-            rsvpInput["values"] = values
+    # maybe useful for later development
+    # def add():
+    #     value = rsvpInput.get()
+    #     values = list(rsvpInput["values"])
+    #     if value and value not in values:
+    #         values.append(value)
+    #         rsvpInput["values"] = values
 
-    def addToConfiguration():
-        value = rsvpInput.get()
-        if value and value not in configuration["rsvp"]["choices"]:
-            configuration["rsvp"]["choices"].append(value)
+    # def addToConfiguration():
+    #     value = rsvpInput.get()
+    #     if value and value not in configuration["rsvp"]["choices"]:
+    #         configuration["rsvp"]["choices"].append(value)
 
-    def remove():
-        value = rsvpInput.get()
-        values = list(rsvpInput["values"])
-        if value in values:
-            values.remove(value)
-            rsvpInput["values"] = values
+    # def remove():
+    #     value = rsvpInput.get()
+    #     values = list(rsvpInput["values"])
+    #     if value in values:
+    #         values.remove(value)
+    #         rsvpInput["values"] = values
 
-    def removeFromConfiguration():
-        value = rsvpInput.get()
-        if value in configuration["rsvp"]["choices"]:
-            configuration["rsvp"]["choices"].remove(value)
+    # def removeFromConfiguration():
+    #     value = rsvpInput.get()
+    #     if value in configuration["rsvp"]["choices"]:
+    #         configuration["rsvp"]["choices"].remove(value)
 
-    tk.Button(rsvpFrame, text="Add", command=add).pack()
-    tk.Button(rsvpFrame, text="Add to configuration", command=addToConfiguration).pack()
-    tk.Button(rsvpFrame, text="Remove", command=remove).pack()
-    tk.Button(rsvpFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
+    # tk.Button(rsvpFrame, text="Add", command=add).pack()
+    # tk.Button(rsvpFrame, text="Add to configuration", command=addToConfiguration).pack()
+    # tk.Button(rsvpFrame, text="Remove", command=remove).pack()
+    # tk.Button(rsvpFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
 
     return rsvpFrame, rsvpInput
 
