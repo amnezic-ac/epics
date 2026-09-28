@@ -124,13 +124,15 @@ def makeEncodingFrame(masterFrame, configuration):
 
     def addToCombobox():
         values = list(encodingInput["values"])
-        value = encodingInput.get()
+        value = userEntry.get()
         if value and value not in values:
             values.append(value)
             encodingInput["values"] = values
+            userEntry.delete(0, tk.END)
+            encodingInput.set(encodingInput["values"][-1])
 
     def addToConfiguration():
-        value = encodingInput.get()
+        value = userEntry.get()
         if value and value not in configuration["encoding"]["choices"]:
             addToCombobox()
             configuration["encoding"]["choices"].append(value)
@@ -141,10 +143,12 @@ def makeEncodingFrame(masterFrame, configuration):
         if value in values:
             values.remove(value)
             encodingInput["values"] = values
+            encodingInput.set(values[0])
 
     def removeFromConfiguration():
         value = encodingInput.get()
         if value in configuration["encoding"]["choices"]:
+            removeFromCombobox()
             configuration["encoding"]["choices"].remove(value)
 
     buttonsFrame = tk.Frame(encodingFrame)
