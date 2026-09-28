@@ -53,6 +53,7 @@ def makeCutypeFrame(masterFrame, configuration):
             values.append(value)
             cutypeInput["values"] = values
             userInput.delete(0, tk.END)
+            cutypeInput.set(cutypeInput["values"][-1])
 
     def addToConfiguration():
         value = userInput.get()
@@ -67,7 +68,10 @@ def makeCutypeFrame(masterFrame, configuration):
             values.remove(value)
             cutypeInput["values"] = values
             userInput.delete(0, tk.END)
-            cutypeInput.set(values[0])
+            if (len(cutypeInput["values"]) != 0):
+                cutypeInput.set(values[0])
+            else:
+                cutypeInput.set("")
 
     def removeFromConfiguration():
         value = cutypeInput.get()
