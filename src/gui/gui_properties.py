@@ -131,3 +131,39 @@ def makeClassificationFrame(masterFrame, configuration):
     checkbutton.pack(side="left")
 
     return classificationFrame, combobox
+
+def makeCommentFrame(masterFrame, configuration):
+    commentFrame = tk.Frame(masterFrame)
+
+    hiddableFrame = tk.Frame(commentFrame)
+    commentText = tk.Text(
+        hiddableFrame,
+        height=configuration["comment"]["height"],
+        width=configuration["comment"]["width"]
+    )
+    commentText.pack()
+
+    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(hiddableFrame, configuration)
+    altrepFrame.pack()
+
+    languageFrame, languageInput = makeLanguageFrame(hiddableFrame, configuration)
+    languageFrame.pack()
+
+    buttonState = tk.BooleanVar(value=False)
+    def toggleCategoriesEntry():
+        if (buttonState.get()):
+            checkbutton.config(text="Comment : ")
+            hiddableFrame.pack(side="right")
+        else:
+            checkbutton.config(text="Comment ? ")
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(commentFrame, text="Comment ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleCategoriesEntry)
+    checkbutton.pack(side="left")
+
+    commentDict = {
+        "value": commentText,
+        "altrep": altrepInput,
+        "language": languageInput
+    }
+
+    return commentFrame, commentDict
