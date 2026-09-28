@@ -189,7 +189,7 @@ def makeFmtTypeFrame(masterFrame):
 
     return fmtTypeFrame, fmtTypeInput
 
-def makeFreeBusyTimeFrame(masterFrame):
+def makeFreeBusyTimeFrame(masterFrame, configuration):
     freeBusyTimeFrame = tk.Frame(masterFrame)
 
     freeBusyTimeInput = ttk.Combobox(
@@ -199,34 +199,35 @@ def makeFreeBusyTimeFrame(masterFrame):
     )
     freeBusyTimeInput.pack()
 
-    def add():
-        value = freeBusyTimeInput.get()
-        values = list(freeBusyTimeInput["values"])
-        if value and value not in values:
-            values.append(value)
-            freeBusyTimeInput["values"] = values
+    # maybe useful for later development
+    # def add():
+    #     value = freeBusyTimeInput.get()
+    #     values = list(freeBusyTimeInput["values"])
+    #     if value and value not in values:
+    #         values.append(value)
+    #         freeBusyTimeInput["values"] = values
 
-    def addToConfiguration():
-        value = freeBusyTimeInput.get()
-        if value and value not in configuration["freebusytime"]["choices"]:
-            configuration["freebusytime"]["choices"].append(value)
+    # def addToConfiguration():
+    #     value = freeBusyTimeInput.get()
+    #     if value and value not in configuration["freebusytime"]["choices"]:
+    #         configuration["freebusytime"]["choices"].append(value)
 
-    def remove():
-        value = freeBusyTimeInput.get()
-        values = list(freeBusyTimeInput["values"])
-        if value in values:
-            values.remove(value)
-            freeBusyTimeInput["values"] = values
+    # def remove():
+    #     value = freeBusyTimeInput.get()
+    #     values = list(freeBusyTimeInput["values"])
+    #     if value in values:
+    #         values.remove(value)
+    #         freeBusyTimeInput["values"] = values
 
-    def removeFromConfiguration():
-        value = freeBusyTimeInput.get()
-        if value in configuration["freebusytime"]["choices"]:
-            configuration["freebusytime"]["choices"].remove(value)
+    # def removeFromConfiguration():
+    #     value = freeBusyTimeInput.get()
+    #     if value in configuration["freebusytime"]["choices"]:
+    #         configuration["freebusytime"]["choices"].remove(value)
 
-    tk.Button(freeBusyTimeFrame, text="Add", command=add).pack()
-    tk.Button(freeBusyTimeFrame, text="Add to configuration", command=addToConfiguration).pack()
-    tk.Button(freeBusyTimeFrame, text="Remove", command=remove).pack()
-    tk.Button(freeBusyTimeFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
+    # tk.Button(freeBusyTimeFrame, text="Add", command=add).pack()
+    # tk.Button(freeBusyTimeFrame, text="Add to configuration", command=addToConfiguration).pack()
+    # tk.Button(freeBusyTimeFrame, text="Remove", command=remove).pack()
+    # tk.Button(freeBusyTimeFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
 
     return freeBusyTimeFrame, freeBusyTimeInput
 

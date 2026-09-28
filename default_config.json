@@ -42,10 +42,14 @@
             "RESOURCE",
             "ROOM",
             "UNKNOWN"
-        ]
+        ],
+        "height": 5
     },
     "encoding": {
-        "choices": []
+        "choices": [
+            "base64",
+            "binary"
+        ]
     },
     "languages": {
         "choices": [
@@ -781,6 +785,14 @@
         "choices": [
             "TRUE",
             "FALSE"
+        ]
+    },
+    "freebusytime": {
+        "choices": [
+            "FREE",
+            "BUSY",
+            "BUSY-UNAVAILABLE",
+            "BUSY-TENTATIVE"
         ]
     }
 }
