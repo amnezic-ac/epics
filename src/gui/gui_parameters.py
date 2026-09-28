@@ -232,12 +232,14 @@ def makeFreeBusyTimeFrame(masterFrame, configuration):
     return freeBusyTimeFrame, freeBusyTimeInput
 
 
-def makeLanguageFrame(masterFrame):
+def makeLanguageFrame(masterFrame, configuration):
     languageFrame = tk.Frame(masterFrame)
+
+    result = [f"{value}" for item in configuration["language"]["choices"] for _, value in item.items()]
 
     languageInput = ttk.Combobox(
         languageFrame,
-        values=configuration["languages"]["choices"],
+        values=result,
         state="readonly"
     )
     languageInput.pack()

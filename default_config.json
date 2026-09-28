@@ -51,7 +51,7 @@
             "binary"
         ]
     },
-    "languages": {
+    "language": {
         "choices": [
             {
                 "af": "Afrikaans"
