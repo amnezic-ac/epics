@@ -107,3 +107,27 @@ def makeCategoriesFrame(masterFrame, configuration):
     }
 
     return categoriesFrame, categoriesDict
+
+def makeClassificationFrame(masterFrame, configuration):
+    classificationFrame = tk.Frame(masterFrame)
+
+    hiddableFrame = tk.Frame(classificationFrame)
+    combobox = ttk.Combobox(
+        hiddableFrame,
+        values=configuration["classification"]["choices"],
+        state="readonly"
+    )
+    combobox.pack()
+
+    buttonState = tk.BooleanVar(value=False)
+    def toggleCategoriesEntry():
+        if (buttonState.get()):
+            checkbutton.config(text="Classification : ")
+            hiddableFrame.pack(side="right")
+        else:
+            checkbutton.config(text="Classification ? ")
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(classificationFrame, text="Classification ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleCategoriesEntry)
+    checkbutton.pack(side="left")
+
+    return classificationFrame, combobox
