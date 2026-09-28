@@ -31,7 +31,7 @@ Propriétés de description des composantes
 |           |ATTACHEMENT|CATEGORIES|CLASS|COMMENT|DESCRIPTION|GEO|LOCATION|PERCENT-COMPLETE|PRIORITY|RESOURCES|STATUS|SUMMARY|
 |:-         |:-:        |:-:       |:-:  |:-:    |:-:        |:-:|:-:     |:-:             |:-:     |:-:      |:-:   |:-:    |
 |alarm      |[0-9]+     |Non       |Non  |Non    |?          |Non|Non     |Non             |Non     |Non      |Non   |Oui    |
-|event      |Non        |Oui       |Oui  |[0-9]+ |?          |?  |?       |Non             |?       |?        |?     |Oui    |
+|event      |[0-9]+     |Oui       |Oui  |[0-9]+ |?          |?  |?       |Non             |?       |?        |?     |Oui    |
 |freebusy   |[0-9]+     |Non       |Non  |[0-9]+ |?          |Non|Non     |Non             |Non     |Non      |Non   |Non    |
 |journal    |[0-9]+     |Oui       |Oui  |[0-9]+ |[0-9]+     |Non|Non     |Non             |Non     |Non      |?     |Non    |
 |timezone   |Non        |Non       |Non  |Non    |?          |Non|Non     |Non             |Non     |Non      |Non   |Oui    |
