@@ -179,7 +179,6 @@ def makeEncodingFrame(masterFrame, configuration):
 
     return encodingFrame, encodingInput
 
-
 def makeFmtTypeFrame(masterFrame):
     # for more regulation on fmttype input value, please refer to RFC 4288 section 4.2
     fmtTypeFrame = tk.Frame(masterFrame)
@@ -231,7 +230,6 @@ def makeFreeBusyTimeFrame(masterFrame, configuration):
 
     return freeBusyTimeFrame, freeBusyTimeInput
 
-
 def makeLanguageFrame(masterFrame, configuration):
     languageFrame = tk.Frame(masterFrame)
 
@@ -276,26 +274,33 @@ def makeLanguageFrame(masterFrame, configuration):
 
     return languageFrame, languageInput
 
-def makeMemberFrame(masterFrame):
+def makeMemberFrame(masterFrame, configuration):
     memberFrame = tk.Frame(masterFrame)
 
+    inputFrame = tk.Frame(memberFrame)
     memberInput = ttk.Combobox(
-        memberFrame,
+        inputFrame,
         values=configuration["member"]["choices"],
         state="readonly"
     )
     memberInput.pack()
+    userEntry = tk.Entry(inputFrame)
+    userEntry.pack()
+    inputFrame.pack(side="left")
 
     def add():
-        value = memberInput.get()
+        value = userEntry.get()
         values = list(memberInput["values"])
         if value and value not in values:
             values.append(value)
             memberInput["values"] = values
+            memberInput.set(memberInput["values"][-1])
+            userEntry.delete(0, tk.END)
 
     def addToConfiguration():
-        value = memberInput.get()
+        value = userEntry.get()
         if value and value not in configuration["member"]["choices"]:
+            add()
             configuration["member"]["choices"].append(value)
 
     def remove():
@@ -304,16 +309,23 @@ def makeMemberFrame(masterFrame):
         if value in values:
             values.remove(value)
             memberInput["values"] = values
+            if (len(memberInput["values"]) > 0):
+                memberInput.set(memberInput["values"][0])
+            else:
+                memberInput.set("")
 
     def removeFromConfiguration():
         value = memberInput.get()
         if value in configuration["member"]["choices"]:
+            remove()
             configuration["member"]["choices"].remove(value)
 
-    tk.Button(memberFrame, text="Add", command=add).pack()
-    tk.Button(memberFrame, text="Add to configuration", command=addToConfiguration).pack()
-    tk.Button(memberFrame, text="Remove", command=remove).pack()
-    tk.Button(memberFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
+    buttonsFrame = tk.Frame(memberFrame)
+    tk.Button(buttonsFrame, text="Add", command=add).pack()
+    tk.Button(buttonsFrame, text="Add to configuration", command=addToConfiguration).pack()
+    tk.Button(buttonsFrame, text="Remove", command=remove).pack()
+    tk.Button(buttonsFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
+    buttonsFrame.pack(side="right")
 
     return memberFrame, memberInput
 
