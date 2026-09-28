@@ -271,21 +271,31 @@ def makeFmtTypeFrame(masterFrame):
     # for more regulation on fmttype input value, please refer to RFC 4288 section 4.2
     fmtTypeFrame = tk.Frame(masterFrame)
 
-    fmtTypeInput = tk.Entry(fmtTypeFrame)
+    typesFrame = tk.Frame(fmtTypeFrame)
+    typeInput = tk.Entry(typesFrame)
+    typeInput.pack(side="right")
+    tk.Label(typesFrame, text="/").pack(side="right")
+    subtypeInput = tk.Entry(typesFrame)
+    subtypeInput.pack(side="right")
 
     userFrame = tk.Frame(fmtTypeFrame)
     buttonState = tk.BooleanVar(value=False)
     def toggleFmttypeEntry():
         if (buttonState.get()):
-            button.config(text="FMT type : ")
-            fmtTypeInput.pack(side="right")
+            button.config(text="type/subtype : ")
+            typesFrame.pack(side="right")
         else:
             button.config(text="FMT type ? ")
-            fmtTypeInput.pack_forget()
+            typesFrame.pack_forget()
 
-    button = tk.Checkbutton(userFrame, text="FMT type ?", variable=buttonState, offvalue=False, onvalue=True, command=toggleFmttypeEntry)
-    button.pack()
-    userFrame.pack(side="left")
+    button = tk.Checkbutton(fmtTypeFrame, text="FMT type ?", variable=buttonState, offvalue=False, onvalue=True, command=toggleFmttypeEntry)
+    button.pack(side="left")
+
+    # it's an error here but I don't understand how to put subtypeInput on the right of typeInput
+    fmtTypeInput = {
+        "type" : subtypeInput,
+        "subtype" : typeInput
+    }
 
     return fmtTypeFrame, fmtTypeInput
 
