@@ -234,3 +234,39 @@ def makeGeoFrame(masterFrame, configuration):
     }
 
     return geoFrame, geoDict
+
+def makeLocationFrame(masterFrame, configuration):
+    locationFrame = tk.Frame(masterFrame)
+
+    hiddableFrame = tk.Frame(locationFrame)
+    locationText = tk.Text(hiddableFrame)
+    locationText.config(
+        height=configuration["location"]["height"],
+        width=configuration["location"]["width"]
+    )
+    locationText.pack()
+
+    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(hiddableFrame, configuration)
+    altrepFrame.pack()
+
+    languageFrame, languageInput = makeLanguageFrame(hiddableFrame, configuration)
+    languageFrame.pack()
+
+    buttonState = tk.BooleanVar(value=False)
+    def toggleCategoriesEntry():
+        if (buttonState.get()):
+            checkbutton.config(text="Location : ")
+            hiddableFrame.pack(side="right")
+        else:
+            checkbutton.config(text="Location ? ")
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(locationFrame, text="Location ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleCategoriesEntry)
+    checkbutton.pack(side="left")
+
+    locationDict = {
+        "value": locationText,
+        "altrep": altrepInput,
+        "language": languageInput
+    }
+
+    return locationFrame, locationDict
