@@ -14,7 +14,7 @@
             "IT",
             "FINANCE"
         ],
-        "classification_view_height": 5
+        "height": 5
     },
     "comment": {
         "height": 3,
@@ -798,5 +798,9 @@
             "BOSS",
             "EMPLOYEE"
         ]
+    },
+    "resources": {
+        "height": 3,
+        "width": 40
     }
 }
