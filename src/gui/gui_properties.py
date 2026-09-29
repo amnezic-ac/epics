@@ -371,5 +371,27 @@ def makeStatusFrame(masterFrame, configuration, componentType: str):
     checkbutton = tk.Checkbutton(statusFrame, text="Status ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
 
-
     return statusFrame, statusCombobox
+
+def makeSummaryFrame(masterFrame, configuration):
+    summaryFrame = tk.Frame(masterFrame)
+
+    summaryVar = tk.StringVar(value="")
+    summaryEntry = tk.Entry(summaryFrame, textvariable=summaryVar)
+    summaryEntry.pack()
+    
+    hiddableFrame = tk.Frame(summaryFrame)
+    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(hiddableFrame, configuration)
+    altrepFrame.pack()
+
+    languageFrame, languageInput = makeLanguageFrame(hiddableFrame, configuration)
+    languageFrame.pack()
+    hiddableFrame.pack()
+
+    summaryDict = {
+        "value": summaryVar,
+        "altrep": altrepInput,
+        "language": languageInput
+    }
+
+    return summaryFrame, summaryDict
