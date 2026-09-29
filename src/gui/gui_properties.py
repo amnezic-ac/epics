@@ -348,3 +348,28 @@ def makeResourceFrame(masterFrame, configuration):
     }
 
     return resourceFrame, resourceDict
+
+def makeStatusFrame(masterFrame, configuration, componentType: str):
+    statusFrame = tk.Frame(masterFrame)
+
+    hiddableFrame = tk.Frame(statusFrame)
+    statusCombobox = ttk.Combobox(
+        hiddableFrame,
+        values=configuration["status"][f"{componentType}"],
+        state="readonly"
+    )
+    statusCombobox.pack()
+
+    buttonState = tk.BooleanVar(value=False)
+    def toggleHiddableFrame():
+        if (buttonState.get()):
+            checkbutton.config(text="Status : ")
+            hiddableFrame.pack(side="right")
+        else:
+            checkbutton.config(text="Status ? ")
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(statusFrame, text="Status ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
+    checkbutton.pack(side="left")
+
+
+    return statusFrame, statusCombobox

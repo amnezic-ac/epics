@@ -802,5 +802,23 @@
     "resources": {
         "height": 3,
         "width": 40
+    },
+    "status": {
+        "event": [
+            "TENTATIVE",
+            "CONFIRMED",
+            "CANCELLED"
+        ],
+        "todo": [
+            "NEEDS-ACTION",
+            "COMPLETED",
+            "IN-PROCESS",
+            "CANCELLED"
+        ],
+        "journal": [
+            "DRAFT",
+            "FINAL",
+            "CANCELLED"
+        ]
     }
 }
