@@ -3,6 +3,7 @@ import tkinter as tk
 from src.gui.gui_parameters import *
 
 # NOTE: put the user input part in a hiddable frame iff the frame is optional for all the types of event it can appears
+# TODO: implement geo frame
 
 def makeAttachmentFrame(masterFrame, configuration):
     attachmentFrame = tk.Frame(masterFrame)
@@ -167,3 +168,39 @@ def makeCommentFrame(masterFrame, configuration):
     }
 
     return commentFrame, commentDict
+
+def makeDescriptionFrame(masterFrame, configuration):
+    descriptionFrame = tk.Frame(masterFrame)
+
+    hiddableFrame = tk.Frame(descriptionFrame)
+    descriptionText = tk.Text(hiddableFrame)
+    descriptionText.config(
+        height=configuration["description"]["height"],
+        width=configuration["description"]["width"]
+    )
+    descriptionText.pack()
+
+    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(hiddableFrame, configuration)
+    altrepFrame.pack()
+
+    languageFrame, languageInput = makeLanguageFrame(hiddableFrame, configuration)
+    languageFrame.pack()
+
+    buttonState = tk.BooleanVar(value=False)
+    def toggleCategoriesEntry():
+        if (buttonState.get()):
+            checkbutton.config(text="Description : ")
+            hiddableFrame.pack(side="right")
+        else:
+            checkbutton.config(text="Description ? ")
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(descriptionFrame, text="Description ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleCategoriesEntry)
+    checkbutton.pack(side="left")
+
+    descriptionDict = {
+        "value": descriptionText,
+        "altrep": altrepInput,
+        "language": languageInput
+    }
+
+    return descriptionFrame, descriptionDict
