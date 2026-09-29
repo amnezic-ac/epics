@@ -291,3 +291,25 @@ def makePercentFrame(masterFrame):
     checkbutton.pack(side="left")
 
     return percentFrame, percentVar
+
+def makePriorityFrame(masterFrame):
+    priorityFrame = tk.Frame(masterFrame)
+
+    hiddableFrame = tk.Frame(priorityFrame)
+    priorityVar = tk.StringVar(value="")
+    latSpinbox = ttk.Spinbox(hiddableFrame, from_=0, to=9, increment=1, textvariable=priorityVar)
+    latSpinbox.pack(side="right")
+
+    buttonState = tk.BooleanVar(value=False)
+    def toggleHiddableFrame():
+        if (buttonState.get()):
+            checkbutton.config(text="Priority level : ")
+            hiddableFrame.pack(side="right")
+        else:
+            checkbutton.config(text="Priority level : ")
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(priorityFrame, text="Priority level ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
+    checkbutton.pack(side="left")
+
+    return priorityFrame, priorityVar
+ 
