@@ -204,3 +204,33 @@ def makeDescriptionFrame(masterFrame, configuration):
     }
 
     return descriptionFrame, descriptionDict
+
+def makeGeoFrame(masterFrame, configuration):
+    geoFrame = tk.Frame(masterFrame)
+
+    hiddableFrame = tk.Frame(geoFrame)
+    latVar = tk.StringVar(value="")
+    latSpinbox = ttk.Spinbox(hiddableFrame, from_=-90.000000, to=90.000000, wrap=True, increment=0.000001, textvariable=latVar)
+    latSpinbox.pack()
+    tk.Label(hiddableFrame, text=" ; ").pack(side="right")
+    longVar = tk.StringVar(value="")
+    longSpinbox = ttk.Spinbox(hiddableFrame, from_=-180.000000, to=180.000000, wrap=True, increment=0.000001, textvariable=longVar)
+    longSpinbox.pack(side="right")
+
+    buttonState = tk.BooleanVar(value=False)
+    def toggleCategoriesEntry():
+        if (buttonState.get()):
+            checkbutton.config(text="Geographic position : ")
+            hiddableFrame.pack(side="right")
+        else:
+            checkbutton.config(text="Geographic position ? ")
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(geoFrame, text="Geographic position ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleCategoriesEntry)
+    checkbutton.pack(side="left")
+
+    geoDict = {
+        "lat": latVar,
+        "long": longVar
+    }
+
+    return geoFrame, geoDict
