@@ -312,4 +312,39 @@ def makePriorityFrame(masterFrame):
     checkbutton.pack(side="left")
 
     return priorityFrame, priorityVar
- 
+
+def makeResourceFrame(masterFrame, configuration):
+    resourceFrame = tk.Frame(masterFrame)
+
+    hiddableFrame = tk.Frame(resourceFrame)
+    resourceText = tk.Text(hiddableFrame)
+    resourceText.config(
+        height=configuration["resources"]["height"],
+        width=configuration["resources"]["width"]
+    )
+    resourceText.pack()
+
+    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(hiddableFrame, configuration)
+    altrepFrame.pack()
+
+    languageFrame, languageInput = makeLanguageFrame(hiddableFrame, configuration)
+    languageFrame.pack()
+
+    buttonState = tk.BooleanVar(value=False)
+    def toggleHiddableFrame():
+        if (buttonState.get()):
+            checkbutton.config(text="Resource : ")
+            hiddableFrame.pack(side="right")
+        else:
+            checkbutton.config(text="Resource ? ")
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(resourceFrame, text="Resource ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
+    checkbutton.pack(side="left")
+
+    resourceDict = {
+        "value": resourceText,
+        "altrep": altrepInput,
+        "language": languageInput
+    }
+
+    return resourceFrame, resourceDict
