@@ -3,7 +3,6 @@ import tkinter as tk
 from src.gui.gui_parameters import *
 
 # NOTE: put the user input part in a hiddable frame iff the frame is optional for all the types of event it can appears
-# TODO: implement geo frame
 
 def makeAttachmentFrame(masterFrame, configuration):
     attachmentFrame = tk.Frame(masterFrame)
@@ -94,12 +93,12 @@ def makeCategoriesFrame(masterFrame, configuration):
     buttonsFrame.pack(side="right")
 
     buttonState = tk.BooleanVar(value=False)
-    def toggleCategoriesEntry():
+    def toggleHiddableFrame():
         if (buttonState.get()):
             hiddableFrame.pack(side="right")
         else:
             hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(categoriesFrame, text="Categories ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleCategoriesEntry)
+    checkbutton = tk.Checkbutton(categoriesFrame, text="Categories ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
 
     categoriesDict = {
@@ -121,14 +120,14 @@ def makeClassificationFrame(masterFrame, configuration):
     combobox.pack()
 
     buttonState = tk.BooleanVar(value=False)
-    def toggleCategoriesEntry():
+    def toggleHiddableFrame():
         if (buttonState.get()):
             checkbutton.config(text="Classification : ")
             hiddableFrame.pack(side="right")
         else:
             checkbutton.config(text="Classification ? ")
             hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(classificationFrame, text="Classification ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleCategoriesEntry)
+    checkbutton = tk.Checkbutton(classificationFrame, text="Classification ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
 
     return classificationFrame, combobox
@@ -151,14 +150,14 @@ def makeCommentFrame(masterFrame, configuration):
     languageFrame.pack()
 
     buttonState = tk.BooleanVar(value=False)
-    def toggleCategoriesEntry():
+    def toggleHiddableFrame():
         if (buttonState.get()):
             checkbutton.config(text="Comment : ")
             hiddableFrame.pack(side="right")
         else:
             checkbutton.config(text="Comment ? ")
             hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(commentFrame, text="Comment ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleCategoriesEntry)
+    checkbutton = tk.Checkbutton(commentFrame, text="Comment ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
 
     commentDict = {
@@ -187,14 +186,14 @@ def makeDescriptionFrame(masterFrame, configuration):
     languageFrame.pack()
 
     buttonState = tk.BooleanVar(value=False)
-    def toggleCategoriesEntry():
+    def toggleHiddableFrame():
         if (buttonState.get()):
             checkbutton.config(text="Description : ")
             hiddableFrame.pack(side="right")
         else:
             checkbutton.config(text="Description ? ")
             hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(descriptionFrame, text="Description ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleCategoriesEntry)
+    checkbutton = tk.Checkbutton(descriptionFrame, text="Description ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
 
     descriptionDict = {
@@ -218,14 +217,14 @@ def makeGeoFrame(masterFrame, configuration):
     longSpinbox.pack(side="right")
 
     buttonState = tk.BooleanVar(value=False)
-    def toggleCategoriesEntry():
+    def toggleHiddableFrame():
         if (buttonState.get()):
             checkbutton.config(text="Geographic position : ")
             hiddableFrame.pack(side="right")
         else:
             checkbutton.config(text="Geographic position ? ")
             hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(geoFrame, text="Geographic position ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleCategoriesEntry)
+    checkbutton = tk.Checkbutton(geoFrame, text="Geographic position ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
 
     geoDict = {
@@ -253,14 +252,14 @@ def makeLocationFrame(masterFrame, configuration):
     languageFrame.pack()
 
     buttonState = tk.BooleanVar(value=False)
-    def toggleCategoriesEntry():
+    def toggleHiddableFrame():
         if (buttonState.get()):
             checkbutton.config(text="Location : ")
             hiddableFrame.pack(side="right")
         else:
             checkbutton.config(text="Location ? ")
             hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(locationFrame, text="Location ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleCategoriesEntry)
+    checkbutton = tk.Checkbutton(locationFrame, text="Location ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
 
     locationDict = {
@@ -270,3 +269,25 @@ def makeLocationFrame(masterFrame, configuration):
     }
 
     return locationFrame, locationDict
+
+def makePercentFrame(masterFrame):
+    percentFrame = tk.Frame(masterFrame)
+
+    hiddableFrame = tk.Frame(percentFrame)
+    percentVar = tk.StringVar(value="")
+    tk.Label(hiddableFrame, text=" %").pack(side="right")
+    latSpinbox = ttk.Spinbox(hiddableFrame, from_=0, to=100, increment=1, textvariable=percentVar)
+    latSpinbox.pack(side="right")
+
+    buttonState = tk.BooleanVar(value=False)
+    def toggleHiddableFrame():
+        if (buttonState.get()):
+            checkbutton.config(text="Task completed at ")
+            hiddableFrame.pack(side="right")
+        else:
+            checkbutton.config(text="Completed ? ")
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(percentFrame, text="Completed ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
+    checkbutton.pack(side="left")
+
+    return percentFrame, percentVar
