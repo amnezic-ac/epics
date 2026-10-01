@@ -475,6 +475,8 @@ def makeDtFrame(masterFrame, configuration, typename: str):
         timeFrame.pack(side="right")
 
     dtDict = {
+        "date-status": buttonState,
+        "time-status": timebuttonState,
         "date": dateEntry,
         "time": timebuttonState,
         "hour": hourVar,
@@ -489,7 +491,7 @@ def makeDurationFrame(masterFrame, configuration):
 
     hiddableFrame = tk.Frame(durationFrame)
 
-    week = tk.StringVar(value="")
+    week = tk.StringVar(value="0")
     weekEntry = tk.Spinbox(hiddableFrame, textvariable=week, width=3, from_=0, wrap=True)
     weekEntry.pack(side="left")
     tk.Label(hiddableFrame, text=configuration["duration"]["week-text"]).pack(side="left")
@@ -522,6 +524,7 @@ def makeDurationFrame(masterFrame, configuration):
     button.pack(side="left")
 
     duration = {
+        "value": state,
         "week": week,
         "day": day,
         "hour": hour,

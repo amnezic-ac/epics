@@ -56,6 +56,9 @@ def makeEventFrame(masterFrame, configuration):
     statusFrame, statusCombobox = makeStatusFrame(eventFrame, configuration, "event")
     statusFrame.pack()
 
+    durationFrame, durationDict = makeDurationFrame(eventFrame, configuration)
+    durationFrame.pack()
+
     def createEvent():
         tmstmp = datetime.now()
 
@@ -66,10 +69,10 @@ def makeEventFrame(masterFrame, configuration):
             raise Exception(f"An event has to show a title, please put a title")
 
         dtstart = None
-        if (dtStartDict["date"].get()):
+        if (dtStartDict["date-status"].get()):
             truc = dtStartDict["date"].get().split('/')
             dtstart = datetime.strptime(f"{truc[0]}-{truc[1]}-{truc[2]}", "%Y-%m-%d")
-            if (dtStartDict["time"]):
+            if (dtStartDict["time-status"].get()):
                 dtstart = dtstart.replace(
                     hour=int(dtStartDict["hour"].get()),
                     minute=int(dtStartDict["minute"].get()),
@@ -77,10 +80,10 @@ def makeEventFrame(masterFrame, configuration):
                 )
 
         dtend = None
-        if (dtEndDict["date"].selection_get()):
+        if (dtEndDict["date-status"].get()):
             truc = dtEndDict["date"].get().split('/')
             dtend = datetime.strptime(f"{truc[0]}-{truc[1]}-{truc[2]}", "%Y-%m-%d")
-            if (dtEndDict["time"]):
+            if (dtEndDict["time-status"].get()):
                 dtend = dtend.replace(
                     hour=int(dtEndDict["hour"].get()),
                     minute=int(dtEndDict["minute"].get()),
@@ -130,10 +133,29 @@ def makeEventFrame(masterFrame, configuration):
         if (statusCombobox.get() != ""):
             status = Status(statusCombobox.get())
 
+        duration = None
+        if (durationDict["value"].get()):
+            duration = Duration(
+                int(durationDict["week"].get()),
+                int(durationDict["day"].get()),
+                int(durationDict["hour"].get()),
+                int(durationDict["minute"].get()),
+                int(durationDict["second"].get())
+            )
+
+        end = None
+        if (dtend and duration):
+            raise Exception(f"Can't have an end date and a duration")
+        else:
+            if (not dtend):
+                end = duration
+            else:
+                end = dtend
+
         event = Vevent(
             tmstmp,
             dtstart=dtstart,
-            end=dtend,
+            end=end,
             classification=classification,
             description=description,
             attach=attachment,
@@ -144,7 +166,7 @@ def makeEventFrame(masterFrame, configuration):
             priority=priority,
             # resources=[resource],
             status=status,
-            title=summary
+            title=summary,
         )
         print(event)
         eventObject["value"] = event
