@@ -146,6 +146,8 @@ def makeEventFrame(masterFrame, configuration):
         end = None
         if (dtend and duration):
             raise Exception(f"Can't have an end date and a duration")
+        elif (not dtend and not duration):
+            raise Exception(f"An event has to got an end")
         else:
             if (not dtend):
                 end = duration
