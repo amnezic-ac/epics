@@ -840,5 +840,12 @@
         "datetime-default": false,
         "uncheckedText": "Start date ? ",
         "checkedText": "Start date : "
+    },
+    "duration": {
+        "week-text": "w ",
+        "day-text": "d ",
+        "hour-text": "h ",
+        "minute-text": "m ",
+        "second-text": "s "
     }
 }

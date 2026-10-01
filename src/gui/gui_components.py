@@ -66,7 +66,7 @@ def makeEventFrame(masterFrame, configuration):
             raise Exception(f"An event has to show a title, please put a title")
 
         dtstart = None
-        if (dtStartDict["date"].selection_get()):
+        if (dtStartDict["date"].get()):
             truc = dtStartDict["date"].get().split('/')
             dtstart = datetime.strptime(f"{truc[0]}-{truc[1]}-{truc[2]}", "%Y-%m-%d")
             if (dtStartDict["time"]):

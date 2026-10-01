@@ -10,8 +10,8 @@ def main():
     myCalendar = Calendar()
     tmstp = datetime.now()
 
-    # myEvent = Vevent(tmstp, tmstp, tmstp + timedelta(hours=2))
-    # myCalendar.add_component(myEvent)
+    myEvent = Vevent(tmstp, tmstp, tmstp + timedelta(hours=2))
+    myCalendar.add_component(myEvent)
 
     print(myCalendar)
 

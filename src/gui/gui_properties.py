@@ -483,3 +483,50 @@ def makeDtFrame(masterFrame, configuration, typename: str):
     }
 
     return dtFrame, dtDict
+
+def makeDurationFrame(masterFrame, configuration):
+    durationFrame = tk.Frame(masterFrame)
+
+    hiddableFrame = tk.Frame(durationFrame)
+
+    week = tk.StringVar(value="")
+    weekEntry = tk.Spinbox(hiddableFrame, textvariable=week, width=3, from_=0, wrap=True)
+    weekEntry.pack(side="left")
+    tk.Label(hiddableFrame, text=configuration["duration"]["week-text"]).pack(side="left")
+    day = tk.StringVar(value="")
+    dayEntry = tk.Spinbox(hiddableFrame, textvariable=day, width=3, from_=0, to=31, wrap=True)
+    dayEntry.pack(side="left")
+    tk.Label(hiddableFrame, text=configuration["duration"]["day-text"]).pack(side="left")
+    hour = tk.StringVar(value="")
+    hourEntry = tk.Spinbox(hiddableFrame, textvariable=hour, width=3, from_=0, to=23, wrap=True)
+    hourEntry.pack(side="left")
+    tk.Label(hiddableFrame, text=configuration["duration"]["hour-text"]).pack(side="left")
+    minute = tk.StringVar(value="")
+    minuteEntry = tk.Spinbox(hiddableFrame, textvariable=minute, width=3, from_=0, to=59, wrap=True)
+    minuteEntry.pack(side="left")
+    tk.Label(hiddableFrame, text=configuration["duration"]["minute-text"]).pack(side="left")
+    second = tk.StringVar(value="")
+    secondEntry = tk.Spinbox(hiddableFrame, textvariable=second, width=3, from_=0, to=59, wrap=True)
+    secondEntry.pack(side="left")
+    tk.Label(hiddableFrame, text=configuration["duration"]["second-text"]).pack(side="left")
+
+    state = tk.BooleanVar(value=False)
+    def toggleHiddableFrame():
+        if (state.get()):
+            hiddableFrame.pack(side="right")
+            button.config(text="Duration : ")
+        else:
+            button.config(text="Duration ? ")
+            hiddableFrame.pack_forget()
+    button = tk.Checkbutton(durationFrame, text="Duration ? ", variable=state, onvalue=True, offvalue=False, command=toggleHiddableFrame)
+    button.pack(side="left")
+
+    duration = {
+        "week": week,
+        "day": day,
+        "hour": hour,
+        "minute": minute,
+        "second": second
+    }
+
+    return durationFrame, duration
