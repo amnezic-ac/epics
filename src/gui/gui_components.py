@@ -6,6 +6,8 @@ from src.backend.components.vevent import Vevent
 from src.backend.properties import *
 from src.gui.gui_properties import *
 
+# NOTE: work on period frame handler --> should do a choice between a duration and a dtend (also useful for dtstart)
+
 def findLangIdFromLangValue(configuration, value_):
     for language in configuration:
         for key, value in language.items():
@@ -32,7 +34,7 @@ def makeEventFrame(masterFrame, configuration):
     categoriesFrame, categoriesDict = makeCategoriesFrame(eventFrame, configuration)
     categoriesFrame.pack()
 
-    classificationFrame, classificationCombobox = makeClassificationFrame(eventFrame, configuration)
+    classificationFrame, classificationDict = makeClassificationFrame(eventFrame, configuration)
     classificationFrame.pack()
 
     commentFrame, commentDict = makeCommentFrame(eventFrame, configuration)
@@ -47,13 +49,13 @@ def makeEventFrame(masterFrame, configuration):
     locationFrame, locationDict = makeLocationFrame(eventFrame, configuration)
     locationFrame.pack()
    
-    priorityFrame, priorityVar = makePriorityFrame(eventFrame)
+    priorityFrame, priorityDict = makePriorityFrame(eventFrame)
     priorityFrame.pack()
 
     resourceFrame, resourceDict = makeResourceFrame(eventFrame, configuration)
     resourceFrame.pack()
 
-    statusFrame, statusCombobox = makeStatusFrame(eventFrame, configuration, "event")
+    statusFrame, statusDict = makeStatusFrame(eventFrame, configuration, "event")
     statusFrame.pack()
 
     durationFrame, durationDict = makeDurationFrame(eventFrame, configuration)
@@ -91,47 +93,45 @@ def makeEventFrame(masterFrame, configuration):
                 )
 
         categories = None
-        if (len(categoriesDict["listbox"].curselection()) != 0):
+        if (categoriesDict["state"].get() and len(categoriesDict["listbox"].curselection()) > 0):
             categories = Categories([categoriesDict["listbox"].get(index) for index in categoriesDict["listbox"].curselection()])
 
         attachment = None
-        if (attachmentDict["value"].get() and attachmentDict["value"] != ""):
+        if (attachmentDict["state"].get()):
             attachment = Attachement(attachmentDict["value"].get(), typename=attachmentDict["fmttype"]["type"].get(), subtypename=attachmentDict["fmttype"]["subtype"].get())
 
         classification = None
-        if (classificationCombobox.get() != ""):
-            classification = Classification(classificationCombobox.get())
+        if (classificationDict["state"].get()):
+            classification = Classification(classificationDict["value"].get())
 
         comment = None
-        if (commentDict["value"].get("1.0", "end-1c") != ""):
+        if (commentDict["state"].get()):
             comment = Comment(commentDict["value"].get("1.0", "end-1c"), commentDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], commentDict["language"].get()))
 
         description = None
-        if (descriptionDict["value"].get("1.0", "end-1c") != ""):
+        if (descriptionDict["state"].get()):
             description = Description(descriptionDict["value"].get("1.0", "end-1c"), descriptionDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], descriptionDict["language"].get()))
         
         geo = None
-        try:
+        if (geoDict["state"].get()):
             geo = Geo(float(geoDict["lat"].get()), (geoDict["long"].get()))
-        except Exception as _:
-            pass
 
         location = None
-        if (locationDict["value"].get("1.0", "end-1c") != ""):
-            location = Location(locationDict["value"].get("1.0", "end-1c"), locationDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], locationDict["language"].get()))
+        if (locationDict["state"].get()):
+            location = Location(locationDict["value"].get(), locationDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], locationDict["language"].get()))
 
         priority = None
-        if (priorityVar.get() != ""):
-            priority = Priority(int(priorityVar.get()))
+        if (priorityDict["state"].get()):
+            priority = Priority(int(priorityDict["value"].get()))
 
         # TODO: check why stringify doesn't work
         resource = None
-        if (resourceDict["value"].get("1.0", "end-1c") != ""):
+        if (resourceDict["state"].get()):
             resource = Resources(resourceDict["value"].get("1.0", "end-1c"), resourceDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], resourceDict["language"].get()))
 
         status = None
-        if (statusCombobox.get() != ""):
-            status = Status(statusCombobox.get())
+        if (statusDict["state"].get()):
+            status = Status(statusDict["value"].get())
 
         duration = None
         if (durationDict["value"].get()):

@@ -27,6 +27,7 @@ def makeAttachmentFrame(masterFrame, configuration):
     checkbutton.pack(side="left")
 
     attachmentDict = {
+        "state": buttonState,
         "value": attachmentValue,
         "fmttype": fmttypeInput
     }
@@ -104,6 +105,7 @@ def makeCategoriesFrame(masterFrame, configuration):
     checkbutton.pack(side="left")
 
     categoriesDict = {
+        "state": buttonState,
         "listbox": listbox,
         "language": languageInput
     }
@@ -113,11 +115,13 @@ def makeCategoriesFrame(masterFrame, configuration):
 def makeClassificationFrame(masterFrame, configuration):
     classificationFrame = tk.Frame(masterFrame)
 
+    value = tk.StringVar(value="")
     hiddableFrame = tk.Frame(classificationFrame)
     combobox = ttk.Combobox(
         hiddableFrame,
         values=configuration["classification"]["choices"],
-        state="readonly"
+        state="readonly",
+        textvariable=value
     )
     combobox.pack()
 
@@ -131,8 +135,13 @@ def makeClassificationFrame(masterFrame, configuration):
             hiddableFrame.pack_forget()
     checkbutton = tk.Checkbutton(classificationFrame, text="Classification ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
+    
+    classificationDict = {
+        "state": buttonState,
+        "value": combobox
+    }
 
-    return classificationFrame, combobox
+    return classificationFrame, classificationDict
 
 def makeCommentFrame(masterFrame, configuration):
     commentFrame = tk.Frame(masterFrame)
@@ -163,6 +172,7 @@ def makeCommentFrame(masterFrame, configuration):
     checkbutton.pack(side="left")
 
     commentDict = {
+        "state": buttonState,
         "value": commentText,
         "altrep": altrepInput,
         "language": languageInput
@@ -199,6 +209,7 @@ def makeDescriptionFrame(masterFrame, configuration):
     checkbutton.pack(side="left")
 
     descriptionDict = {
+        "state": buttonState,
         "value": descriptionText,
         "altrep": altrepInput,
         "language": languageInput
@@ -230,6 +241,7 @@ def makeGeoFrame(masterFrame, configuration):
     checkbutton.pack(side="left")
 
     geoDict = {
+        "state": buttonState,
         "lat": latVar,
         "long": longVar
     }
@@ -265,6 +277,7 @@ def makeLocationFrame(masterFrame, configuration):
     checkbutton.pack(side="left")
 
     locationDict = {
+        "state": buttonState,
         "value": locationText,
         "altrep": altrepInput,
         "language": languageInput
@@ -292,7 +305,12 @@ def makePercentFrame(masterFrame):
     checkbutton = tk.Checkbutton(percentFrame, text="Completed ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
 
-    return percentFrame, percentVar
+    percentDict = {
+        "state": buttonState,
+        "value": percentVar
+    }
+
+    return percentFrame, percentDict
 
 def makePriorityFrame(masterFrame):
     priorityFrame = tk.Frame(masterFrame)
@@ -313,7 +331,12 @@ def makePriorityFrame(masterFrame):
     checkbutton = tk.Checkbutton(priorityFrame, text="Priority level ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
 
-    return priorityFrame, priorityVar
+    priorityDict = {
+        "state": buttonState,
+        "value": priorityVar
+    }
+
+    return priorityFrame, priorityDict
 
 def makeResourceFrame(masterFrame, configuration):
     resourceFrame = tk.Frame(masterFrame)
@@ -344,6 +367,7 @@ def makeResourceFrame(masterFrame, configuration):
     checkbutton.pack(side="left")
 
     resourceDict = {
+        "state": buttonState,
         "value": resourceText,
         "altrep": altrepInput,
         "language": languageInput
@@ -355,10 +379,12 @@ def makeStatusFrame(masterFrame, configuration, componentType: str):
     statusFrame = tk.Frame(masterFrame)
 
     hiddableFrame = tk.Frame(statusFrame)
+    value = tk.StringVar(value="")
     statusCombobox = ttk.Combobox(
         hiddableFrame,
         values=configuration["status"][f"{componentType}"],
-        state="readonly"
+        state="readonly",
+        textvariable=value
     )
     statusCombobox.pack()
 
@@ -373,7 +399,12 @@ def makeStatusFrame(masterFrame, configuration, componentType: str):
     checkbutton = tk.Checkbutton(statusFrame, text="Status ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
 
-    return statusFrame, statusCombobox
+    statusDict = {
+        "state": buttonState,
+        "value": value
+    }
+
+    return statusFrame, statusDict
 
 def makeSummaryFrame(masterFrame, configuration):
     summaryFrame = tk.Frame(masterFrame)
