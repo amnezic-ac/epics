@@ -826,5 +826,8 @@
     },
     "dtdue": {
         "datetime-default": false
+    },
+    "dtcompleted": {
+        "datetime-default": false
     }
 }
