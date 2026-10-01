@@ -847,5 +847,11 @@
         "hour-text": "h ",
         "minute-text": "m ",
         "second-text": "s "
+    },
+    "transparency": {
+        "choices": [
+            "OPAQUE",
+            "TRANSPARENT"
+        ]
     }
 }

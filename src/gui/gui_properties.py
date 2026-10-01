@@ -564,3 +564,32 @@ def makeDurationFrame(masterFrame, configuration):
     }
 
     return durationFrame, duration
+
+def makeTranspFrame(masterFrame, configuration):
+    transpFrame = tk.Frame(masterFrame)
+
+    hiddableFrame = tk.Frame(transpFrame)
+    value = tk.StringVar(value="")
+    transpCombobox = ttk.Combobox(
+        hiddableFrame,
+        values=configuration["transparency"]["choices"],
+        state="readonly",
+        textvariable=value
+    )
+    transpCombobox.pack()
+
+    buttonState = tk.BooleanVar(value=False)
+    def toggleHiddableFrame():
+        if (buttonState.get()):
+            hiddableFrame.pack(side="right")
+        else:
+            hiddableFrame.pack_forget()
+    checkbutton = tk.Checkbutton(transpFrame, text="Transparency", variable=buttonState, onvalue=True, offvalue=False, command=toggleHiddableFrame)
+    checkbutton.pack(side="left")
+
+    transpDict = {
+        "state": buttonState,
+        "value": value
+    }
+
+    return transpFrame, transpDict

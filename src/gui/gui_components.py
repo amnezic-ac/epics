@@ -61,6 +61,9 @@ def makeEventFrame(masterFrame, configuration):
     durationFrame, durationDict = makeDurationFrame(eventFrame, configuration)
     durationFrame.pack()
 
+    transpFrame, transpDict = makeTranspFrame(eventFrame, configuration)
+    transpFrame.pack()
+
     def createEvent():
         tmstmp = datetime.now()
 
@@ -133,6 +136,10 @@ def makeEventFrame(masterFrame, configuration):
         if (statusDict["state"].get()):
             status = Status(statusDict["value"].get())
 
+        transp = None
+        if (transpDict["state"].get()):
+            transp = Transparency(transpDict["value"].get())
+
         duration = None
         if (durationDict["value"].get()):
             duration = Duration(
@@ -169,6 +176,7 @@ def makeEventFrame(masterFrame, configuration):
             # resources=[resource],
             status=status,
             title=summary,
+            transp=transp
         )
         print(event)
         eventObject["value"] = event
