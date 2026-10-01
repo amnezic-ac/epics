@@ -822,12 +822,23 @@
         ]
     },
     "dtend": {
-        "datetime-default": false
+        "datetime-default": false,
+        "uncheckedText": "End date ? ",
+        "checkedText": "End date : "
     },
     "dtdue": {
-        "datetime-default": false
+        "datetime-default": false,
+        "uncheckedText": "Due date ? ",
+        "checkedText": "Due date : "
     },
     "dtcompleted": {
-        "datetime-default": false
+        "datetime-default": false,
+        "uncheckedText": "Completed date ? ",
+        "checkedText": "Completed date : "
+    },
+    "dtstart": {
+        "datetime-default": false,
+        "uncheckedText": "Start date ? ",
+        "checkedText": "Start date : "
     }
 }

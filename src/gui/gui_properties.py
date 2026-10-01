@@ -398,11 +398,15 @@ def makeSummaryFrame(masterFrame, configuration):
 
     return summaryFrame, summaryDict
 
-def makeDtCompletedFrame(masterFrame, configuration):
-    dtCompletedFrame = tk.Frame(masterFrame)
+def makeDtFrame(masterFrame, configuration, typename: str):
+    # typename is the name of the type of the datime
+    if (typename not in ["completed", "end", "due", "start"]):
+        return None, None
+
+    dtFrame = tk.Frame(masterFrame)
 
     today = datetime.now()
-    hiddableFrame = tk.Frame(dtCompletedFrame)
+    hiddableFrame = tk.Frame(dtFrame)
     dateEntry = tkc.DateEntry(
         hiddableFrame,
         selectmode="day",
@@ -413,12 +417,12 @@ def makeDtCompletedFrame(masterFrame, configuration):
     buttonState = tk.BooleanVar(value=False)
     def toggleHiddableFrame():
         if (buttonState.get()):
-            checkbutton.config(text="Completed date : ")
+            checkbutton.config(text=configuration[f"dt{typename}"]["checkedText"])
             hiddableFrame.pack(side="right")
         else:
-            checkbutton.config(text="Completed date ? ")
+            checkbutton.config(text=configuration[f"dt{typename}"]["uncheckedText"])
             hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(dtCompletedFrame, text="Completed date ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
+    checkbutton = tk.Checkbutton(dtFrame, text=configuration[f"dt{typename}"]["uncheckedText"], variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
 
     timeFrame = tk.Frame(hiddableFrame)
@@ -456,7 +460,7 @@ def makeDtCompletedFrame(masterFrame, configuration):
     tk.Label(timeFrame, text="h ").pack(side="right")
     hourSpinbox.pack(side="right")
 
-    timebuttonState = tk.BooleanVar(value=configuration["dtcompleted"]["datetime-default"])
+    timebuttonState = tk.BooleanVar(value=configuration[f"dt{typename}"]["datetime-default"])
     def toggleHiddableTimeFrame():
         if (timebuttonState.get()):
             timecheckbutton.config(text=" at ")
@@ -470,7 +474,7 @@ def makeDtCompletedFrame(masterFrame, configuration):
         timecheckbutton.config(text=" at ")
         timeFrame.pack(side="right")
 
-    dtCompletedDict = {
+    dtDict = {
         "date": dateEntry,
         "time": timebuttonState,
         "hour": hourVar,
@@ -478,169 +482,4 @@ def makeDtCompletedFrame(masterFrame, configuration):
         "second": secondVar
     }
 
-    return dtCompletedFrame, dtCompletedDict
-
-
-def makeDtdueFrame(masterFrame, configuration):
-    dtdueFrame = tk.Frame(masterFrame)
-
-    today = datetime.now()
-    hiddableFrame = tk.Frame(dtdueFrame)
-    dateEntry = tkc.DateEntry(
-        hiddableFrame,
-        selectmode="day",
-        date_pattern="y/mm/dd"
-    )
-    dateEntry.pack(side="left")
-
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            checkbutton.config(text="Due date : ")
-            hiddableFrame.pack(side="right")
-        else:
-            checkbutton.config(text="Due date ? ")
-            hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(dtdueFrame, text="Due date ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
-
-    timeFrame = tk.Frame(hiddableFrame)
-    secondVar = tk.StringVar(value="0")
-    secondSpinbox = tk.Spinbox(
-        timeFrame,
-        from_=0,
-        to=59,
-        increment=1,
-        width=4,
-        textvariable=secondVar
-    )
-    minuteVar = tk.StringVar(value="0")
-    minuteSpinbox = tk.Spinbox(
-        timeFrame,
-        from_=0,
-        to=59,
-        increment=1,
-        width=4,
-        textvariable=minuteVar 
-    )
-    hourVar = tk.StringVar(value="0")
-    hourSpinbox = tk.Spinbox(
-        timeFrame,
-        from_=0,
-        to=23,
-        increment=1,
-        width=4,
-        textvariable=hourVar
-    )
-    tk.Label(timeFrame, text="s").pack(side="right")
-    secondSpinbox.pack(side="right")
-    tk.Label(timeFrame, text="m ").pack(side="right")
-    minuteSpinbox.pack(side="right")
-    tk.Label(timeFrame, text="h ").pack(side="right")
-    hourSpinbox.pack(side="right")
-
-    timebuttonState = tk.BooleanVar(value=configuration["dtdue"]["datetime-default"])
-    def toggleHiddableTimeFrame():
-        if (timebuttonState.get()):
-            timecheckbutton.config(text=" at ")
-            timeFrame.pack(side="right")
-        else:
-            timecheckbutton.config(text="Time ? ")
-            timeFrame.pack_forget()
-    timecheckbutton = tk.Checkbutton(hiddableFrame, text="Time ? ", variable=timebuttonState, offvalue=False, onvalue=True, command=toggleHiddableTimeFrame)
-    timecheckbutton.pack(side="left")
-    if (timebuttonState.get()):
-        timecheckbutton.config(text=" at ")
-        timeFrame.pack(side="right")
-
-    dtdueDict = {
-        "date": dateEntry,
-        "time": timebuttonState,
-        "hour": hourVar,
-        "minute": minuteVar,
-        "second": secondVar
-    }
-
-    return dtdueFrame, dtdueDict
-
-def makeDtendFrame(masterFrame, configuration):
-    dtendFrame = tk.Frame(masterFrame)
-
-    today = datetime.now()
-    hiddableFrame = tk.Frame(dtendFrame)
-    dateEntry = tkc.DateEntry(
-        hiddableFrame,
-        selectmode="day",
-        date_pattern="y/mm/dd"
-    )
-    dateEntry.pack(side="left")
-
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            checkbutton.config(text="End date : ")
-            hiddableFrame.pack(side="right")
-        else:
-            checkbutton.config(text="End date ? ")
-            hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(dtendFrame, text="End date ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
-
-    timeFrame = tk.Frame(hiddableFrame)
-    secondVar = tk.StringVar(value="0")
-    secondSpinbox = tk.Spinbox(
-        timeFrame,
-        from_=0,
-        to=59,
-        increment=1,
-        width=4,
-        textvariable=secondVar
-    )
-    minuteVar = tk.StringVar(value="0")
-    minuteSpinbox = tk.Spinbox(
-        timeFrame,
-        from_=0,
-        to=59,
-        increment=1,
-        width=4,
-        textvariable=minuteVar 
-    )
-    hourVar = tk.StringVar(value="0")
-    hourSpinbox = tk.Spinbox(
-        timeFrame,
-        from_=0,
-        to=23,
-        increment=1,
-        width=4,
-        textvariable=hourVar
-    )
-    tk.Label(timeFrame, text="s").pack(side="right")
-    secondSpinbox.pack(side="right")
-    tk.Label(timeFrame, text="m ").pack(side="right")
-    minuteSpinbox.pack(side="right")
-    tk.Label(timeFrame, text="h ").pack(side="right")
-    hourSpinbox.pack(side="right")
-
-    timebuttonState = tk.BooleanVar(value=configuration["dtend"]["datetime-default"])
-    def toggleHiddableTimeFrame():
-        if (timebuttonState.get()):
-            timecheckbutton.config(text=" at ")
-            timeFrame.pack(side="right")
-        else:
-            timecheckbutton.config(text="Time ? ")
-            timeFrame.pack_forget()
-    timecheckbutton = tk.Checkbutton(hiddableFrame, text="Time ? ", variable=timebuttonState, offvalue=False, onvalue=True, command=toggleHiddableTimeFrame)
-    timecheckbutton.pack(side="left")
-    if (timebuttonState.get()):
-        timecheckbutton.config(text=" at ")
-        timeFrame.pack(side="right")
-
-    dtEndDict = {
-        "date": dateEntry,
-        "time": timebuttonState,
-        "hour": hourVar,
-        "minute": minuteVar,
-        "second": secondVar
-    }
-
-    return dtendFrame, dtEndDict
+    return dtFrame, dtDict

@@ -20,7 +20,10 @@ def makeEventFrame(masterFrame, configuration):
     summaryFrame, summaryDict = makeSummaryFrame(eventFrame, configuration)
     summaryFrame.pack()
 
-    dtendFrame, dtEndDict = makeDtendFrame(eventFrame, configuration)
+    dtStartFrame, dtStartDict = makeDtFrame(eventFrame, configuration, "start")
+    dtStartFrame.pack()
+
+    dtendFrame, dtEndDict = makeDtFrame(eventFrame, configuration, "end")
     dtendFrame.pack()
 
     attachmentFrame, attachmentDict = makeAttachmentFrame(eventFrame, configuration)
@@ -61,6 +64,17 @@ def makeEventFrame(masterFrame, configuration):
             summary = Summary(summaryDict["value"].get(), summaryDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], summaryDict["language"].get()))
         else:
             raise Exception(f"An event has to show a title, please put a title")
+
+        dtstart = None
+        if (dtStartDict["date"].selection_get()):
+            truc = dtStartDict["date"].get().split('/')
+            dtstart = datetime.strptime(f"{truc[0]}-{truc[1]}-{truc[2]}", "%Y-%m-%d")
+            if (dtStartDict["time"]):
+                dtstart = dtstart.replace(
+                    hour=int(dtStartDict["hour"].get()),
+                    minute=int(dtStartDict["minute"].get()),
+                    second=int(dtStartDict["second"].get())
+                )
 
         dtend = None
         if (dtEndDict["date"].selection_get()):
@@ -118,7 +132,7 @@ def makeEventFrame(masterFrame, configuration):
 
         event = Vevent(
             tmstmp,
-            tmstmp,
+            dtstart=dtstart,
             end=dtend,
             classification=classification,
             description=description,
