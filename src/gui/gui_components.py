@@ -43,10 +43,7 @@ def makeEventFrame(masterFrame, configuration):
 
     locationFrame, locationDict = makeLocationFrame(eventFrame, configuration)
     locationFrame.pack()
-
-    # percentFrame, percentVar = makePercentFrame(eventFrame)
-    # percentFrame.pack()
-    
+   
     priorityFrame, priorityVar = makePriorityFrame(eventFrame)
     priorityFrame.pack()
 
