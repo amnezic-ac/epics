@@ -1,29 +1,37 @@
 # This file will contain what the main user will launch when using the software with GUI
 # for integration, please refer to ./main_api.py
 
-import json
 import tkinter as tk
+from tkinter import ttk
+from tkinter import filedialog as fd
 
 from src.gui.gui_components import *
+from utils import configuration, exportConfigToJSONFile, logging
 
-def importConfigFromJSONFile(filepath: str) -> dict:
-    data = None
-    with open(filepath, 'r', encoding='utf-8') as file:
-        data = json.load(file)
-    return data
 
-configuration = importConfigFromJSONFile("default_config.json")
+logging.debug(f"New session activated")
 
-main_window = tk.Tk()
-main_window.title("ICS generator")
+root = tk.Tk()
 
-testFrame, eventObject = makeEventFrame(main_window, configuration)
-testFrame.pack()
+menubar = tk.Menu(root)
+filemenu = tk.Menu(menubar, tearoff=0)
+filemenu.add_command(label="New event", command=lambda: makeEventFrame(root))
+filemenu.add_command(label="New task", command=lambda: logging.debug("New task frame opened"))
+filemenu.add_command(label="New alarm", command=lambda: logging.debug("New alaram opened"))
+filemenu.add_command(label="New journal", command=lambda: logging.debug("New journal frame opened"))
+menubar.add_cascade(label="Calendar", menu=filemenu)
 
-def exportConfigToJSONFile(filepath: str) -> bool:
-    with open(filepath, "w", encoding='utf-8') as file:
-        json.dump(configuration, file, indent=4)
+file = None
+text = tk.Text(root, height=12)
+def getICSFile():
+    file = fd.askopenfile()
+    print(text.insert('1.0', file.readlines()))
 
-main_window.mainloop()
+calendarChoiceButton = tk.Button(root, text="Choose a calendar", command = getICSFile)
+calendarChoiceButton.pack()
+
+root.config(menu=menubar)
+root.mainloop()
 
 exportConfigToJSONFile("default_config.json")
+logging.debug(f"Session ended")

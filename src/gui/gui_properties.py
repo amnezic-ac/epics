@@ -3,6 +3,7 @@ import tkinter as tk
 from src.gui.gui_parameters import *
 import tkcalendar as tkc
 from datetime import datetime
+from utils import configuration, logging
 
 # NOTE: put the user input part in a hiddable frame iff the frame is optional for all the types of event it can appears
 
@@ -18,13 +19,13 @@ def makeAttachmentFrame(masterFrame, configuration):
     buttonState = tk.BooleanVar(value=False)
     def toggleHiddableFrame():
         if (buttonState.get()):
-            hiddableFrame.pack(side="right")
+            hiddableFrame.pack()
             checkbutton.config(text="Attachment : ")
         else:
             hiddableFrame.pack_forget()
             checkbutton.config(text="Attachment ? ")
     checkbutton = tk.Checkbutton(attachmentFrame, text="Attachment ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
+    checkbutton.pack()
 
     attachmentDict = {
         "state": buttonState,
@@ -98,11 +99,11 @@ def makeCategoriesFrame(masterFrame, configuration):
     buttonState = tk.BooleanVar(value=False)
     def toggleHiddableFrame():
         if (buttonState.get()):
-            hiddableFrame.pack(side="right")
+            hiddableFrame.pack()
         else:
             hiddableFrame.pack_forget()
     checkbutton = tk.Checkbutton(categoriesFrame, text="Categories ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
+    checkbutton.pack()
 
     categoriesDict = {
         "state": buttonState,
@@ -164,12 +165,12 @@ def makeCommentFrame(masterFrame, configuration):
     def toggleHiddableFrame():
         if (buttonState.get()):
             checkbutton.config(text="Comment : ")
-            hiddableFrame.pack(side="right")
+            hiddableFrame.pack()
         else:
             checkbutton.config(text="Comment ? ")
             hiddableFrame.pack_forget()
     checkbutton = tk.Checkbutton(commentFrame, text="Comment ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
+    checkbutton.pack()
 
     commentDict = {
         "state": buttonState,
@@ -201,12 +202,12 @@ def makeDescriptionFrame(masterFrame, configuration):
     def toggleHiddableFrame():
         if (buttonState.get()):
             checkbutton.config(text="Description : ")
-            hiddableFrame.pack(side="right")
+            hiddableFrame.pack()
         else:
             checkbutton.config(text="Description ? ")
             hiddableFrame.pack_forget()
     checkbutton = tk.Checkbutton(descriptionFrame, text="Description ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
+    checkbutton.pack()
 
     descriptionDict = {
         "state": buttonState,
@@ -223,7 +224,7 @@ def makeGeoFrame(masterFrame, configuration):
     hiddableFrame = tk.Frame(geoFrame)
     latVar = tk.StringVar(value="")
     latSpinbox = ttk.Spinbox(hiddableFrame, from_=-90.000000, to=90.000000, wrap=True, increment=0.000001, textvariable=latVar)
-    latSpinbox.pack()
+    latSpinbox.pack(side="right")
     tk.Label(hiddableFrame, text=" ; ").pack(side="right")
     longVar = tk.StringVar(value="")
     longSpinbox = ttk.Spinbox(hiddableFrame, from_=-180.000000, to=180.000000, wrap=True, increment=0.000001, textvariable=longVar)
@@ -269,12 +270,12 @@ def makeLocationFrame(masterFrame, configuration):
     def toggleHiddableFrame():
         if (buttonState.get()):
             checkbutton.config(text="Location : ")
-            hiddableFrame.pack(side="right")
+            hiddableFrame.pack()
         else:
             checkbutton.config(text="Location ? ")
             hiddableFrame.pack_forget()
     checkbutton = tk.Checkbutton(locationFrame, text="Location ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
+    checkbutton.pack()
 
     locationDict = {
         "state": buttonState,
@@ -326,7 +327,7 @@ def makePriorityFrame(masterFrame):
             checkbutton.config(text="Priority level : ")
             hiddableFrame.pack(side="right")
         else:
-            checkbutton.config(text="Priority level : ")
+            checkbutton.config(text="Priority level ? ")
             hiddableFrame.pack_forget()
     checkbutton = tk.Checkbutton(priorityFrame, text="Priority level ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
@@ -359,12 +360,12 @@ def makeResourceFrame(masterFrame, configuration):
     def toggleHiddableFrame():
         if (buttonState.get()):
             checkbutton.config(text="Resource : ")
-            hiddableFrame.pack(side="right")
+            hiddableFrame.pack()
         else:
             checkbutton.config(text="Resource ? ")
             hiddableFrame.pack_forget()
     checkbutton = tk.Checkbutton(resourceFrame, text="Resource ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
+    checkbutton.pack()
 
     resourceDict = {
         "state": buttonState,
@@ -375,54 +376,47 @@ def makeResourceFrame(masterFrame, configuration):
 
     return resourceFrame, resourceDict
 
-def makeStatusFrame(masterFrame, configuration, componentType: str):
+def makeStatusFrame(masterFrame, componentType: str):
     statusFrame = tk.Frame(masterFrame)
 
-    hiddableFrame = tk.Frame(statusFrame)
-    value = tk.StringVar(value="")
+    value = tk.StringVar(value=configuration["status"][f"{componentType}"][0])
     statusCombobox = ttk.Combobox(
-        hiddableFrame,
+        statusFrame,
         values=configuration["status"][f"{componentType}"],
         state="readonly",
         textvariable=value
     )
     statusCombobox.pack()
 
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            checkbutton.config(text="Status : ")
-            hiddableFrame.pack(side="right")
-        else:
-            checkbutton.config(text="Status ? ")
-            hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(statusFrame, text="Status ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
+    return statusFrame, value
 
-    statusDict = {
-        "state": buttonState,
-        "value": value
-    }
-
-    return statusFrame, statusDict
-
-def makeSummaryFrame(masterFrame, configuration):
+def makeSummaryFrame(masterFrame, title):
     summaryFrame = tk.Frame(masterFrame)
 
-    summaryVar = tk.StringVar(value="")
-    summaryEntry = tk.Entry(summaryFrame, textvariable=summaryVar)
-    summaryEntry.pack()
+    summaryEntry = tk.Entry(summaryFrame, textvariable=title)
+    summaryEntry.pack(side="left")
     
     hiddableFrame = tk.Frame(summaryFrame)
-    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(hiddableFrame, configuration)
+    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(hiddableFrame)
     altrepFrame.pack()
 
-    languageFrame, languageInput = makeLanguageFrame(hiddableFrame, configuration)
+    languageFrame, languageInput = makeLanguageFrame(hiddableFrame)
     languageFrame.pack()
-    hiddableFrame.pack()
+    
+    state = tk.BooleanVar(value=False)
+    def toggleHiddableFrame():
+        if (state.get()):
+            logging.debug(f"User toggled hiddable frame from a {title.get()} event frame.")
+            hiddableFrame.pack(side="bottom")
+        else:
+            hiddableFrame.pack_forget()
+            logging.debug(f"User untoggled hiddable frame from a {title.get()} event frame.")
+    button = tk.Checkbutton(summaryFrame, text="+", variable=state, offvalue=False, onvalue=True, command=toggleHiddableFrame)
+    button.pack(side="right")
 
     summaryDict = {
-        "value": summaryVar,
+        "value": title,
+        "state": state,
         "altrep": altrepInput,
         "language": languageInput
     }
@@ -593,3 +587,48 @@ def makeTranspFrame(masterFrame, configuration):
     }
 
     return transpFrame, transpDict
+
+def makeAttendeeFrame(masterFrame, configuration, eventType: str):
+    attendeeFrame = tk.Frame(masterFrame)
+
+    userFrame = tk.Frame(attendeeFrame)
+    value = tk.StringVar(value="")
+    userInput = tk.Entry(attendeeFrame, textvariable=value)
+    userInput.pack()
+
+    hiddableFrame = tk.Frame(userFrame)
+    cutypeFrame, cutypeDict = makeCutypeFrame(hiddableFrame, configuration)
+    cutypeFrame.pack()
+    # memberFrame, memberDict = makeMemberFrame(hiddableFrame, configuration)
+    # memberFrame.pack()
+    # roleFrame, roleDict = makeRoleFrame(hiddableFrame, configuration)
+    # roleFrame.pack()
+    # partstatFrame, parstatDict = makePartstatFrame(hiddableFrame, configuration, eventType)
+    # partstatFrame.pack()
+    # rsvpFrame, rsvpDict = makeRsvpFrame(hiddableFrame, configuration)
+    # rsvpFrame.pack()
+    # deltoFrame, deltoDict = makeDelegatedToFrame(hiddableFrame)
+    # deltoFrame.pack()
+    # delfromFrame, delfromDict = makeDelegatedFromFrame(hiddableFrame)
+    # delfromFrame.pack()
+    # sentbyFrame, sentbyDict = makeSentByFrame(hiddableFrame)
+    # sentbyFrame.pack()
+    # cnFrame, cnDict = makeCommonNameFrame(hiddableFrame)
+    # cnFrame.pack()
+    # dirFrame, dirDict = makeDirFrame(hiddableFrame)
+    # dirFrame.pack() 
+    # languageFrame, languageDict = makeLanguageFrame(hiddableFrame, configuration)
+    # languageFrame.pack()
+
+    state = tk.BooleanVar(value=False)
+    def toggleHiddableFrame():
+        if (state.get()):
+            hiddableFrame.pack(side="right")
+            button.config(text="Details : ")
+        else:
+            hiddableFrame.pack_forget()
+            button.config(text="Details ? ")
+    button = tk.Checkbutton(attendeeFrame, text="Details ? ", variable=state, onvalue=True, offvalue=False, command=toggleHiddableFrame)
+    button.pack(side="left")
+
+    return attendeeFrame

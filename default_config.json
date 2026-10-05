@@ -1,4 +1,8 @@
 {
+    "general": {
+        "width": 90,
+        "log-file": "log.txt"
+    },
     "categories": {
         "choices": [
             "Sport",

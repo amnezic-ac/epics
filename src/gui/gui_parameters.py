@@ -2,13 +2,14 @@ from tkinter import ttk
 import tkinter as tk
 
 from src.backend.parameters import *
+from utils import configuration
 
 """
 Disclaimer
     Except the first two functions, all the other one have been AI generated for convenience purpose
 """
 
-def makeAlternativeRepresentationFrame(masterFrame, configuration):
+def makeAlternativeRepresentationFrame(masterFrame):
     altrepFrame = tk.Frame(masterFrame)
 
     hiddableFrame = tk.Frame(altrepFrame)
@@ -22,13 +23,13 @@ def makeAlternativeRepresentationFrame(masterFrame, configuration):
     state = tk.BooleanVar(value=False)
     def toggleHiddableFrame():
         if (state.get()):
-            hiddableFrame.pack(side="right")
+            hiddableFrame.pack()
             button.config(text="Alternative representation")
         else:
             hiddableFrame.pack_forget()
             button.config(text="Alternative configuration ? ")
     button = tk.Checkbutton(altrepFrame, text="Alternative representation ? ", variable = state, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    button.pack(side="left")
+    button.pack()
 
     return  altrepFrame, altrepInput
 
@@ -57,10 +58,12 @@ def makeCutypeFrame(masterFrame, configuration):
 
     hiddableFrame = tk.Frame(cutypeFrame)
     userFrame = tk.Frame(hiddableFrame)
+    value = tk.StringVar(value="")
     cutypeInput = ttk.Combobox(
         hiddableFrame,
         values=configuration["cutype"]["choices"],
-        state="readonly"
+        state="readonly",
+        textvariable=value
     )
     cutypeInput.config(
         height=min(configuration["cutype"]["height"], len(configuration["cutype"]["choices"]))
@@ -122,13 +125,19 @@ def makeCutypeFrame(masterFrame, configuration):
     button = tk.Checkbutton(cutypeFrame, text="Calendar user type ? ", variable = state, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     button.pack(side="left")
 
-    return cutypeFrame, cutypeInput
+    cutypeDict = {
+        "state": state,
+        "value": value
+    }
+
+    return cutypeFrame, cutypeDict
 
 def makeDelegatedFromFrame(masterFrame):
     delegatedFromFrame = tk.Frame(masterFrame)
 
     hiddableFrame = tk.Frame(delegatedFromFrame)
-    delegatedFromInput = tk.Entry(hiddableFrame)
+    value = tk.StringVar(value="")
+    delegatedFromInput = tk.Entry(hiddableFrame, textvariable=value)
     delegatedFromInput.pack()
 
     state = tk.BooleanVar(value=False)
@@ -142,13 +151,19 @@ def makeDelegatedFromFrame(masterFrame):
     button = tk.Checkbutton(delegatedFromFrame, text="Delegated from ? ", variable = state, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     button.pack(side="left")
 
-    return delegatedFromFrame, delegatedFromInput
+    delfromDict = {
+        "state": state,
+        "value": value
+    }
+
+    return delegatedFromFrame, delfromDict
 
 def makeDelegatedToFrame(masterFrame):
     delegatedToFrame = tk.Frame(masterFrame)
 
-    hiddableFrame = tk.Frame(delegatedFromFrame)
-    delegatedToInput = tk.Entry(hiddableFrame)
+    hiddableFrame = tk.Frame(delegatedToFrame)
+    value = tk.StringVar(value="")
+    delegatedToInput = tk.Entry(hiddableFrame, textvariable=value)
     delegatedToInput.pack()
 
     state = tk.BooleanVar(value=False)
@@ -159,10 +174,15 @@ def makeDelegatedToFrame(masterFrame):
         else:
             hiddableFrame.pack_forget()
             button.config(text="Delegated to ? ")
-    button = tk.Checkbutton(delegatedToFrame, text="Delegated from ? ", variable = state, offvalue=False, onvalue=True, command=toggleHiddableFrame)
+    button = tk.Checkbutton(delegatedToFrame, text="Delegated to ? ", variable = state, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     button.pack(side="left")
 
-    return delegatedToFrame, delegatedToInput
+    deltoDict = {
+        "state": state,
+        "value": value
+    }
+
+    return delegatedToFrame, deltoDict
 
 def makeDirFrame(masterFrame):
     dirFrame = tk.Frame(masterFrame)
@@ -352,7 +372,7 @@ def makeFreeBusyTimeFrame(masterFrame, configuration):
 
     return freeBusyTimeFrame, freeBusyTimeInput
 
-def makeLanguageFrame(masterFrame, configuration):
+def makeLanguageFrame(masterFrame):
     languageFrame = tk.Frame(masterFrame)
 
     result = [f"{value}" for item in configuration["language"]["choices"] for _, value in item.items()]
@@ -413,10 +433,12 @@ def makeMemberFrame(masterFrame, configuration):
 
     hiddableFrame = tk.Frame(memberFrame)
     inputFrame = tk.Frame(hiddableFrame)
+    value = tk.StringVar(value="")
     memberInput = ttk.Combobox(
         inputFrame,
         values=configuration["member"]["choices"],
-        state="readonly"
+        state="readonly",
+        textvariable=value
     )
     memberInput.pack()
     userEntry = tk.Entry(inputFrame)
@@ -473,7 +495,12 @@ def makeMemberFrame(masterFrame, configuration):
     checkbutton = tk.Checkbutton(memberFrame, text="Member role ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
 
-    return memberFrame, memberInput
+    memberDict = {
+        "state": buttonState,
+        "value": value
+    }
+
+    return memberFrame, memberDict
 
 def makePartstatFrame(masterFrame, configuration, eventType: str):
     if (eventType not in ["event", "todo", "journal"]):
@@ -484,10 +511,12 @@ def makePartstatFrame(masterFrame, configuration, eventType: str):
     hiddableFrame = tk.Frame(partstatFrame)
     userFrame = tk.Frame(hiddableFrame)
     parstatChoices = configuration["parstat"][f"{eventType}-choices"]
+    value = tk.StringVar(value="")
     partstatInput = ttk.Combobox(
         userFrame,
         values=parstatChoices,
-        state="readonly"
+        state="readonly",
+        textvariable=value
     )
     partstatInput.pack()
     userFrame.pack()
@@ -535,7 +564,12 @@ def makePartstatFrame(masterFrame, configuration, eventType: str):
     # tk.Button(partstatFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
     # buttonsFrame.pack(side="right")
 
-    return partstatFrame, partstatInput
+    partstatDict = {
+        "state": buttonState,
+        "value": value
+    }
+
+    return partstatFrame, partstatDict
 
 def makeRoleFrame(masterFrame, configuration):
     roleFrame = tk.Frame(masterFrame)
@@ -674,10 +708,12 @@ def makeRsvpFrame(masterFrame, configuration):
     rsvpFrame = tk.Frame(masterFrame)
 
     hiddableFrame = tk.Frame(rsvpFrame)
+    value = tk.StringVar(value="")
     rsvpInput = ttk.Combobox(
         hiddableFrame,
         values=configuration["rsvp"]["choices"],
-        state="readonly"
+        state="readonly",
+        textvariable=value
     )
     rsvpInput.pack()
 
@@ -722,13 +758,19 @@ def makeRsvpFrame(masterFrame, configuration):
     checkbutton = tk.Checkbutton(rsvpFrame, text="RSVP status ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
 
-    return rsvpFrame, rsvpInput
+    rsvpDict = {
+        "state": buttonState,
+        "value": value
+    }
+
+    return rsvpFrame, rsvpDict
 
 def makeSentByFrame(masterFrame):
     sentByFrame = tk.Frame(masterFrame)
 
     hiddableFrame = tk.Frame(sentByFrame)
-    sentByInput = tk.Entry(hiddableFrame)
+    value = tk.StringVar(value="")
+    sentByInput = tk.Entry(hiddableFrame, textvariable=value)
     sentByInput.pack()
     
     buttonState = tk.BooleanVar(value=False)
@@ -742,4 +784,9 @@ def makeSentByFrame(masterFrame):
     checkbutton = tk.Checkbutton(sentByFrame, text="Sent by ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
     checkbutton.pack(side="left")
 
-    return sentByFrame, sentByInput
+    sentbyDict = {
+        "state": buttonState,
+        "value": value
+    }
+
+    return sentByFrame, sentbyDict

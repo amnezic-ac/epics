@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from src.backend.components.vevent import Vevent
 from src.backend.properties import *
 from src.gui.gui_properties import *
+from utils import configuration, logging
 
 # NOTE: work on period frame handler --> should do a choice between a duration and a dtend (also useful for dtstart)
 
@@ -15,174 +16,194 @@ def findLangIdFromLangValue(configuration, value_):
                 return key
     return None
 
-def makeEventFrame(masterFrame, configuration):
-    eventFrame = tk.Frame(masterFrame)
-    eventObject = {"value": None}
+def makeEventFrame(masterFrame):
+    logging.debug("New frame event opened")
 
-    summaryFrame, summaryDict = makeSummaryFrame(eventFrame, configuration)
-    summaryFrame.pack()
+    title = tk.StringVar(value="")
+    main = tk.Toplevel(masterFrame)
+    def updateEventTitle(*args):
+        main.title(title.get())
+    title.trace("w", updateEventTitle)
 
-    dtStartFrame, dtStartDict = makeDtFrame(eventFrame, configuration, "start")
-    dtStartFrame.pack()
+    for i in range(8):
+        main.rowconfigure(i, weight = 1)
+    for i in range(2):
+        main.columnconfigure(i, weight = 1)
 
-    dtendFrame, dtEndDict = makeDtFrame(eventFrame, configuration, "end")
-    dtendFrame.pack()
+    summaryFrame, summaryDict = makeSummaryFrame(main, title)
+    summaryFrame.grid(column=0, row=0, sticky=tk.NW)
 
-    attachmentFrame, attachmentDict = makeAttachmentFrame(eventFrame, configuration)
-    attachmentFrame.pack()
+    statusFrame, statusValue = makeStatusFrame(main, "event")
+    statusFrame.grid(column=2, row=0, sticky=tk.NE)
 
-    categoriesFrame, categoriesDict = makeCategoriesFrame(eventFrame, configuration)
-    categoriesFrame.pack()
+    return main
+    # eventFrame = tk.Frame(masterFrame)
+    # eventObject = {"value": None}
 
-    classificationFrame, classificationDict = makeClassificationFrame(eventFrame, configuration)
-    classificationFrame.pack()
+    # dtStartFrame, dtStartDict = makeDtFrame(eventFrame, configuration, "start")
+    # dtStartFrame.pack(anchor="w")
 
-    commentFrame, commentDict = makeCommentFrame(eventFrame, configuration)
-    commentFrame.pack()
+    # dtendFrame, dtEndDict = makeDtFrame(eventFrame, configuration, "end")
+    # dtendFrame.pack(anchor="w")
 
-    descriptionFrame, descriptionDict = makeDescriptionFrame(eventFrame, configuration)
-    descriptionFrame.pack()
+    # attachmentFrame, attachmentDict = makeAttachmentFrame(eventFrame, configuration)
+    # attachmentFrame.pack(anchor="w")
 
-    geoFrame, geoDict = makeGeoFrame(eventFrame, configuration)
-    geoFrame.pack()
+    # categoriesFrame, categoriesDict = makeCategoriesFrame(eventFrame, configuration)
+    # categoriesFrame.pack(anchor="w")
 
-    locationFrame, locationDict = makeLocationFrame(eventFrame, configuration)
-    locationFrame.pack()
+    # classificationFrame, classificationDict = makeClassificationFrame(eventFrame, configuration)
+    # classificationFrame.pack(anchor="w")
+
+    # commentFrame, commentDict = makeCommentFrame(eventFrame, configuration)
+    # commentFrame.pack(anchor="w")
+
+    # descriptionFrame, descriptionDict = makeDescriptionFrame(eventFrame, configuration)
+    # descriptionFrame.pack(anchor="w")
+
+    # geoFrame, geoDict = makeGeoFrame(eventFrame, configuration)
+    # geoFrame.pack(anchor="w")
+
+    # locationFrame, locationDict = makeLocationFrame(eventFrame, configuration)
+    # locationFrame.pack(anchor="w")
    
-    priorityFrame, priorityDict = makePriorityFrame(eventFrame)
-    priorityFrame.pack()
+    # priorityFrame, priorityDict = makePriorityFrame(eventFrame)
+    # priorityFrame.pack(anchor="w")
 
-    resourceFrame, resourceDict = makeResourceFrame(eventFrame, configuration)
-    resourceFrame.pack()
+    # resourceFrame, resourceDict = makeResourceFrame(eventFrame, configuration)
+    # resourceFrame.pack(anchor="w")
 
-    statusFrame, statusDict = makeStatusFrame(eventFrame, configuration, "event")
-    statusFrame.pack()
+    # statusFrame, statusDict = makeStatusFrame(eventFrame, configuration, "event")
+    # statusFrame.pack(anchor="w")
 
-    durationFrame, durationDict = makeDurationFrame(eventFrame, configuration)
-    durationFrame.pack()
+    # durationFrame, durationDict = makeDurationFrame(eventFrame, configuration)
+    # durationFrame.pack(anchor="w")
 
-    transpFrame, transpDict = makeTranspFrame(eventFrame, configuration)
-    transpFrame.pack()
+    # transpFrame, transpDict = makeTranspFrame(eventFrame, configuration)
+    # transpFrame.pack(anchor="w")
 
-    def createEvent():
-        tmstmp = datetime.now()
+    # attendeeFrame = makeAttendeeFrame(eventFrame, configuration, "event")
+    # attendeeFrame.pack(anchor="w")
 
-        summary = None
-        if (summaryDict["value"].get() != ""):
-            summary = Summary(summaryDict["value"].get(), summaryDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], summaryDict["language"].get()))
-        else:
-            raise Exception(f"An event has to show a title, please put a title")
+    # def createEvent():
+    #     tmstmp = datetime.now()
 
-        dtstart = None
-        if (dtStartDict["date-status"].get()):
-            truc = dtStartDict["date"].get().split('/')
-            dtstart = datetime.strptime(f"{truc[0]}-{truc[1]}-{truc[2]}", "%Y-%m-%d")
-            if (dtStartDict["time-status"].get()):
-                dtstart = dtstart.replace(
-                    hour=int(dtStartDict["hour"].get()),
-                    minute=int(dtStartDict["minute"].get()),
-                    second=int(dtStartDict["second"].get())
-                )
+    #     summary = None
+    #     if (summaryDict["value"].get() != ""):
+    #         summary = Summary(summaryDict["value"].get(), summaryDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], summaryDict["language"].get()))
+    #     else:
+    #         raise Exception(f"An event has to show a title, please put a title")
 
-        dtend = None
-        if (dtEndDict["date-status"].get()):
-            truc = dtEndDict["date"].get().split('/')
-            dtend = datetime.strptime(f"{truc[0]}-{truc[1]}-{truc[2]}", "%Y-%m-%d")
-            if (dtEndDict["time-status"].get()):
-                dtend = dtend.replace(
-                    hour=int(dtEndDict["hour"].get()),
-                    minute=int(dtEndDict["minute"].get()),
-                    second=int(dtEndDict["second"].get())
-                )
+    #     dtstart = None
+    #     if (dtStartDict["date-status"].get()):
+    #         truc = dtStartDict["date"].get().split('/')
+    #         dtstart = datetime.strptime(f"{truc[0]}-{truc[1]}-{truc[2]}", "%Y-%m-%d")
+    #         if (dtStartDict["time-status"].get()):
+    #             dtstart = dtstart.replace(
+    #                 hour=int(dtStartDict["hour"].get()),
+    #                 minute=int(dtStartDict["minute"].get()),
+    #                 second=int(dtStartDict["second"].get())
+    #             )
 
-        categories = None
-        if (categoriesDict["state"].get() and len(categoriesDict["listbox"].curselection()) > 0):
-            categories = Categories([categoriesDict["listbox"].get(index) for index in categoriesDict["listbox"].curselection()])
+    #     dtend = None
+    #     if (dtEndDict["date-status"].get()):
+    #         truc = dtEndDict["date"].get().split('/')
+    #         dtend = datetime.strptime(f"{truc[0]}-{truc[1]}-{truc[2]}", "%Y-%m-%d")
+    #         if (dtEndDict["time-status"].get()):
+    #             dtend = dtend.replace(
+    #                 hour=int(dtEndDict["hour"].get()),
+    #                 minute=int(dtEndDict["minute"].get()),
+    #                 second=int(dtEndDict["second"].get())
+    #             )
 
-        attachment = None
-        if (attachmentDict["state"].get()):
-            attachment = Attachement(attachmentDict["value"].get(), typename=attachmentDict["fmttype"]["type"].get(), subtypename=attachmentDict["fmttype"]["subtype"].get())
+    #     categories = None
+    #     if (categoriesDict["state"].get() and len(categoriesDict["listbox"].curselection()) > 0):
+    #         categories = Categories([categoriesDict["listbox"].get(index) for index in categoriesDict["listbox"].curselection()])
 
-        classification = None
-        if (classificationDict["state"].get()):
-            classification = Classification(classificationDict["value"].get())
+    #     attachment = None
+    #     if (attachmentDict["state"].get()):
+    #         attachment = Attachement(attachmentDict["value"].get(), typename=attachmentDict["fmttype"]["type"].get(), subtypename=attachmentDict["fmttype"]["subtype"].get())
 
-        comment = None
-        if (commentDict["state"].get()):
-            comment = Comment(commentDict["value"].get("1.0", "end-1c"), commentDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], commentDict["language"].get()))
+    #     classification = None
+    #     if (classificationDict["state"].get()):
+    #         classification = Classification(classificationDict["value"].get())
 
-        description = None
-        if (descriptionDict["state"].get()):
-            description = Description(descriptionDict["value"].get("1.0", "end-1c"), descriptionDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], descriptionDict["language"].get()))
-        
-        geo = None
-        if (geoDict["state"].get()):
-            geo = Geo(float(geoDict["lat"].get()), (geoDict["long"].get()))
+    #     comment = None
+    #     if (commentDict["state"].get()):
+    #         comment = Comment(commentDict["value"].get("1.0", "end-1c"), commentDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], commentDict["language"].get()))
 
-        location = None
-        if (locationDict["state"].get()):
-            location = Location(locationDict["value"].get(), locationDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], locationDict["language"].get()))
+    #     description = None
+    #     if (descriptionDict["state"].get()):
+    #         description = Description(descriptionDict["value"].get("1.0", "end-1c"), descriptionDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], descriptionDict["language"].get()))
+    #     
+    #     geo = None
+    #     if (geoDict["state"].get()):
+    #         geo = Geo(float(geoDict["lat"].get()), (geoDict["long"].get()))
 
-        priority = None
-        if (priorityDict["state"].get()):
-            priority = Priority(int(priorityDict["value"].get()))
+    #     location = None
+    #     if (locationDict["state"].get()):
+    #         location = Location(locationDict["value"].get(), locationDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], locationDict["language"].get()))
 
-        # TODO: check why stringify doesn't work
-        resource = None
-        if (resourceDict["state"].get()):
-            resource = Resources(resourceDict["value"].get("1.0", "end-1c"), resourceDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], resourceDict["language"].get()))
+    #     priority = None
+    #     if (priorityDict["state"].get()):
+    #         priority = Priority(int(priorityDict["value"].get()))
 
-        status = None
-        if (statusDict["state"].get()):
-            status = Status(statusDict["value"].get())
+    #     # TODO: check why stringify doesn't work
+    #     resource = None
+    #     if (resourceDict["state"].get()):
+    #         resource = Resources(resourceDict["value"].get("1.0", "end-1c"), resourceDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], resourceDict["language"].get()))
 
-        transp = None
-        if (transpDict["state"].get()):
-            transp = Transparency(transpDict["value"].get())
+    #     status = None
+    #     if (statusDict["state"].get()):
+    #         status = Status(statusDict["value"].get())
 
-        duration = None
-        if (durationDict["value"].get()):
-            duration = Duration(
-                int(durationDict["week"].get()),
-                int(durationDict["day"].get()),
-                int(durationDict["hour"].get()),
-                int(durationDict["minute"].get()),
-                int(durationDict["second"].get())
-            )
+    #     transp = None
+    #     if (transpDict["state"].get()):
+    #         transp = Transparency(transpDict["value"].get())
 
-        end = None
-        if (dtend and duration):
-            raise Exception(f"Can't have an end date and a duration")
-        elif (not dtend and not duration):
-            raise Exception(f"An event has to got an end")
-        else:
-            if (not dtend):
-                end = duration
-            else:
-                end = dtend
+    #     duration = None
+    #     if (durationDict["value"].get()):
+    #         duration = Duration(
+    #             int(durationDict["week"].get()),
+    #             int(durationDict["day"].get()),
+    #             int(durationDict["hour"].get()),
+    #             int(durationDict["minute"].get()),
+    #             int(durationDict["second"].get())
+    #         )
 
-        event = Vevent(
-            tmstmp,
-            dtstart=dtstart,
-            end=end,
-            classification=classification,
-            description=description,
-            attach=attachment,
-            categories=categories,
-            comment=comment,
-            geo=geo,
-            location=location,
-            priority=priority,
-            # resources=[resource],
-            status=status,
-            title=summary,
-            transp=transp
-        )
-        print(event)
-        eventObject["value"] = event
+    #     end = None
+    #     if (dtend and duration):
+    #         raise Exception(f"Can't have an end date and a duration")
+    #     elif (not dtend and not duration):
+    #         raise Exception(f"An event has to got an end")
+    #     else:
+    #         if (not dtend):
+    #             end = duration
+    #         else:
+    #             end = dtend
+
+    #     event = Vevent(
+    #         tmstmp,
+    #         dtstart=dtstart,
+    #         end=end,
+    #         classification=classification,
+    #         description=description,
+    #         attach=attachment,
+    #         categories=categories,
+    #         comment=comment,
+    #         geo=geo,
+    #         location=location,
+    #         priority=priority,
+    #         # resources=[resource],
+    #         status=status,
+    #         title=summary,
+    #         transp=transp
+    #     )
+    #     print(event)
+    #     eventObject["value"] = event
 
 
-    addButton = tk.Button(eventFrame, text="Add event", command=createEvent)
-    addButton.pack()
+    # addButton = tk.Button(eventFrame, text="Add event", command=createEvent)
+    # addButton.pack(anchor="w")
 
-    return eventFrame, eventObject
+    # return eventFrame, eventObject
