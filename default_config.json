@@ -1,7 +1,8 @@
 {
     "general": {
         "width": 90,
-        "log-file": "log.txt"
+        "log-file": "log.txt",
+        "time-status": true
     },
     "categories": {
         "choices": [
@@ -856,6 +857,14 @@
         "choices": [
             "OPAQUE",
             "TRANSPARENT"
+        ]
+    },
+    "caladdress": {
+        "choices": [
+            {
+                "common-name": "Clovis Lefebvre",
+                "email": "clovis.lefebvre@epita.fr"
+            }
         ]
     }
 }

@@ -87,3 +87,146 @@ DEBUG [10/05/2026 11:21:48 AM]: Session ended
 DEBUG [10/05/2026 11:22:25 AM]: New session activated
 DEBUG [10/05/2026 11:22:27 AM]: New frame event opened
 DEBUG [10/05/2026 11:22:43 AM]: Session ended
+DEBUG [10/05/2026 11:26:35 AM]: New session activated
+DEBUG [10/05/2026 11:26:37 AM]: New frame event opened
+DEBUG [10/05/2026 11:26:47 AM]: Session ended
+DEBUG [10/05/2026 11:27:01 AM]: New session activated
+DEBUG [10/05/2026 11:27:03 AM]: New frame event opened
+DEBUG [10/05/2026 11:27:19 AM]: Session ended
+DEBUG [10/05/2026 11:29:04 AM]: New session activated
+DEBUG [10/05/2026 11:29:06 AM]: New frame event opened
+DEBUG [10/05/2026 11:29:10 AM]: Session ended
+DEBUG [10/05/2026 11:29:20 AM]: New session activated
+DEBUG [10/05/2026 11:29:23 AM]: New frame event opened
+DEBUG [10/05/2026 11:29:55 AM]: Session ended
+DEBUG [10/05/2026 11:31:33 AM]: New session activated
+DEBUG [10/05/2026 11:31:35 AM]: New frame event opened
+DEBUG [10/05/2026 11:31:38 AM]: Session ended
+DEBUG [10/05/2026 11:41:28 AM]: New session activated
+DEBUG [10/05/2026 11:41:30 AM]: New frame event opened
+DEBUG [10/05/2026 11:41:33 AM]: Session ended
+DEBUG [10/05/2026 11:43:14 AM]: New session activated
+DEBUG [10/05/2026 11:43:16 AM]: New frame event opened
+DEBUG [10/05/2026 11:43:32 AM]: Session ended
+DEBUG [10/05/2026 11:44:00 AM]: New session activated
+DEBUG [10/05/2026 11:44:02 AM]: New frame event opened
+DEBUG [10/05/2026 11:44:05 AM]: Session ended
+DEBUG [10/05/2026 11:44:15 AM]: New session activated
+DEBUG [10/05/2026 11:44:17 AM]: New frame event opened
+DEBUG [10/05/2026 11:44:52 AM]: New session activated
+DEBUG [10/05/2026 11:44:53 AM]: New frame event opened
+DEBUG [10/05/2026 11:45:01 AM]: Session ended
+DEBUG [10/05/2026 11:46:56 AM]: New session activated
+DEBUG [10/05/2026 11:46:58 AM]: New frame event opened
+DEBUG [10/05/2026 11:47:19 AM]: Session ended
+DEBUG [10/05/2026 11:49:13 AM]: New session activated
+DEBUG [10/05/2026 11:49:15 AM]: New frame event opened
+DEBUG [10/05/2026 11:49:19 AM]: Session ended
+DEBUG [10/05/2026 11:50:33 AM]: New session activated
+DEBUG [10/05/2026 11:50:35 AM]: New frame event opened
+DEBUG [10/05/2026 11:50:39 AM]: Session ended
+DEBUG [10/05/2026 11:51:36 AM]: New session activated
+DEBUG [10/05/2026 11:51:38 AM]: New frame event opened
+DEBUG [10/05/2026 11:51:59 AM]: Session ended
+DEBUG [10/05/2026 11:58:12 AM]: New session activated
+DEBUG [10/05/2026 11:58:14 AM]: New frame event opened
+DEBUG [10/05/2026 11:58:18 AM]: Session ended
+DEBUG [10/05/2026 11:58:26 AM]: New session activated
+DEBUG [10/05/2026 11:58:28 AM]: New frame event opened
+DEBUG [10/05/2026 11:58:34 AM]: Session ended
+DEBUG [10/05/2026 11:58:40 AM]: New session activated
+DEBUG [10/05/2026 11:58:42 AM]: New frame event opened
+DEBUG [10/05/2026 11:58:52 AM]: Session ended
+DEBUG [10/05/2026 12:00:04 PM]: New session activated
+DEBUG [10/05/2026 12:00:06 PM]: New frame event opened
+DEBUG [10/05/2026 12:00:10 PM]: Session ended
+DEBUG [10/05/2026 12:01:22 PM]: New session activated
+DEBUG [10/05/2026 12:01:24 PM]: New frame event opened
+DEBUG [10/05/2026 12:01:30 PM]: Session ended
+DEBUG [10/05/2026 12:01:53 PM]: New session activated
+DEBUG [10/05/2026 12:01:56 PM]: New frame event opened
+DEBUG [10/05/2026 12:02:18 PM]: New session activated
+DEBUG [10/05/2026 12:02:20 PM]: New frame event opened
+DEBUG [10/05/2026 12:03:11 PM]: New session activated
+DEBUG [10/05/2026 12:03:13 PM]: New frame event opened
+DEBUG [10/05/2026 12:03:42 PM]: Session ended
+DEBUG [10/05/2026 12:04:20 PM]: New session activated
+DEBUG [10/05/2026 12:04:22 PM]: New frame event opened
+DEBUG [10/05/2026 12:04:29 PM]: Session ended
+DEBUG [10/05/2026 12:43:35 PM]: New session activated
+DEBUG [10/05/2026 12:43:38 PM]: New frame event opened
+DEBUG [10/05/2026 12:43:44 PM]: Session ended
+DEBUG [10/05/2026 12:51:21 PM]: New session activated
+DEBUG [10/05/2026 12:51:23 PM]: New frame event opened
+DEBUG [10/05/2026 12:51:28 PM]: Session ended
+DEBUG [10/05/2026 12:51:36 PM]: New session activated
+DEBUG [10/05/2026 12:51:38 PM]: New frame event opened
+DEBUG [10/05/2026 12:51:43 PM]: Session ended
+DEBUG [10/05/2026 12:52:38 PM]: New session activated
+DEBUG [10/05/2026 12:52:40 PM]: New frame event opened
+DEBUG [10/05/2026 12:52:43 PM]: Session ended
+DEBUG [10/05/2026 12:54:24 PM]: New session activated
+DEBUG [10/05/2026 12:54:26 PM]: New frame event opened
+DEBUG [10/05/2026 12:54:32 PM]: Session ended
+DEBUG [10/05/2026 12:55:00 PM]: New session activated
+DEBUG [10/05/2026 12:55:02 PM]: New frame event opened
+DEBUG [10/05/2026 12:55:08 PM]: Session ended
+DEBUG [10/05/2026 12:55:24 PM]: New session activated
+DEBUG [10/05/2026 12:55:25 PM]: New frame event opened
+DEBUG [10/05/2026 12:55:28 PM]: Session ended
+DEBUG [10/05/2026 12:55:41 PM]: New session activated
+DEBUG [10/05/2026 12:55:43 PM]: New frame event opened
+DEBUG [10/05/2026 12:55:47 PM]: Session ended
+DEBUG [10/05/2026 12:57:02 PM]: New session activated
+DEBUG [10/05/2026 12:57:03 PM]: New frame event opened
+DEBUG [10/05/2026 12:57:14 PM]: New session activated
+DEBUG [10/05/2026 12:57:20 PM]: New frame event opened
+DEBUG [10/05/2026 12:58:41 PM]: New session activated
+DEBUG [10/05/2026 12:58:44 PM]: New frame event opened
+DEBUG [10/05/2026 12:58:50 PM]: Session ended
+DEBUG [10/05/2026 12:58:57 PM]: New session activated
+DEBUG [10/05/2026 12:58:59 PM]: New frame event opened
+DEBUG [10/05/2026 12:59:35 PM]: Session ended
+DEBUG [10/05/2026 01:06:00 PM]: New session activated
+DEBUG [10/05/2026 01:06:02 PM]: New frame event opened
+DEBUG [10/05/2026 01:06:07 PM]: Session ended
+DEBUG [10/05/2026 01:06:31 PM]: New session activated
+DEBUG [10/05/2026 01:06:35 PM]: New frame event opened
+DEBUG [10/05/2026 01:06:40 PM]: Session ended
+DEBUG [10/05/2026 01:07:09 PM]: New session activated
+DEBUG [10/05/2026 01:07:11 PM]: New frame event opened
+DEBUG [10/05/2026 01:07:19 PM]: Session ended
+DEBUG [10/05/2026 01:07:48 PM]: New session activated
+DEBUG [10/05/2026 01:07:50 PM]: New frame event opened
+DEBUG [10/05/2026 01:07:58 PM]: Session ended
+DEBUG [10/05/2026 01:09:29 PM]: New session activated
+DEBUG [10/05/2026 01:09:31 PM]: New frame event opened
+DEBUG [10/05/2026 01:09:52 PM]: Session ended
+DEBUG [10/05/2026 01:10:45 PM]: New session activated
+DEBUG [10/05/2026 01:10:47 PM]: New frame event opened
+DEBUG [10/05/2026 01:10:52 PM]: Session ended
+DEBUG [10/05/2026 01:13:56 PM]: New session activated
+DEBUG [10/05/2026 01:13:58 PM]: New frame event opened
+DEBUG [10/05/2026 01:14:01 PM]: Session ended
+DEBUG [10/05/2026 01:14:23 PM]: New session activated
+DEBUG [10/05/2026 01:14:25 PM]: New frame event opened
+DEBUG [10/05/2026 01:14:28 PM]: Session ended
+DEBUG [10/05/2026 01:14:42 PM]: New session activated
+DEBUG [10/05/2026 01:14:44 PM]: New frame event opened
+DEBUG [10/05/2026 01:15:21 PM]: Session ended
+DEBUG [10/05/2026 01:15:48 PM]: New session activated
+DEBUG [10/05/2026 01:15:51 PM]: New frame event opened
+DEBUG [10/05/2026 01:16:08 PM]: New session activated
+DEBUG [10/05/2026 01:16:09 PM]: New frame event opened
+DEBUG [10/05/2026 01:16:21 PM]: New session activated
+DEBUG [10/05/2026 01:16:23 PM]: New frame event opened
+DEBUG [10/05/2026 01:16:43 PM]: Session ended
+DEBUG [10/05/2026 01:18:18 PM]: New session activated
+DEBUG [10/05/2026 01:18:20 PM]: New frame event opened
+DEBUG [10/05/2026 01:18:34 PM]: Session ended
+DEBUG [10/05/2026 01:18:46 PM]: New session activated
+DEBUG [10/05/2026 01:18:47 PM]: New frame event opened
+DEBUG [10/05/2026 01:18:56 PM]: Session ended
+DEBUG [10/05/2026 01:20:10 PM]: New session activated
+DEBUG [10/05/2026 01:20:12 PM]: New frame event opened
+DEBUG [10/05/2026 01:20:14 PM]: Session ended

@@ -34,7 +34,41 @@ def makeEventFrame(masterFrame):
     summaryFrame.grid(column=0, row=0, sticky=tk.NW)
 
     statusFrame, statusValue = makeStatusFrame(main, "event")
-    statusFrame.grid(column=2, row=0, sticky=tk.NE)
+    statusFrame.grid(column=1, row=0, sticky=tk.NE)
+
+    dtStartFrame, dtStartDict = makeDtFrame(main, "start")
+    dtStartFrame.grid(column=0, row=1, sticky=tk.W)
+
+    endFrame = tk.Frame(main)
+    endChoice = tk.StringVar(value="")
+    dtButton = ttk.Radiobutton(endFrame, text="Date", value="date", variable=endChoice)
+    dtButton.pack()
+    durationButton = ttk.Radiobutton(endFrame, text="Duration", value="duration", variable=endChoice)
+    durationButton.pack()
+    # dtEndFrame, dtEndDict = makeDtFrame(main, "end")
+    # dtEndFrame.grid(column=1, row=1)
+    endFrame.grid(row=1, column=1, sticky=tk.E)
+
+    locationFrame, locationDict = makeLocationFrame(main)
+    locationFrame.grid(column=0, row=2, sticky=tk.W)
+
+    organizerFrame = makeAttendeeFrame(main, "event", "Organizer: ")
+    organizerFrame.grid(row=3, column=0, sticky=tk.W)
+
+    attendeesFrame = makeAttendeeFrame(main, "event", "Attendees: ")
+    attendeesFrame.grid(row=4, column=0, sticky=tk.W)
+
+    attachmentFrame, attachmentDict = makeAttachmentFrame(main)
+    attachmentFrame.grid(row=5, column=0, sticky=tk.W)
+
+    categoriesFrame, categoriesDict = makeCategoriesFrame(main)
+    categoriesFrame.grid(row=5, column=1, sticky=tk.E)
+
+    descriptionFrame, _ = makeDescriptionFrame(main)
+    descriptionFrame.grid(row=6, column=0, columnspan=2, sticky=tk.W)
+
+    label = tk.Label(main, text="More details")
+    label.grid(row=7, column=1, columnspan=2)
 
     return main
     # eventFrame = tk.Frame(masterFrame)
