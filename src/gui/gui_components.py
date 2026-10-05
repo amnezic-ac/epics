@@ -19,7 +19,7 @@ def findLangIdFromLangValue(configuration, value_):
 def makeEventFrame(masterFrame):
     logging.debug("New frame event opened")
 
-    title = tk.StringVar(value="")
+    title = tk.StringVar(value=None)
     main = tk.Toplevel(masterFrame)
     def updateEventTitle(*args):
         main.title(title.get())
@@ -31,10 +31,10 @@ def makeEventFrame(masterFrame):
         main.columnconfigure(i, weight = 1)
 
     summaryFrame, summaryDict = makeSummaryFrame(main, title)
-    summaryFrame.grid(column=0, row=0, sticky=tk.NW)
+    summaryFrame.grid(column=0, row=0, sticky=tk.W)
 
     statusFrame, statusValue = makeStatusFrame(main, "event")
-    statusFrame.grid(column=1, row=0, sticky=tk.NE)
+    statusFrame.grid(column=1, row=0, sticky=tk.E)
 
     dtStartFrame, dtStartDict = makeDtFrame(main, "start")
     dtStartFrame.grid(column=0, row=1, sticky=tk.W)
@@ -67,8 +67,36 @@ def makeEventFrame(masterFrame):
     descriptionFrame, _ = makeDescriptionFrame(main)
     descriptionFrame.grid(row=6, column=0, columnspan=2, sticky=tk.W)
 
-    label = tk.Label(main, text="More details")
-    label.grid(row=7, column=1, columnspan=2)
+    labelPlus = tk.Label(main, text="More details")
+    labelPlus.grid(row=7, column=0, columnspan=2, sticky=tk.EW)
+
+    informationsFrame = tk.Frame(main)
+
+    classificationFrame, _ = makeClassificationFrame(informationsFrame)
+    classificationFrame.grid(row=0, column=0, sticky=tk.W)
+
+    priorityFrame, _ = makePriorityFrame(informationsFrame)
+    priorityFrame.grid(row=0, column=1, sticky=tk.E)
+
+    for i in range(9):
+        informationsFrame.rowconfigure(i, weight=1)
+    for i in range(2):
+        informationsFrame.columnconfigure(i, weight=1)
+    labelMinus = tk.Label(informationsFrame, text="Less details")
+    labelMinus.grid(row=8, column=0, columnspan=2, sticky=tk.EW)
+    
+    state = tk.BooleanVar(value=False)
+    def toggleHiddableFrame(event):
+        actual = not state.get()
+        if (actual):
+            labelPlus.grid_forget()
+            informationsFrame.grid(row=7, column=0, columnspan=2, sticky=tk.EW)
+        else:
+            informationsFrame.grid_forget()
+            labelPlus.grid(row=7, column=0, columnspan=2, sticky=tk.EW)
+        state.set(actual)
+    labelPlus.bind('<Double-1>', toggleHiddableFrame)
+    labelMinus.bind('<Double-1>', toggleHiddableFrame)
 
     return main
     # eventFrame = tk.Frame(masterFrame)

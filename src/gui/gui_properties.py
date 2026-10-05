@@ -112,32 +112,20 @@ def makeCategoriesFrame(masterFrame):
 
     return categoriesFrame, categoriesDict
 
-def makeClassificationFrame(masterFrame, configuration):
+def makeClassificationFrame(masterFrame):
     classificationFrame = tk.Frame(masterFrame)
 
+    tk.Label(classificationFrame, text="Classification").pack(side="left")
     value = tk.StringVar(value="")
-    hiddableFrame = tk.Frame(classificationFrame)
     combobox = ttk.Combobox(
-        hiddableFrame,
+        classificationFrame,
         values=configuration["classification"]["choices"],
         state="readonly",
         textvariable=value
     )
     combobox.pack()
 
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            checkbutton.config(text="Classification : ")
-            hiddableFrame.pack(side="right")
-        else:
-            checkbutton.config(text="Classification ? ")
-            hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(classificationFrame, text="Classification ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
-    
     classificationDict = {
-        "state": buttonState,
         "value": combobox
     }
 
@@ -318,24 +306,12 @@ def makePercentFrame(masterFrame):
 def makePriorityFrame(masterFrame):
     priorityFrame = tk.Frame(masterFrame)
 
-    hiddableFrame = tk.Frame(priorityFrame)
+    tk.Label(priorityFrame, text="Priority level: ").pack(side="left")
     priorityVar = tk.StringVar(value="")
-    latSpinbox = ttk.Spinbox(hiddableFrame, from_=0, to=9, increment=1, textvariable=priorityVar)
-    latSpinbox.pack(side="right")
-
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            checkbutton.config(text="Priority level : ")
-            hiddableFrame.pack(side="right")
-        else:
-            checkbutton.config(text="Priority level ? ")
-            hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(priorityFrame, text="Priority level ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
+    prioritySpinbox = ttk.Spinbox(priorityFrame, from_=0, to=9, increment=1, textvariable=priorityVar, wrap=True)
+    prioritySpinbox.pack(side="right")
 
     priorityDict = {
-        "state": buttonState,
         "value": priorityVar
     }
 
