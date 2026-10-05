@@ -205,31 +205,19 @@ def makeDescriptionFrame(masterFrame):
 
     return descriptionFrame, descriptionDict
 
-def makeGeoFrame(masterFrame, configuration):
+def makeGeoFrame(masterFrame):
     geoFrame = tk.Frame(masterFrame)
 
-    hiddableFrame = tk.Frame(geoFrame)
-    latVar = tk.StringVar(value="")
-    latSpinbox = ttk.Spinbox(hiddableFrame, from_=-90.000000, to=90.000000, wrap=True, increment=0.000001, textvariable=latVar)
+    tk.Label(geoFrame, text="Geographical position: ").pack(side="left")
+    latVar = tk.StringVar(value=None)
+    latSpinbox = ttk.Spinbox(geoFrame, from_=-90.000000, to=90.000000, wrap=True, increment=0.000001, textvariable=latVar)
     latSpinbox.pack(side="right")
-    tk.Label(hiddableFrame, text=" ; ").pack(side="right")
-    longVar = tk.StringVar(value="")
-    longSpinbox = ttk.Spinbox(hiddableFrame, from_=-180.000000, to=180.000000, wrap=True, increment=0.000001, textvariable=longVar)
+    tk.Label(geoFrame, text=" ; ").pack(side="right")
+    longVar = tk.StringVar(value=None)
+    longSpinbox = ttk.Spinbox(geoFrame, from_=-180.000000, to=180.000000, wrap=True, increment=0.000001, textvariable=longVar)
     longSpinbox.pack(side="right")
 
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            checkbutton.config(text="Geographic position : ")
-            hiddableFrame.pack(side="right")
-        else:
-            checkbutton.config(text="Geographic position ? ")
-            hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(geoFrame, text="Geographic position ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
-
     geoDict = {
-        "state": buttonState,
         "lat": latVar,
         "long": longVar
     }
@@ -535,30 +523,20 @@ def makeDurationFrame(masterFrame, configuration):
 
     return durationFrame, duration
 
-def makeTranspFrame(masterFrame, configuration):
+def makeTranspFrame(masterFrame):
     transpFrame = tk.Frame(masterFrame)
 
-    hiddableFrame = tk.Frame(transpFrame)
-    value = tk.StringVar(value="")
+    value = tk.StringVar(value=configuration["transparency"]["choices"][0])
+    tk.Label(transpFrame, text="Transparency of the event: ").pack(side="left")
     transpCombobox = ttk.Combobox(
-        hiddableFrame,
+        transpFrame,
         values=configuration["transparency"]["choices"],
         state="readonly",
         textvariable=value
     )
     transpCombobox.pack()
 
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            hiddableFrame.pack(side="right")
-        else:
-            hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(transpFrame, text="Transparency", variable=buttonState, onvalue=True, offvalue=False, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
-
     transpDict = {
-        "state": buttonState,
         "value": value
     }
 

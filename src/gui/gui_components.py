@@ -67,10 +67,17 @@ def makeEventFrame(masterFrame):
     descriptionFrame, _ = makeDescriptionFrame(main)
     descriptionFrame.grid(row=6, column=0, columnspan=2, sticky=tk.W)
 
-    labelPlus = tk.Label(main, text="More details")
-    labelPlus.grid(row=7, column=0, columnspan=2, sticky=tk.EW)
+    labelPlus = tk.Label(main, text="Show more ?")
+    labelPlus.grid(row=7, column=0, sticky=tk.EW)
+
+    submitButton = tk.Button(main, text="Confirm")
+    submitButton.grid(row=7, column=1)
 
     informationsFrame = tk.Frame(main)
+    for i in range(9):
+        informationsFrame.rowconfigure(i, weight=1)
+    for i in range(2):
+        informationsFrame.columnconfigure(i, weight=1)
 
     classificationFrame, _ = makeClassificationFrame(informationsFrame)
     classificationFrame.grid(row=0, column=0, sticky=tk.W)
@@ -78,12 +85,16 @@ def makeEventFrame(masterFrame):
     priorityFrame, _ = makePriorityFrame(informationsFrame)
     priorityFrame.grid(row=0, column=1, sticky=tk.E)
 
-    for i in range(9):
-        informationsFrame.rowconfigure(i, weight=1)
-    for i in range(2):
-        informationsFrame.columnconfigure(i, weight=1)
-    labelMinus = tk.Label(informationsFrame, text="Less details")
-    labelMinus.grid(row=8, column=0, columnspan=2, sticky=tk.EW)
+    tranparencyFrame, _ = makeTranspFrame(informationsFrame)
+    tranparencyFrame.grid(row=1, column=0, sticky=tk.W)
+
+    geoFrame, _ = makeGeoFrame(informationsFrame)
+    geoFrame.grid(row=1, column=1, sticky=tk.E)
+
+    labelMinus = tk.Label(informationsFrame, text="Show less ?")
+    labelMinus.grid(row=8, column=0)
+    submitButton2 = tk.Button(informationsFrame, text="Confirm")
+    submitButton2.grid(row=8, column=1)
     
     state = tk.BooleanVar(value=False)
     def toggleHiddableFrame(event):
@@ -97,6 +108,42 @@ def makeEventFrame(masterFrame):
         state.set(actual)
     labelPlus.bind('<Double-1>', toggleHiddableFrame)
     labelMinus.bind('<Double-1>', toggleHiddableFrame)
+
+    def submit():
+        # mandatory properties
+        summary = None  # not a mandatory property in theory but got no sense withtout it
+        if (not summaryDict["value"].get()):
+            raise Exception(f"The event has to got a title")
+        summary = summaryDict["value"].get()
+
+        dtstart = None
+        if (not dtStartDict["date"].get()):
+            raise Exception(f"An event has to got a start date")
+        else:
+            truc = dtStartDict["date"].get().split('/')
+            dtstart = datetime.strptime(f"{truc[0]}-{truc[1]}-{truc[2]}", "%Y-%m-%d")
+            if (dtStartDict["time-status"].get()):
+                dtstart = dtstart.replace(
+                    hour=int(dtStartDict["hour"].get()),
+                    minute=int(dtStartDict["minute"].get()),
+                    second=int(dtStartDict["second"].get())
+                )
+
+
+        tmstamp = datetime.now()
+        event = Vevent(
+            tmstamp,
+            dtstart,
+            tmstamp
+        )
+        print(event)
+
+    submitButton.config(
+        command=submit
+    )
+    submitButton2.config(
+        command=submit
+    )
 
     return main
     # eventFrame = tk.Frame(masterFrame)
