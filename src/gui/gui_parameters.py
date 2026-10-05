@@ -53,7 +53,7 @@ def makeCommonNameFrame(masterFrame):
 
     return  commonNameFrame, commonNameInput
 
-def makeCutypeFrame(masterFrame, configuration):
+def makeCutypeFrame(masterFrame):
     cutypeFrame = tk.Frame(masterFrame)
 
     hiddableFrame = tk.Frame(cutypeFrame)
@@ -204,7 +204,7 @@ def makeDirFrame(masterFrame):
 
     return dirFrame, dirInput
 
-def makeEncodingFrame(masterFrame, configuration):
+def makeEncodingFrame(masterFrame):
     encodingFrame = tk.Frame(masterFrame)
 
     hiddableFrame = tk.Frame(encodingFrame)
@@ -319,7 +319,7 @@ def makeFmtTypeFrame(masterFrame):
 
     return fmtTypeFrame, fmtTypeInput
 
-def makeFreeBusyTimeFrame(masterFrame, configuration):
+def makeFreeBusyTimeFrame(masterFrame):
     freeBusyTimeFrame = tk.Frame(masterFrame)
 
     hiddableFrame = tk.Frame(freeBusyTimeFrame)
@@ -428,7 +428,7 @@ def makeLanguageFrame(masterFrame):
 
     return languageFrame, languageInput
 
-def makeMemberFrame(masterFrame, configuration):
+def makeMemberFrame(masterFrame):
     memberFrame = tk.Frame(masterFrame)
 
     hiddableFrame = tk.Frame(memberFrame)
@@ -502,7 +502,7 @@ def makeMemberFrame(masterFrame, configuration):
 
     return memberFrame, memberDict
 
-def makePartstatFrame(masterFrame, configuration, eventType: str):
+def makePartstatFrame(masterFrame, eventType: str):
     if (eventType not in ["event", "todo", "journal"]):
         raise Exception(f"Partstat parameter could only be used on an event, a todo or a journal, not a {eventType}")
 
@@ -571,7 +571,7 @@ def makePartstatFrame(masterFrame, configuration, eventType: str):
 
     return partstatFrame, partstatDict
 
-def makeRoleFrame(masterFrame, configuration):
+def makeRoleFrame(masterFrame):
     roleFrame = tk.Frame(masterFrame)
 
     hiddableFrame = tk.Frame(roleFrame)
@@ -638,7 +638,7 @@ def makeRoleFrame(masterFrame, configuration):
 
     return roleFrame, roleInput
 
-def makeRelationshipFrame(masterFrame, configuration):
+def makeRelationshipFrame(masterFrame):
     relationshipFrame = tk.Frame(masterFrame)
 
     hiddableFrame = tk.Frame(relationshipFrame)
@@ -704,7 +704,7 @@ def makeRelationshipFrame(masterFrame, configuration):
 
     return relationshipFrame, relationshipInput
 
-def makeRsvpFrame(masterFrame, configuration):
+def makeRsvpFrame(masterFrame):
     rsvpFrame = tk.Frame(masterFrame)
 
     hiddableFrame = tk.Frame(rsvpFrame)

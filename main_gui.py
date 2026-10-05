@@ -15,7 +15,10 @@ root = tk.Tk()
 
 menubar = tk.Menu(root)
 filemenu = tk.Menu(menubar, tearoff=0)
-filemenu.add_command(label="New event", command=lambda: makeEventFrame(root))
+def createEvent(masterFrame):
+    eventFrame, eventDict = makeEventFrame(masterFrame)
+
+filemenu.add_command(label="New event", command=lambda: createEvent(root))
 filemenu.add_command(label="New task", command=lambda: logging.debug("New task frame opened"))
 filemenu.add_command(label="New alarm", command=lambda: logging.debug("New alaram opened"))
 filemenu.add_command(label="New journal", command=lambda: logging.debug("New journal frame opened"))

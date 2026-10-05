@@ -40,13 +40,28 @@ def makeEventFrame(masterFrame):
     dtStartFrame.grid(column=0, row=1, sticky=tk.W)
 
     endFrame = tk.Frame(main)
+    endFrame.rowconfigure(0)
+    endFrame.rowconfigure(1)
+    endFrame.columnconfigure(0)
+    endFrame.columnconfigure(1)
     endChoice = tk.StringVar(value="")
-    dtButton = ttk.Radiobutton(endFrame, text="Date", value="date", variable=endChoice)
-    dtButton.pack()
-    durationButton = ttk.Radiobutton(endFrame, text="Duration", value="duration", variable=endChoice)
-    durationButton.pack()
-    # dtEndFrame, dtEndDict = makeDtFrame(main, "end")
-    # dtEndFrame.grid(column=1, row=1)
+    dtendFrame, dtendDict = makeDtFrame(endFrame, "end")
+    durationFrame, durationDict = makeDurationFrame(endFrame)
+    durationUsed = tk.BooleanVar(value=False)
+    def toggleDtFrame():
+        durationUsed.set(False)
+        dtendFrame.grid(row=0, column=1)
+        if (durationFrame):
+            durationFrame.grid_forget()
+    dtButton = ttk.Radiobutton(endFrame, text="Date", value="date", variable=endChoice, command=toggleDtFrame)
+    dtButton.grid(row=0, column=0, sticky=tk.W)
+    def toggleDurationFrame():
+        durationUsed.set(True)
+        durationFrame.grid(row=1, column=1)
+        if (dtendFrame):
+            dtendFrame.grid_forget()
+    durationButton = ttk.Radiobutton(endFrame, text="Duration", value="duration", variable=endChoice, command=toggleDurationFrame)
+    durationButton.grid(row=1, column=0, sticky=tk.W)
     endFrame.grid(row=1, column=1, sticky=tk.E)
 
     locationFrame, locationDict = makeLocationFrame(main)
@@ -64,7 +79,7 @@ def makeEventFrame(masterFrame):
     categoriesFrame, categoriesDict = makeCategoriesFrame(main)
     categoriesFrame.grid(row=5, column=1, sticky=tk.E)
 
-    descriptionFrame, _ = makeDescriptionFrame(main)
+    descriptionFrame, descriptionDict = makeDescriptionFrame(main)
     descriptionFrame.grid(row=6, column=0, columnspan=2, sticky=tk.W)
 
     labelPlus = tk.Label(main, text="Show more ?")
@@ -79,17 +94,20 @@ def makeEventFrame(masterFrame):
     for i in range(2):
         informationsFrame.columnconfigure(i, weight=1)
 
-    classificationFrame, _ = makeClassificationFrame(informationsFrame)
+    classificationFrame, classificationDict = makeClassificationFrame(informationsFrame)
     classificationFrame.grid(row=0, column=0, sticky=tk.W)
 
-    priorityFrame, _ = makePriorityFrame(informationsFrame)
+    priorityFrame, priorityDict = makePriorityFrame(informationsFrame)
     priorityFrame.grid(row=0, column=1, sticky=tk.E)
 
-    tranparencyFrame, _ = makeTranspFrame(informationsFrame)
+    tranparencyFrame, transpDict = makeTranspFrame(informationsFrame)
     tranparencyFrame.grid(row=1, column=0, sticky=tk.W)
 
-    geoFrame, _ = makeGeoFrame(informationsFrame)
+    geoFrame, geoDict = makeGeoFrame(informationsFrame)
     geoFrame.grid(row=1, column=1, sticky=tk.E)
+
+    commentFrame, commentDict = makeCommentFrame(informationsFrame)
+    commentFrame.grid(column=0, row=4, columnspan=2, sticky=tk.EW)
 
     labelMinus = tk.Label(informationsFrame, text="Show less ?")
     labelMinus.grid(row=8, column=0)
@@ -109,12 +127,13 @@ def makeEventFrame(masterFrame):
     labelPlus.bind('<Double-1>', toggleHiddableFrame)
     labelMinus.bind('<Double-1>', toggleHiddableFrame)
 
+    eventDict = {"value":None}
     def submit():
         # mandatory properties
         summary = None  # not a mandatory property in theory but got no sense withtout it
         if (not summaryDict["value"].get()):
             raise Exception(f"The event has to got a title")
-        summary = summaryDict["value"].get()
+        summary = Summary(summaryDict["value"].get())
 
         dtstart = None
         if (not dtStartDict["date"].get()):
@@ -128,15 +147,101 @@ def makeEventFrame(masterFrame):
                     minute=int(dtStartDict["minute"].get()),
                     second=int(dtStartDict["second"].get())
                 )
+        
+        end = None
+        if (durationUsed):
+            end = Duration(
+                int(durationDict["week"].get()),
+                int(durationDict["day"].get()),
+                int(durationDict["hour"].get()),
+                int(durationDict["minute"].get()),
+                int(durationDict["second"].get())
+            )
+        else:
+            truc = dtEndDict["date"].get().split('/')
+            end = datetime.strptime(f"{truc[0]}-{truc[1]}-{truc[2]}", "%Y-%m-%d")
+            if (dtEndDict["time-status"].get()):
+                dtend = dtend.replace(
+                    hour=int(dtEndDict["hour"].get()),
+                    minute=int(dtEndDict["minute"].get()),
+                    second=int(dtEndDict["second"].get())
+                )
+
+        categories = None
+        if (len(categoriesDict["listbox"].curselection()) > 0):
+            categories = Categories([categoriesDict["listbox"].get(index) for index in categoriesDict["listbox"].curselection()])
+
+        # attachment = None
+        # if (attachmentDict["state"].get()):
+        #     attachment = Attachement(attachmentDict["value"].get(), typename=attachmentDict["fmttype"]["type"].get(), subtypename=attachmentDict["fmttype"]["subtype"].get())
+
+        classification = None
+        if (classificationDict["value"].get()):
+            classification = Classification(classificationDict["value"].get())
+
+        comment = None
+        if (commentDict["value"].get("1.0", "end-1c")):
+            comment = Comment(commentDict["value"].get("1.0", "end-1c"), commentDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], commentDict["language"].get()))
+
+        description = None
+        if (descriptionDict["value"].get("1.0", "end-1c")):
+            description = Description(descriptionDict["value"].get("1.0", "end-1c"), descriptionDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], descriptionDict["language"].get()))
+        
+        geo = None
+        if (geoDict["lat"].get() and geoDict["long"].get()):
+            geo = Geo(float(geoDict["lat"].get()), (geoDict["long"].get()))
+
+        location = None
+        if (locationDict["value"].get("1.0", "end-1c")):
+            location = Location(locationDict["value"].get("1.0", "end-1c"), locationDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], locationDict["language"].get()))
+
+        priority = None
+        if (priorityDict["value"].get()):
+            priority = Priority(int(priorityDict["value"].get()))
+
+        # TODO: check why stringify doesn't work
+        # resource = None
+        # if (resourceDict["state"].get()):
+        #     resource = Resources(resourceDict["value"].get("1.0", "end-1c"), resourceDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], resourceDict["language"].get()))
+
+        status = None
+        if (statusValue.get()):
+            status = Status(statusValue.get())
+
+        transp = None
+        if (transpDict["value"].get()):
+            transp = Transparency(transpDict["value"].get())
+
+        duration = None
 
 
         tmstamp = datetime.now()
         event = Vevent(
             tmstamp,
             dtstart,
-            tmstamp
+            end,
+            classification,
+            tmstamp,
+            description,
+            geo,
+            datetime.now(),
+            location,
+            None,
+            priority,
+            None,
+            status,
+            summary,
+            transp,
+            None,
+            None,
+            categories,
+            comment,
+            None,
+            None
         )
+        eventDict["value"] = event
         print(event)
+        logging.debug(f"\"{title.get()}\" event has successfully been created")
 
     submitButton.config(
         command=submit
@@ -145,7 +250,7 @@ def makeEventFrame(masterFrame):
         command=submit
     )
 
-    return main
+    return main, eventDict
     # eventFrame = tk.Frame(masterFrame)
     # eventObject = {"value": None}
 
