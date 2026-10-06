@@ -1,4 +1,4 @@
-from src.backend.properties import Uid, Categories, Classification, Comment, Description, Geo, Location, Priority, Resources, Status, Summary, Duration, Transparency, Attachement, Atttendee, Comment, Contact
+from src.backend.properties import Uid, Categories, Classification, Comment, Description, Geo, Location, Priority, Resources, Status, Summary, Duration, Transparency, Attachement, Atttendee, Comment, Contact, Url
 from src.backend.components.component import Component
 from datetime import datetime, timedelta
 
@@ -30,7 +30,8 @@ class Vevent(Component):
         categories: Categories = None,
         comment: [Comment] = None,
         contact: [Contact] = None,
-        resources: [Resources] = None
+        resources: [Resources] = None,
+        url: Url = None
         ):
         ### mandatory
         self.dtstamp = dtstamp
@@ -63,8 +64,9 @@ class Vevent(Component):
         self.comment = comment
         self.contact = contact
         self.resources = resources
+        self.url = url
 
-        ### TODO: seq, url, recurid, rrule, exdate, rstatus, related, rdate
+        ### TODO: seq, recurid, rrule, exdate, rstatus, related, rdate
 
 
 

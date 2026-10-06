@@ -826,26 +826,6 @@
             "CANCELLED"
         ]
     },
-    "dtend": {
-        "datetime-default": false,
-        "uncheckedText": "End date ? ",
-        "checkedText": "End date : "
-    },
-    "dtdue": {
-        "datetime-default": false,
-        "uncheckedText": "Due date ? ",
-        "checkedText": "Due date : "
-    },
-    "dtcompleted": {
-        "datetime-default": false,
-        "uncheckedText": "Completed date ? ",
-        "checkedText": "Completed date : "
-    },
-    "dtstart": {
-        "datetime-default": false,
-        "uncheckedText": "Start date ? ",
-        "checkedText": "Start date : "
-    },
     "duration": {
         "week-text": "w ",
         "day-text": "d ",
@@ -859,11 +839,24 @@
             "TRANSPARENT"
         ]
     },
-    "caladdress": {
+    "attendees": {
+        "height": 5,
         "choices": [
             {
                 "common-name": "Clovis Lefebvre",
                 "email": "clovis.lefebvre@epita.fr"
+            },
+            {
+                "common-name": "Cyril Schmitt",
+                "email": "cyril.schmitt@epita.fr"
+            },
+            {
+                "common-name": "Lo\u00efcia Ribeiro",
+                "email": "loicia.ribeiro@epita.fr"
+            },
+            {
+                "common-name": "Alexandre Peltot",
+                "email": "alexandre.peltot@epita.fr"
             }
         ]
     }

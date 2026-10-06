@@ -537,30 +537,45 @@ def makeTranspFrame(masterFrame):
     return transpFrame, transpDict
 
 def makeAttendeeFrame(masterFrame, eventType: str, labelText: str):
-    attendeeFrame = tk.Frame(masterFrame)
+    frame = tk.Frame(masterFrame)
 
-    userFrame = tk.Frame(attendeeFrame)
-
-    hiddableFrame = tk.Frame(attendeeFrame)
-    cutypeFrame, cutypeDict = makeCutypeFrame(hiddableFrame)
-    cutypeFrame.pack()
-
-    label = tk.Label(attendeeFrame, text=f"{labelText}")
-    state = tk.BooleanVar(value=False)
-    def toggleHiddableFrame(event):
-        actual = not state.get()
-        if (actual):
-            hiddableFrame.pack(side="bottom")
-        else:
-            hiddableFrame.pack_forget()
-        state.set(actual)
-
-    label.bind('<Double-1>', toggleHiddableFrame)
+    label = tk.Label(frame, text=f"{labelText}")
     label.pack(side="left")
+    listbox = tk.Listbox(
+        frame,
+        selectmode="multiple" if labelText != "Organizer: " else "single",
+        height=min(configuration["attendees"]["height"], len(configuration["attendees"]["choices"]))
+    )
 
-    value = tk.StringVar(value="ORGANIZER ENTRY (TODO)")
-    userInput = tk.Entry(attendeeFrame, textvariable=value)
-    userInput.pack()
+    for i in range(len(configuration["attendees"]["choices"])):
+        listbox.insert(i, configuration["attendees"]["choices"][i]["common-name"])
+
+    listbox.pack()
+
+    return frame, listbox
+
+    # userFrame = tk.Frame(attendeeFrame)
+
+    # hiddableFrame = tk.Frame(attendeeFrame)
+    # cutypeFrame, cutypeDict = makeCutypeFrame(hiddableFrame)
+    # cutypeFrame.pack()
+
+    # label = tk.Label(attendeeFrame, text=f"{labelText}")
+    # state = tk.BooleanVar(value=False)
+    # def toggleHiddableFrame(event):
+    #     actual = not state.get()
+    #     if (actual):
+    #         hiddableFrame.pack(side="bottom")
+    #     else:
+    #         hiddableFrame.pack_forget()
+    #     state.set(actual)
+
+    # label.bind('<Double-1>', toggleHiddableFrame)
+    # label.pack(side="left")
+
+    # value = tk.StringVar(value="ORGANIZER ENTRY (TODO)")
+    # userInput = tk.Entry(attendeeFrame, textvariable=value)
+    # userInput.pack()
 
     # memberFrame, memberDict = makeMemberFrame(hiddableFrame, configuration)
     # memberFrame.pack()
@@ -584,3 +599,13 @@ def makeAttendeeFrame(masterFrame, eventType: str, labelText: str):
     # languageFrame.pack()
 
     return attendeeFrame
+
+def makeURLFrame(master):
+    frame = tk.Frame(master)
+
+    tk.Label(frame, text="URL: ").pack(side="left")
+    value = tk.StringVar(value="")
+    entry = tk.Entry(frame, textvariable=value)
+    entry.pack(side="right")
+
+    return frame, value

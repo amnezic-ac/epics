@@ -350,3 +350,11 @@ class Organizer(Property):
 
         result += f":{self.value}"
         return result
+
+# TODO: check that value complies with RFC 3986
+class Url(Property):
+    def __init__(self, value: str):
+        self.value = value
+
+    def __str__(self):
+        return f"URL:{self.value}"
