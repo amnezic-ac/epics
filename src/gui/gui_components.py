@@ -184,54 +184,56 @@ def makeEventFrame(masterFrame):
                     second=int(dtEndDict["second"].get())
                 )
 
+        # optional properties
         categories = None
-        if (len(categoriesDict["listbox"].curselection()) > 0):
-            categories = Categories([categoriesDict["listbox"].get(index) for index in categoriesDict["listbox"].curselection()])
-
-        # attachment = None
-        # if (attachmentDict["state"].get()):
-        #     attachment = Attachement(attachmentDict["value"].get(), typename=attachmentDict["fmttype"]["type"].get(), subtypename=attachmentDict["fmttype"]["subtype"].get())
-
         classification = None
-        if (classificationDict["value"].get()):
-            classification = Classification(classificationDict["value"].get())
-
         comment = None
-        if (commentDict["value"].get("1.0", "end-1c")):
-            comment = Comment(commentDict["value"].get("1.0", "end-1c"), commentDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], commentDict["language"].get()))
-
         description = None
-        if (descriptionDict["value"].get("1.0", "end-1c")):
-            description = Description(descriptionDict["value"].get("1.0", "end-1c"), descriptionDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], descriptionDict["language"].get()))
-        
         geo = None
-        if (geoDict["lat"].get() and geoDict["long"].get()):
-            geo = Geo(float(geoDict["lat"].get()), (geoDict["long"].get()))
-
         location = None
-        if (locationDict["value"].get("1.0", "end-1c")):
-            location = Location(locationDict["value"].get("1.0", "end-1c"), locationDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], locationDict["language"].get()))
-
         priority = None
-        if (priorityDict["value"].get()):
-            priority = Priority(int(priorityDict["value"].get()))
-
-        # TODO: check why stringify doesn't work
-        # resource = None
-        # if (resourceDict["state"].get()):
-        #     resource = Resources(resourceDict["value"].get("1.0", "end-1c"), resourceDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], resourceDict["language"].get()))
-
         status = None
-        if (statusValue.get()):
-            status = Status(statusValue.get())
-
         transp = None
-        if (transpDict["value"].get()):
-            transp = Transparency(transpDict["value"].get())
-
         url = None
-        if (urlValue.get()):
-            url = Url(urlValue.get())
+        if (state.get()):
+            if (len(categoriesDict["listbox"].curselection()) > 0):
+                categories = Categories([categoriesDict["listbox"].get(index) for index in categoriesDict["listbox"].curselection()])
+
+            # attachment = None
+            # if (attachmentDict["state"].get()):
+            #     attachment = Attachement(attachmentDict["value"].get(), typename=attachmentDict["fmttype"]["type"].get(), subtypename=attachmentDict["fmttype"]["subtype"].get())
+
+            if (classificationDict["value"].get()):
+                classification = Classification(classificationDict["value"].get())
+
+            if (commentDict["value"].get("1.0", "end-1c")):
+                comment = Comment(commentDict["value"].get("1.0", "end-1c"), commentDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], commentDict["language"].get()))
+
+            if (descriptionDict["value"].get("1.0", "end-1c")):
+                description = Description(descriptionDict["value"].get("1.0", "end-1c"), descriptionDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], descriptionDict["language"].get()))
+            
+            if (geoDict["lat"].get() and geoDict["long"].get()):
+                geo = Geo(float(geoDict["lat"].get()), (geoDict["long"].get()))
+
+            if (locationDict["value"].get("1.0", "end-1c")):
+                location = Location(locationDict["value"].get("1.0", "end-1c"), locationDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], locationDict["language"].get()))
+
+            if (priorityDict["value"].get()):
+                priority = Priority(int(priorityDict["value"].get()))
+
+            # TODO: check why stringify doesn't work
+            # resource = None
+            # if (resourceDict["state"].get()):
+            #     resource = Resources(resourceDict["value"].get("1.0", "end-1c"), resourceDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], resourceDict["language"].get()))
+
+            if (statusValue.get()):
+                status = Status(statusValue.get())
+
+            if (transpDict["value"].get()):
+                transp = Transparency(transpDict["value"].get())
+
+            if (urlValue.get()):
+                url = Url(urlValue.get())
 
         tmstamp = datetime.now()
         event = Vevent(
