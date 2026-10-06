@@ -1,5 +1,6 @@
 import json
 import logging
+import datetime
 
 def importConfigFromJSONFile(filepath: str) -> dict:
     data = None
@@ -20,3 +21,10 @@ logging.basicConfig(
     format='%(levelname)s [%(asctime)s]: %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p'
 )
+
+def findLangIdFromLangValue(language: str):
+    for language in configuration["language"]:
+        for key, value in language.items():
+            if (value == language):
+                return key
+    return None

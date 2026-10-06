@@ -2,7 +2,7 @@ from tkinter import ttk
 import tkinter as tk
 
 from src.backend.parameters import *
-from utils import configuration
+from src.utils import configuration, logging
 
 """
 Disclaimer

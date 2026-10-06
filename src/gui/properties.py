@@ -1,9 +1,10 @@
 from tkinter import ttk
 import tkinter as tk
-from src.gui.gui_parameters import *
 import tkcalendar as tkc
 from datetime import datetime
-from utils import configuration, logging
+
+from src.utils import configuration, findLangIdFromLangValue, logging
+from src.gui.parameters import *
 
 # NOTE: put the user input part in a hiddable frame iff the frame is optional for all the types of event it can appears
 
@@ -406,7 +407,7 @@ def makeDtFrame(masterFrame, typename: str):
     elif (typename == "due"):
         tk.Label(dtFrame, text="Due for ").pack(side="left")
     elif (typename == "completed"):
-        tk.Label(dtFrame, text="Completed on ").pack(side="left")
+            tk.Label(dtFrame, text="Completed on ").pack(side="left")
     today = datetime.now()
     dateEntry = tkc.DateEntry(
         dtFrame,

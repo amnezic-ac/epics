@@ -5,8 +5,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
 
-from src.gui.gui_components import *
-from utils import configuration, exportConfigToJSONFile, logging
+from src.gui.components import event
+from src.utils import configuration, exportConfigToJSONFile, logging
 
 
 logging.debug(f"New session activated")
@@ -16,8 +16,9 @@ root = tk.Tk()
 menubar = tk.Menu(root)
 filemenu = tk.Menu(menubar, tearoff=0)
 def createEvent(masterFrame):
-    eventFrame, eventDict = makeEventFrame(masterFrame)
+    eventFrame, eventDict = event.makeEventFrame(masterFrame)
 
+filemenu.add_command(label="New calendar", command=None)
 filemenu.add_command(label="New event", command=lambda: createEvent(root))
 filemenu.add_command(label="New task", command=lambda: logging.debug("New task frame opened"))
 filemenu.add_command(label="New alarm", command=lambda: logging.debug("New alaram opened"))

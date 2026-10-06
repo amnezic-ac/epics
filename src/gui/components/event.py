@@ -1,11 +1,11 @@
 from tkinter import ttk
 import tkinter as tk
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from src.backend.components.vevent import Vevent
 from src.backend.properties import *
-from src.gui.gui_properties import *
-from utils import configuration, logging
+from src.gui.properties import *
+from src.utils import *
 
 # TODO
 """
@@ -22,13 +22,6 @@ from utils import configuration, logging
 - rstatus: related to how the software deal with the component (maybe for later)
 - rdate
 """
-
-def findLangIdFromLangValue(configuration, value_):
-    for language in configuration:
-        for key, value in language.items():
-            if (value == value_):
-                return key
-    return None
 
 def makeEventFrame(masterFrame):
     logging.debug("New frame event opened")
