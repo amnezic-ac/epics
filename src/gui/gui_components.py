@@ -137,23 +137,28 @@ def makeEventFrame(masterFrame):
         if (actual):
             labelPlus.grid_forget()
             informationsFrame.grid(row=7, column=0, columnspan=2, sticky=tk.EW)
+            logging.debug(f"{title.get()} event additionnal properties displayed")
         else:
             informationsFrame.grid_forget()
             labelPlus.grid(row=7, column=0, columnspan=2, sticky=tk.EW)
+            logging.debug(f"{title.get()} event additionnal properties hided")
         state.set(actual)
     labelPlus.bind('<Double-1>', toggleHiddableFrame)
     labelMinus.bind('<Double-1>', toggleHiddableFrame)
 
     eventDict = {"value":None}
     def submit():
+        logging.debug(f"User attempt to create {title.get()} event")
         # mandatory properties
         summary = None  # not a mandatory property in theory but got no sense withtout it
         if (not summaryDict["value"].get()):
+            logging.warning(f"The event has no title")
             raise Exception(f"The event has to got a title")
         summary = Summary(summaryDict["value"].get())
 
         dtstart = None
         if (not dtStartDict["date"].get()):
+            logging.warning(f"{title.get()} event has no start date")
             raise Exception(f"An event has to got a start date")
         else:
             truc = dtStartDict["date"].get().split('/')

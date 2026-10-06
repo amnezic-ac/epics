@@ -537,6 +537,7 @@ def makeTranspFrame(masterFrame):
     return transpFrame, transpDict
 
 def makeAttendeeFrame(masterFrame, eventType: str, labelText: str):
+    logging.debug(f"Creation of a {labelText} attendee frame")
     frame = tk.Frame(masterFrame)
 
     label = tk.Label(frame, text=f"{labelText}")
@@ -544,6 +545,7 @@ def makeAttendeeFrame(masterFrame, eventType: str, labelText: str):
     listbox = tk.Listbox(
         frame,
         selectmode="multiple" if labelText != "Organizer: " else "single",
+        exportselection=False,
         height=min(configuration["attendees"]["height"], len(configuration["attendees"]["choices"]))
     )
 
