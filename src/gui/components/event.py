@@ -192,7 +192,7 @@ def makeEventFrame(masterFrame, title):
 
         # optional properties
         categories = None
-        categoriesLength = categoriesDict["listbox"].size()
+        categoriesLength = len(categoriesDict["listbox"].curselection())
         if (categoriesLength > 0):
             categories = Categories([categoriesDict["listbox"].get(index) for index in categoriesDict["listbox"].curselection()])
 
