@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
 
-from src.gui.components import event
+from src.gui.components import event, calendar
 from src.utils import configuration, exportConfigToJSONFile, logging
 
 
@@ -15,10 +15,14 @@ root = tk.Tk()
 
 menubar = tk.Menu(root)
 filemenu = tk.Menu(menubar, tearoff=0)
+def createNewCalendar(master):
+    logging.debug(f"User tries to create a new calendar")
+    frame, _ = calendar.handleCalendarCreation(master)
+
 def createEvent(masterFrame):
     eventFrame, eventDict = event.makeEventFrame(masterFrame)
 
-filemenu.add_command(label="New calendar", command=None)
+filemenu.add_command(label="New calendar", command= lambda : createNewCalendar(root))
 filemenu.add_command(label="New event", command=lambda: createEvent(root))
 filemenu.add_command(label="New task", command=lambda: logging.debug("New task frame opened"))
 filemenu.add_command(label="New alarm", command=lambda: logging.debug("New alaram opened"))

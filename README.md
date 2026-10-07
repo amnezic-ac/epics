@@ -15,6 +15,6 @@ Ce programme possède un fichier de configuration qui permet de déterminer un c
 
 
 Les choses qui restent à faire:
-- [ ] modifier les frame avec des datetime pour les rendre obligatoires/optionnels/interdits
-- pour FBTYPE: il faudra gérer le duo UTC/Period
-- comprendre pq `Resources.__str__()` ne fonctionne pas
+- [ ] pour FBTYPE: il faudra gérer le duo UTC/Period
+- [ ] comprendre pq `Resources.__str__()` ne fonctionne pas
+- [ ] dans un notebook, les notes doivent avoir le titre du summary

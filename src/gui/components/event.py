@@ -1,11 +1,11 @@
 from tkinter import ttk
 import tkinter as tk
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from src.backend.components.vevent import Vevent
 from src.backend.properties import *
 from src.gui.properties import *
-from src.utils import *
+from src.utils import logging, configuration
 
 # TODO
 """
@@ -23,16 +23,19 @@ from src.utils import *
 - rdate
 """
 
-def makeEventFrame(masterFrame):
+def makeEventFrame(masterFrame, title):
     logging.debug("New frame event opened")
 
-    title = tk.StringVar(value=None)
-    main = tk.Toplevel(masterFrame)
-    def updateEventTitle(*args):
-        main.title(title.get())
-    title.trace("w", updateEventTitle)
+    # title = tk.StringVar(value="")
+    main = tk.Frame(masterFrame)
+    # def updateEventTitle(*args):
+    #     try:
+    #         main.title(title.get())
+    #     except Exception as _:
+    #         pass
+    # title.trace("w", updateEventTitle)
 
-    for i in range(8):
+    for i in range(7):
         main.rowconfigure(i, weight = 1)
     for i in range(2):
         main.columnconfigure(i, weight = 1)
@@ -89,11 +92,14 @@ def makeEventFrame(masterFrame):
     descriptionFrame, descriptionDict = makeDescriptionFrame(main)
     descriptionFrame.grid(row=6, column=0, columnspan=2, sticky=tk.W)
 
+    destroyButton = tk.Button(main, text="Cancel this event", command=main.destroy)
+    destroyButton.grid(row=7, column=0, sticky=tk.W)
+
     labelPlus = tk.Label(main, text="Show more ?")
-    labelPlus.grid(row=7, column=0, sticky=tk.EW)
+    labelPlus.grid(row=7, column=1, sticky=tk.W)
 
     submitButton = tk.Button(main, text="Confirm")
-    submitButton.grid(row=7, column=1)
+    submitButton.grid(row=7, column=2, sticky=tk.E)
 
     informationsFrame = tk.Frame(main)
     for i in range(9):
@@ -119,10 +125,12 @@ def makeEventFrame(masterFrame):
     commentFrame, commentDict = makeCommentFrame(informationsFrame)
     commentFrame.grid(column=0, row=4, columnspan=2, sticky=tk.EW)
 
+    destroyButton2 = tk.Button(informationsFrame, text="Cancel this event", command=main.destroy)
+    destroyButton2.grid(row=8, column=0, sticky=tk.W)
     labelMinus = tk.Label(informationsFrame, text="Show less ?")
-    labelMinus.grid(row=8, column=0)
+    labelMinus.grid(row=8, column=1)
     submitButton2 = tk.Button(informationsFrame, text="Confirm")
-    submitButton2.grid(row=8, column=1)
+    submitButton2.grid(row=8, column=2)
     
     state = tk.BooleanVar(value=False)
     def toggleHiddableFrame(event):
@@ -184,9 +192,16 @@ def makeEventFrame(masterFrame):
 
         # optional properties
         categories = None
+        categoriesLength = categoriesDict["listbox"].size()
+        if (categoriesLength > 0):
+            categories = Categories([categoriesDict["listbox"].get(index) for index in categoriesDict["listbox"].curselection()])
+
         classification = None
         comment = None
         description = None
+        if (descriptionDict["value"].get("1.0", "end-1c")):
+            description = Description(descriptionDict["value"].get("1.0", "end-1c"), descriptionDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], descriptionDict["language"].get()))
+
         geo = None
         location = None
         priority = None
@@ -194,8 +209,6 @@ def makeEventFrame(masterFrame):
         transp = None
         url = None
         if (state.get()):
-            if (len(categoriesDict["listbox"].curselection()) > 0):
-                categories = Categories([categoriesDict["listbox"].get(index) for index in categoriesDict["listbox"].curselection()])
 
             # attachment = None
             # if (attachmentDict["state"].get()):
@@ -207,8 +220,6 @@ def makeEventFrame(masterFrame):
             if (commentDict["value"].get("1.0", "end-1c")):
                 comment = Comment(commentDict["value"].get("1.0", "end-1c"), commentDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], commentDict["language"].get()))
 
-            if (descriptionDict["value"].get("1.0", "end-1c")):
-                description = Description(descriptionDict["value"].get("1.0", "end-1c"), descriptionDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], descriptionDict["language"].get()))
             
             if (geoDict["lat"].get() and geoDict["long"].get()):
                 geo = Geo(float(geoDict["lat"].get()), (geoDict["long"].get()))
@@ -260,7 +271,10 @@ def makeEventFrame(masterFrame):
         )
         eventDict["value"] = event
         print(event)
+        print("-"*25)
         logging.debug(f"\"{title.get()}\" event has successfully been created")
+        submitButton.config(text="Modify")
+        submitButton2.config(text="Modify")
 
     submitButton.config(
         command=submit
