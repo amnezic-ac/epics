@@ -1,6 +1,7 @@
 from src.backend.properties import Uid, Categories, Classification, Comment, Description, Geo, Location, Priority, Resources, Status, Summary, Duration, Transparency, Attachement, Atttendee, Comment, Contact, Url
 from src.backend.components.component import Component
 from datetime import datetime, timedelta
+import hashlib
 
 class Vevent(Component):
     # for further information, please refer to 3.6.1
@@ -35,7 +36,8 @@ class Vevent(Component):
         ):
         ### mandatory
         self.dtstamp = dtstamp
-        self.uid = Uid(f"{self.dtstamp.strftime("%Y%m%dT%zZ")}")
+        text = self.dtstamp.strftime("%Y%m%dT%zZ%H%M%S")
+        self.uid = Uid(hashlib.sha1(text.encode('utf-8')).hexdigest())
         self.dtstart = dtstart
 
         self.dtend = None
