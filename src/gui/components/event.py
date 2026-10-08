@@ -9,8 +9,7 @@ from src.utils import logging, configuration
 
 # TODO
 """
-- url
-- organizer/attendee
+- organizer
 - contact
 - attach
 - related
@@ -23,33 +22,30 @@ from src.utils import logging, configuration
 - rdate
 """
 
-def makeEventFrame(masterFrame, title):
-    logging.debug("New frame event opened")
+def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
+    """
+    create a frame that will handle VEVENT component creation
 
-    # title = tk.StringVar(value="")
-    main = tk.Frame(masterFrame)
-    # def updateEventTitle(*args):
-    #     try:
-    #         main.title(title.get())
-    #     except Exception as _:
-    #         pass
-    # title.trace("w", updateEventTitle)
+    Params:
+    ------
+    - root: tk.Frame
+        parent frame of the newly created frame with all the vevent properties
+    - eventHolder: dict
+        value holder for the event with only one field: "value"
 
-    for i in range(7):
-        main.rowconfigure(i, weight = 1)
-    for i in range(2):
-        main.columnconfigure(i, weight = 1)
+    Returns:
+    -------
+    - tk.Frame: the newly created frame (note: needs to be packed after the return of the function)
+    """
+    frame = ttk.Frame(root)
+    logging.debug(f"New event tab created")
 
-    summaryFrame, summaryDict = makeSummaryFrame(main, title)
-    summaryFrame.grid(column=0, row=0, sticky=tk.W)
+    title = tk.StringVar(value="")
+    # mandatory properties
+    summaryFrame, summaryDict = makeSummaryFrame(frame, title)
+    dtStartFrame, dtStartDict = makeDtFrame(frame, "start")
 
-    statusFrame, statusValue = makeStatusFrame(main, "event")
-    statusFrame.grid(column=1, row=0, sticky=tk.E)
-
-    dtStartFrame, dtStartDict = makeDtFrame(main, "start")
-    dtStartFrame.grid(column=0, row=1, sticky=tk.W)
-
-    endFrame = tk.Frame(main)
+    endFrame = tk.Frame(frame)
     endFrame.rowconfigure(0)
     endFrame.rowconfigure(1)
     endFrame.columnconfigure(0)
@@ -66,88 +62,126 @@ def makeEventFrame(masterFrame, title):
     dtButton = ttk.Radiobutton(endFrame, text="Date", value="date", variable=endChoice, command=toggleDtFrame)
     dtButton.grid(row=0, column=0, sticky=tk.W)
     def toggleDurationFrame():
+        pass
         durationUsed.set(True)
         durationFrame.grid(row=1, column=1)
         if (dtendFrame):
             dtendFrame.grid_forget()
     durationButton = ttk.Radiobutton(endFrame, text="Duration", value="duration", variable=endChoice, command=toggleDurationFrame)
     durationButton.grid(row=1, column=0, sticky=tk.W)
-    endFrame.grid(row=1, column=1, sticky=tk.E)
 
-    locationFrame, locationDict = makeLocationFrame(main)
-    locationFrame.grid(column=0, row=2, sticky=tk.W)
+    # optional but must not occur more than once
+    classificationFrame, classificationDict = makeClassificationFrame(frame)
+    # created
+    descriptionFrame, descriptionDict = makeDescriptionFrame(frame)
+    geoFrame, geoDict = makeGeoFrame(frame)
+    # last-mod
+    locationFrame, locationDict = makeLocationFrame(frame)
+    organizerFrame, organizerListbox = makeAttendeeFrame(frame, "event", "Organizer: ")
+    priorityFrame, priorityDict = makePriorityFrame(frame)
+    # seq
+    statusFrame, statusValue = makeStatusFrame(frame, "event")
+    tranparencyFrame, transpDict = makeTranspFrame(frame)
+    urlFrame, urlValue = makeURLFrame(frame)
+    # recurid
 
-    organizerFrame, organizerListbox = makeAttendeeFrame(main, "event", "Organizer: ")
-    organizerFrame.grid(row=3, column=0, sticky=tk.W)
+    # optional but should not occur more than once
+    # rrule
 
-    attendeesFrame, attendeesListbox = makeAttendeeFrame(main, "event", "Attendees: ")
-    attendeesFrame.grid(row=4, column=0, sticky=tk.W)
+    # optional and may occur more than once
+    attachmentFrame, attachmentDict = makeAttachmentFrame(frame)
+    attendeesFrame, attendeesListbox = makeAttendeeFrame(frame, "event", "Attendees: ")
+    categoriesFrame, categoriesDict = makeCategoriesFrame(frame)
+    commentFrame, commentDict = makeCommentFrame(frame)
+    # contact
+    # exdate
+    # rstatus
+    # related
+    # resources
+    # rdate
 
-    attachmentFrame, attachmentDict = makeAttachmentFrame(main)
-    attachmentFrame.grid(row=5, column=0, sticky=tk.W)
+    # user actions buttons
+    destroyButton = tk.Button(frame, text="Cancel this event")
+    label = tk.Label(frame, text="Show more ?")
+    submitButton = tk.Button(frame, text="Confirm")
 
-    categoriesFrame, categoriesDict = makeCategoriesFrame(main)
-    categoriesFrame.grid(row=5, column=1, sticky=tk.E)
+    # general frame grid arrangement
+    for row in range(13):
+        frame.rowconfigure(row, weight=1)
+    for col in range(6):
+        frame.columnconfigure(col, weight=1)
 
-    descriptionFrame, descriptionDict = makeDescriptionFrame(main)
-    descriptionFrame.grid(row=6, column=0, columnspan=2, sticky=tk.W)
+    summaryFrame.grid(row=0, column=0,sticky=tk.W, columnspan=3)
+    statusFrame.grid(row=0, column=3, sticky=tk.E, columnspan=3) # it should not be RSVP ?
 
-    destroyButton = tk.Button(main, text="Cancel this event", command=main.destroy)
-    destroyButton.grid(row=7, column=0, sticky=tk.W)
-
-    labelPlus = tk.Label(main, text="Show more ?")
-    labelPlus.grid(row=7, column=1, sticky=tk.W)
-
-    submitButton = tk.Button(main, text="Confirm")
-    submitButton.grid(row=7, column=2, sticky=tk.E)
-
-    informationsFrame = tk.Frame(main)
-    for i in range(9):
-        informationsFrame.rowconfigure(i, weight=1)
-    for i in range(2):
-        informationsFrame.columnconfigure(i, weight=1)
-
-    classificationFrame, classificationDict = makeClassificationFrame(informationsFrame)
-    classificationFrame.grid(row=0, column=0, sticky=tk.W)
-
-    priorityFrame, priorityDict = makePriorityFrame(informationsFrame)
-    priorityFrame.grid(row=0, column=1, sticky=tk.E)
-
-    tranparencyFrame, transpDict = makeTranspFrame(informationsFrame)
-    tranparencyFrame.grid(row=1, column=0, sticky=tk.W)
-
-    geoFrame, geoDict = makeGeoFrame(informationsFrame)
-    geoFrame.grid(row=1, column=1, sticky=tk.E)
-
-    urlFrame, urlValue = makeURLFrame(informationsFrame)
-    urlFrame.grid(row=2, column=0, rowspan=2, sticky=tk.W)
-
-    commentFrame, commentDict = makeCommentFrame(informationsFrame)
-    commentFrame.grid(column=0, row=4, columnspan=2, sticky=tk.EW)
-
-    destroyButton2 = tk.Button(informationsFrame, text="Cancel this event", command=main.destroy)
-    destroyButton2.grid(row=8, column=0, sticky=tk.W)
-    labelMinus = tk.Label(informationsFrame, text="Show less ?")
-    labelMinus.grid(row=8, column=1)
-    submitButton2 = tk.Button(informationsFrame, text="Confirm")
-    submitButton2.grid(row=8, column=2)
+    dtStartFrame.grid(row=1, column=0, sticky=tk.W, columnspan=3)
+    endFrame.grid(row=1, column=3, sticky=tk.E, columnspan=3)
     
+    descriptionFrame.grid(row=2, column=0, sticky=tk.W, columnspan=3)
+    categoriesFrame.grid(row=2, column=3, sticky=tk.E, columnspan=3)
+
+    organizerFrame.grid(row=3, column=0, sticky=tk.NW, columnspan=3)
+    fixme = tk.StringVar(value="FIXME")
+    ttk.Entry(frame, textvariable=fixme).grid(row=4, column=0, sticky=tk.NW, columnspan=3)
+    attendeesFrame.grid(row=3, column=3, rowspan=2, columnspan=3, sticky=tk.NE)
+
+    locationFrame.grid(row=5, column=0, columnspan=6, sticky=tk.NSEW)
+    attachmentFrame.grid(row=6, column=0, sticky=tk.W, columnspan=6)
+
+    destroyButton.grid(row=7, column=0, sticky=tk.W, columnspan=2)
+    label.grid(row=7, column=2, sticky=tk.W, columnspan=2)
+    submitButton.grid(row=7, column=4, sticky=tk.E, columnspan=2)
+
+    # additional infos
+    classificationFrame.grid(row=8, column=0, columnspan=3, sticky=tk.W)
+    classificationFrame.grid_forget()
+    priorityFrame.grid(row=8, column=3, columnspan=3, sticky=tk.E)
+    priorityFrame.grid_forget()
+
+    tranparencyFrame.grid(row=9, column=0, columnspan=3, sticky=tk.W)
+    tranparencyFrame.grid_forget()
+    geoFrame.grid(row=9, column=3, columnspan=3, sticky=tk.E)
+    geoFrame.grid_forget()
+
+    urlFrame.grid(row=10, column=0, columnspan=6, sticky=tk.W)
+    urlFrame.grid_forget()
+    commentFrame.grid(row=11, column=0, columnspan=6, sticky=tk.NSEW)
+    commentFrame.grid_forget()
+    
+
     state = tk.BooleanVar(value=False)
     def toggleHiddableFrame(event):
         actual = not state.get()
         if (actual):
-            labelPlus.grid_forget()
-            informationsFrame.grid(row=7, column=0, columnspan=2, sticky=tk.EW)
-            logging.debug(f"{title.get()} event additionnal properties displayed")
+            classificationFrame.grid()
+            priorityFrame.grid()
+            tranparencyFrame.grid()
+            geoFrame.grid()
+            urlFrame.grid()
+            commentFrame.grid()
+            destroyButton.grid(row=12, column=0, columnspan=2, sticky=tk.W)
+            label.grid(row=12, column=2, columnspan=4)
+            label.config(text="Show less informations")
+            submitButton.grid(row=12, column=4, columnspan=2, sticky=tk.E)
         else:
-            informationsFrame.grid_forget()
-            labelPlus.grid(row=7, column=0, columnspan=2, sticky=tk.EW)
-            logging.debug(f"{title.get()} event additionnal properties hided")
+            classificationFrame.grid_forget()
+            priorityFrame.grid_forget()
+            tranparencyFrame.grid_forget()
+            geoFrame.grid_forget()
+            urlFrame.grid_forget()
+            commentFrame.grid_forget()
+            destroyButton.grid(row=7, column=0, columnspan=2, sticky=tk.W)
+            label.grid(row=7, column=2, columnspan=4)
+            label.config(text="Show more informations")
+            submitButton.grid(row=7, column=4, columnspan=2, sticky=tk.E)
         state.set(actual)
-    labelPlus.bind('<Double-1>', toggleHiddableFrame)
-    labelMinus.bind('<Double-1>', toggleHiddableFrame)
+    label.bind('<Double-1>', toggleHiddableFrame)
 
-    eventDict = {"value":None}
+    def destroy():
+        eventHolder["value"] = None
+        frame.destroy()
+    destroyButton.config(command=destroy)
+
     def submit():
         logging.debug(f"User attempt to create {title.get()} event")
         # mandatory properties
@@ -269,18 +303,13 @@ def makeEventFrame(masterFrame, title):
             None,
             url
         )
-        eventDict["value"] = event
-        print(event)
-        print("-"*25)
+        eventHolder["value"] = event
+        # print(event)
+        # print("-"*25)
         logging.debug(f"\"{title.get()}\" event has successfully been created")
         submitButton.config(text="Modify")
-        submitButton2.config(text="Modify")
-
     submitButton.config(
         command=submit
     )
-    submitButton2.config(
-        command=submit
-    )
 
-    return main, eventDict
+    return frame

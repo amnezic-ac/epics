@@ -15,14 +15,16 @@ def handleCalendarCreation(master):
     notebook.add(main, text="Main")
     logging.debug(f"Calendar notebook created")
 
-    calendar = Calendar()
+    calendar = None
 
     buttonsFrame = tk.Frame(main)
     def addEvent():
         title = tk.StringVar(value="New event")
-        eventFrame, eventDict = makeEventFrame(notebook, title)
-        notebook.add(eventFrame, text=f"{title.get()}")
-        events.append(eventDict)
+        eventHolder = {"value": None}
+        eventFrame = makeEventFrame(notebook, eventHolder)
+        notebook.add(eventFrame, text="New event")
+        events.append(eventHolder)
+        print("eventHolder added to the list")
     eventButton = tk.Button(buttonsFrame, text="Create new event", command=addEvent)
     eventButton.pack()
     # taskButton = tk.Button(buttonsFrame, text="Create new task", command=None)
@@ -32,8 +34,10 @@ def handleCalendarCreation(master):
     # journalButton = tk.Button(buttonsFrame, text="Create new journal", command=None)
     # journalButton.pack()
     def submit():
+        calendar = Calendar()
         for event in events:
-            calendar.add_component(event["value"])
+            if (event["value"]):
+                calendar.add_component(event["value"])
         print(str(calendar))
     submitButton = tk.Button(buttonsFrame, text="Submit", command=submit)
     submitButton.pack()
