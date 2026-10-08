@@ -163,6 +163,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
             label.grid(row=12, column=2, columnspan=4)
             label.config(text="Show less informations")
             submitButton.grid(row=12, column=4, columnspan=2, sticky=tk.E)
+            logging.debug(f"{summaryDict["value"].get()} event frame displayed hiddable properties")
         else:
             classificationFrame.grid_forget()
             priorityFrame.grid_forget()
@@ -174,16 +175,22 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
             label.grid(row=7, column=2, columnspan=4)
             label.config(text="Show more informations")
             submitButton.grid(row=7, column=4, columnspan=2, sticky=tk.E)
+            logging.debug(f"{summaryDict["value"].get()} event frame hidded hiddable properties")
         state.set(actual)
     label.bind('<Double-1>', toggleHiddableFrame)
 
     def destroy():
+        logging.debug(f"User destroyed {summaryDict["value"].get()} event")
         eventHolder["value"] = None
         frame.destroy()
     destroyButton.config(command=destroy)
 
+    submitState = tk.BooleanVar(value=False)
     def submit():
-        logging.debug(f"User attempt to create {title.get()} event")
+        if (not submitState.get()):
+            logging.debug(f"User attempt to create {title.get()} event")
+        else:
+            logging.debug(f"User attempt to modify {title.get()} event")
         # mandatory properties
         summary = None  # not a mandatory property in theory but got no sense withtout it
         if (not summaryDict["value"].get()):
@@ -304,9 +311,11 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
             url
         )
         eventHolder["value"] = event
-        # print(event)
-        # print("-"*25)
-        logging.debug(f"\"{title.get()}\" event has successfully been created")
+        if (not submitState.get()):
+            logging.debug(f"\"{title.get()}\" event has successfully been created")
+        else:
+            logging.debug(f"\"{title.get()}\" event has successfully been modified")
+        submitState.set(True)
         submitButton.config(text="Modify")
     submitButton.config(
         command=submit
