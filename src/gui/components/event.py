@@ -129,7 +129,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
     attachmentFrame.grid(row=6, column=0, sticky=tk.W, columnspan=6)
 
     destroyButton.grid(row=7, column=0, sticky=tk.W, columnspan=2)
-    label.grid(row=7, column=2, sticky=tk.W, columnspan=2)
+    label.grid(row=7, column=2, sticky=tk.EW, columnspan=2)
     submitButton.grid(row=7, column=4, sticky=tk.E, columnspan=2)
 
     # additional infos
@@ -160,7 +160,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
             urlFrame.grid()
             commentFrame.grid()
             destroyButton.grid(row=12, column=0, columnspan=2, sticky=tk.W)
-            label.grid(row=12, column=2, columnspan=4)
+            label.grid(row=12, column=2, columnspan=4, sticky=tk.EW)
             label.config(text="Show less informations")
             submitButton.grid(row=12, column=4, columnspan=2, sticky=tk.E)
             logging.debug(f"{summaryDict["value"].get()} event frame displayed hiddable properties")
@@ -172,7 +172,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
             urlFrame.grid_forget()
             commentFrame.grid_forget()
             destroyButton.grid(row=7, column=0, columnspan=2, sticky=tk.W)
-            label.grid(row=7, column=2, columnspan=4)
+            label.grid(row=7, column=2, columnspan=4, sticky=tk.EW)
             label.config(text="Show more informations")
             submitButton.grid(row=7, column=4, columnspan=2, sticky=tk.E)
             logging.debug(f"{summaryDict["value"].get()} event frame hidded hiddable properties")
