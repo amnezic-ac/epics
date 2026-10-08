@@ -17,26 +17,25 @@ menubar = tk.Menu(root)
 filemenu = tk.Menu(menubar, tearoff=0)
 def createNewCalendar(master):
     logging.debug(f"User tries to create a new calendar")
-    frame, _ = calendar.handleCalendarCreation(master)
+    frame, _ = calendar.create(master)
 
 def createEvent(masterFrame):
     eventFrame, eventDict = event.makeEventFrame(masterFrame)
 
-filemenu.add_command(label="New calendar", command= lambda : createNewCalendar(root))
-filemenu.add_command(label="New event", command=lambda: createEvent(root))
-filemenu.add_command(label="New task", command=lambda: logging.debug("New task frame opened"))
-filemenu.add_command(label="New alarm", command=lambda: logging.debug("New alaram opened"))
-filemenu.add_command(label="New journal", command=lambda: logging.debug("New journal frame opened"))
+filemenu.add_command(label="Create", command=lambda : createNewCalendar(root))
+filemenu.add_command(label="Export", command=lambda: logging.debug(f"User clicked on calendar export"))
+filemenu.add_command(label="Import", command=lambda: logging.debug(f"User clicked on calendar import"))
+filemenu.add_command(label="Remove", command=lambda: logging.debug(f"User clicked on calendar removal"))
 menubar.add_cascade(label="Calendar", menu=filemenu)
 
-file = None
-text = tk.Text(root, height=12)
-def getICSFile():
-    file = fd.askopenfile()
-    print(text.insert('1.0', file.readlines()))
-
-calendarChoiceButton = tk.Button(root, text="Choose a calendar", command = getICSFile)
-calendarChoiceButton.pack()
+# file = None
+# text = tk.Text(root, height=12)
+# def getICSFile():
+#     file = fd.askopenfile()
+#     print(text.insert('1.0', file.readlines()))
+# 
+# calendarChoiceButton = tk.Button(root, text="Choose a calendar", command = getICSFile)
+# calendarChoiceButton.pack()
 
 root.config(menu=menubar)
 root.mainloop()
