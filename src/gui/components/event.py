@@ -102,7 +102,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
 
     # user actions buttons
     destroyButton = tk.Button(frame, text="Cancel this event")
-    label = tk.Label(frame, text="Show more ?")
+    label = tk.Label(frame, text="Show more")
     submitButton = tk.Button(frame, text="Confirm")
 
     # general frame grid arrangement
@@ -129,39 +129,37 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
     attachmentFrame.grid(row=6, column=0, sticky=tk.W, columnspan=6)
 
     destroyButton.grid(row=7, column=0, sticky=tk.W, columnspan=2)
-    label.grid(row=7, column=2, sticky=tk.EW, columnspan=2)
+    label.grid(row=7, column=2, columnspan=2, sticky=tk.EW)
     submitButton.grid(row=7, column=4, sticky=tk.E, columnspan=2)
 
     # additional infos
-    classificationFrame.grid(row=8, column=0, columnspan=3, sticky=tk.W)
-    classificationFrame.grid_forget()
-    priorityFrame.grid(row=8, column=3, columnspan=3, sticky=tk.E)
-    priorityFrame.grid_forget()
-
-    tranparencyFrame.grid(row=9, column=0, columnspan=3, sticky=tk.W)
-    tranparencyFrame.grid_forget()
-    geoFrame.grid(row=9, column=3, columnspan=3, sticky=tk.E)
-    geoFrame.grid_forget()
-
-    urlFrame.grid(row=10, column=0, columnspan=6, sticky=tk.W)
-    urlFrame.grid_forget()
-    commentFrame.grid(row=11, column=0, columnspan=6, sticky=tk.NSEW)
-    commentFrame.grid_forget()
+    # classificationFrame.grid_forget()
+    # priorityFrame.grid_forget()
+    # tranparencyFrame.grid_forget()
+    # geoFrame.grid_forget()
+    # urlFrame.grid_forget()
+    # commentFrame.grid_forget()
     
 
     state = tk.BooleanVar(value=False)
     def toggleHiddableFrame(event):
         actual = not state.get()
         if (actual):
-            classificationFrame.grid()
-            priorityFrame.grid()
-            tranparencyFrame.grid()
-            geoFrame.grid()
-            urlFrame.grid()
-            commentFrame.grid()
+            classificationFrame.grid(row=8, column=0, columnspan=3, sticky=tk.W)
+            priorityFrame.grid(row=8, column=3, columnspan=3, sticky=tk.E)
+            tranparencyFrame.grid(row=9, column=0, columnspan=3, sticky=tk.W)
+            geoFrame.grid(row=9, column=3, columnspan=3, sticky=tk.E)
+            urlFrame.grid(row=10, column=0, columnspan=6, sticky=tk.W)
+            commentFrame.grid(row=11, column=0, columnspan=6, sticky=tk.NSEW)
+            # classificationFrame.grid()
+            # priorityFrame.grid()
+            # tranparencyFrame.grid()
+            # geoFrame.grid()
+            # urlFrame.grid()
+            # commentFrame.grid()
             destroyButton.grid(row=12, column=0, columnspan=2, sticky=tk.W)
-            label.grid(row=12, column=2, columnspan=4, sticky=tk.EW)
-            label.config(text="Show less informations")
+            label.grid(row=12, column=2, columnspan=2, sticky=tk.EW)
+            label.config(text="Show less")
             submitButton.grid(row=12, column=4, columnspan=2, sticky=tk.E)
             logging.debug(f"{summaryDict["value"].get()} event frame displayed hiddable properties")
         else:
@@ -172,8 +170,8 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
             urlFrame.grid_forget()
             commentFrame.grid_forget()
             destroyButton.grid(row=7, column=0, columnspan=2, sticky=tk.W)
-            label.grid(row=7, column=2, columnspan=4, sticky=tk.EW)
-            label.config(text="Show more informations")
+            label.grid(row=7, column=2, columnspan=2, sticky=tk.EW)
+            label.config(text="Show more")
             submitButton.grid(row=7, column=4, columnspan=2, sticky=tk.E)
             logging.debug(f"{summaryDict["value"].get()} event frame hidded hiddable properties")
         state.set(actual)
