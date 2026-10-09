@@ -8,41 +8,41 @@ from src.gui.parameters import *
 
 # NOTE: put the user input part in a hiddable frame iff the frame is optional for all the types of event it can appears
 
-def makeAttachmentFrame(masterFrame):
-    attachmentFrame = tk.Frame(masterFrame)
+def makeAttachmentFrame(root):
+    frame = tk.Frame(root)
 
-    hiddableFrame = tk.Frame(attachmentFrame)
-    attachmentValue = tk.Entry(hiddableFrame)
-    attachmentValue.pack()
-    fmttypeFrame, fmttypeInput = makeFmtTypeFrame(hiddableFrame)
+    parameterFrame = tk.Frame(frame)
+    entry = tk.Entry(parameterFrame)
+    entry.pack()
+    fmttypeFrame, fmttypeInput = makeFmtTypeFrame(parameterFrame)
     fmttypeFrame.pack()
 
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            hiddableFrame.pack()
-            checkbutton.config(text="Attachment : ")
+    state = tk.BooleanVar(value=False)
+    def toggleParameterFrame():
+        if (state.get()):
+            parameterFrame.pack()
+            button.config(text="Attachment : ")
         else:
-            hiddableFrame.pack_forget()
-            checkbutton.config(text="Attachment ? ")
-    checkbutton = tk.Checkbutton(attachmentFrame, text="Attachment ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack()
+            parameterFrame.pack_forget()
+            button.config(text="Attachment ? ")
+    button = tk.Checkbutton(frame, text="Attachment ? ", variable=state, offvalue=False, onvalue=True, command=toggleParameterFrame)
+    button.pack()
 
-    attachmentDict = {
-        "state": buttonState,
-        "value": attachmentValue,
+    valueHolder = {
+        "state": state,
+        "value": entry,
         "fmttype": fmttypeInput
     }
-    return attachmentFrame, attachmentDict
+    return frame, valueHolder
 
-def makeCategoriesFrame(masterFrame):
-    categoriesFrame = tk.Frame(masterFrame)
+def makeCategoriesFrame(root):
+    frame = tk.Frame(root)
 
-    label = tk.Label(categoriesFrame, text="Categories: ")
+    label = tk.Label(frame, text="Categories: ")
     label.pack(side="left")
 
     listbox = tk.Listbox(
-        categoriesFrame,
+        frame,
         selectmode="multiple",
         height=min(configuration["categories"]["height"], len(configuration["categories"]["choices"]))
     )
@@ -50,11 +50,11 @@ def makeCategoriesFrame(masterFrame):
         listbox.insert(i, configuration["categories"]["choices"][i])
     listbox.pack()
 
-    hiddableFrame = tk.Frame(categoriesFrame)
-    userInput = tk.Entry(hiddableFrame)
+    parameterFrame = tk.Frame(frame)
+    userInput = tk.Entry(parameterFrame)
     userInput.pack()
 
-    languageFrame, languageInput = makeLanguageFrame(hiddableFrame)
+    languageFrame, languageInput = makeLanguageFrame(parameterFrame)
     languageFrame.pack(side="bottom")
 
     def add():
@@ -90,315 +90,315 @@ def makeCategoriesFrame(masterFrame):
             remove()
             configuration["cutype"]["choices"].remove(value)
 
-    buttonsFrame = tk.Frame(hiddableFrame)
+    buttonsFrame = tk.Frame(parameterFrame)
     tk.Button(buttonsFrame, text="Add", command=add).pack()
     tk.Button(buttonsFrame, text="Add to configuration", command=addToConfiguration).pack()
     tk.Button(buttonsFrame, text="Remove", command=remove).pack()
     tk.Button(buttonsFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
     buttonsFrame.pack(side="right")
 
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame(event):
-        actual = not buttonState.get()
-        if (buttonState.get()):
-            hiddableFrame.pack()
+    state = tk.BooleanVar(value=False)
+    def toggleParameterFrame(event):
+        actual = not state.get()
+        if (state.get()):
+            parameterFrame.pack()
         else:
-            hiddableFrame.pack_forget()
-        buttonState.set(actual)
-    label.bind('<Double-1>', toggleHiddableFrame)
+            parameterFrame.pack_forget()
+        state.set(actual)
+    label.bind('<Double-1>', toggleParameterFrame)
 
-    categoriesDict = {
+    valueHolder = {
         "listbox": listbox,
     }
 
-    return categoriesFrame, categoriesDict
+    return frame, valueHolder
 
-def makeClassificationFrame(masterFrame):
-    classificationFrame = tk.Frame(masterFrame)
+def makeClassificationFrame(root):
+    frame = tk.Frame(root)
 
-    tk.Label(classificationFrame, text="Classification: ").pack(side="left")
+    tk.Label(frame, text="Classification: ").pack(side="left")
     value = tk.StringVar(value="")
     combobox = ttk.Combobox(
-        classificationFrame,
+        frame,
         values=configuration["classification"]["choices"],
         state="readonly",
         textvariable=value
     )
     combobox.pack()
 
-    classificationDict = {
+    valueHolder = {
         "value": combobox
     }
 
-    return classificationFrame, classificationDict
+    return frame, valueHolder
 
-def makeCommentFrame(masterFrame):
-    commentFrame = tk.Frame(masterFrame)
+def makeCommentFrame(root):
+    frame = tk.Frame(root)
 
-    label = tk.Label(commentFrame, text="Comment")
+    label = tk.Label(frame, text="Comment")
     label.pack()
     commentText = tk.Text(
-        commentFrame,
+        frame,
         height=configuration["comment"]["height"],
         width=configuration["comment"]["width"]
     )
     commentText.pack(expand=True, fill="both")
 
-    hiddableFrame = tk.Frame(commentFrame)
-    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(hiddableFrame)
+    parameterFrame = tk.Frame(frame)
+    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(parameterFrame)
     altrepFrame.pack()
-    languageFrame, languageInput = makeLanguageFrame(hiddableFrame)
+    languageFrame, languageInput = makeLanguageFrame(parameterFrame)
     languageFrame.pack()
 
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame(event):
-        actual = not buttonState.get()
+    state = tk.BooleanVar(value=False)
+    def toggleParameterFrame(event):
+        actual = not state.get()
         if (actual):
-            hiddableFrame.pack()
+            parameterFrame.pack()
         else:
-            hiddableFrame.pack_forget()
-        buttonState.set(actual)
-    label.bind('<Double-1>', toggleHiddableFrame) 
+            parameterFrame.pack_forget()
+        state.set(actual)
+    label.bind('<Double-1>', toggleParameterFrame) 
 
-    commentDict = {
+    valueHolder = {
         "value": commentText,
-        "state": buttonState,
+        "state": state,
         "altrep": altrepInput,
         "language": languageInput
     }
 
-    return commentFrame, commentDict
+    return frame, valueHolder
 
-def makeDescriptionFrame(masterFrame):
-    descriptionFrame = tk.Frame(masterFrame)
+def makeDescriptionFrame(root):
+    frame = tk.Frame(root)
 
-    label = tk.Label(descriptionFrame, text="Description")
+    label = tk.Label(frame, text="Description")
     label.pack(anchor="w")
-    descriptionText = tk.Text(descriptionFrame)
+    descriptionText = tk.Text(frame)
     descriptionText.config(
         height=configuration["description"]["height"],
         width=configuration["description"]["width"]
     )
     descriptionText.pack()
 
-    hiddableFrame = tk.Frame(descriptionFrame)
-    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(hiddableFrame)
+    parameterFrame = tk.Frame(frame)
+    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(parameterFrame)
     altrepFrame.pack()
-    languageFrame, languageInput = makeLanguageFrame(hiddableFrame)
+    languageFrame, languageInput = makeLanguageFrame(parameterFrame)
     languageFrame.pack()
 
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame(event):
-        actual = not buttonState.get()
-        if (buttonState.get()):
-            hiddableFrame.pack()
+    state = tk.BooleanVar(value=False)
+    def toggleParameterFrame(event):
+        actual = not state.get()
+        if (state.get()):
+            parameterFrame.pack()
         else:
-            hiddableFrame.pack_forget()
-        buttonState.set(actual)
-    label.bind('<Double-1>', toggleHiddableFrame)
+            parameterFrame.pack_forget()
+        state.set(actual)
+    label.bind('<Double-1>', toggleParameterFrame)
 
-    descriptionDict = {
-        "state": buttonState,
+    valueHolder = {
+        "state": state,
         "value": descriptionText,
         "altrep": altrepInput,
         "language": languageInput
     }
 
-    return descriptionFrame, descriptionDict
+    return frame, valueHolder
 
-def makeGeoFrame(masterFrame):
-    geoFrame = tk.Frame(masterFrame)
+def makeGeoFrame(root):
+    frame = tk.Frame(root)
 
-    tk.Label(geoFrame, text="Geographical position: ").pack(side="left")
+    tk.Label(frame, text="Geographical position: ").pack(side="left")
     latVar = tk.StringVar(value=None)
-    latSpinbox = ttk.Spinbox(geoFrame, from_=-90.000000, to=90.000000, wrap=True, increment=0.000001, textvariable=latVar)
+    latSpinbox = ttk.Spinbox(frame, from_=-90.000000, to=90.000000, wrap=True, increment=0.000001, textvariable=latVar)
     latSpinbox.pack(side="right")
-    tk.Label(geoFrame, text=" ; ").pack(side="right")
+    tk.Label(frame, text=" ; ").pack(side="right")
     longVar = tk.StringVar(value=None)
-    longSpinbox = ttk.Spinbox(geoFrame, from_=-180.000000, to=180.000000, wrap=True, increment=0.000001, textvariable=longVar)
+    longSpinbox = ttk.Spinbox(frame, from_=-180.000000, to=180.000000, wrap=True, increment=0.000001, textvariable=longVar)
     longSpinbox.pack(side="right")
 
-    geoDict = {
+    valueHolder = {
         "lat": latVar,
         "long": longVar
     }
 
-    return geoFrame, geoDict
+    return frame, valueHolder
 
-def makeLocationFrame(masterFrame):
-    locationFrame = tk.Frame(masterFrame)
+def makeLocationFrame(root):
+    frame = tk.Frame(root)
 
     state = tk.BooleanVar(value=False)
-    hiddableFrame = tk.Frame(locationFrame)
-    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(hiddableFrame)
+    parameterFrame = tk.Frame(frame)
+    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(parameterFrame)
     altrepFrame.pack()
-    languageFrame, languageInput = makeLanguageFrame(hiddableFrame)
+    languageFrame, languageInput = makeLanguageFrame(parameterFrame)
     languageFrame.pack()
 
 
-    label = tk.Label(locationFrame, text="Location: ")
+    label = tk.Label(frame, text="Location: ")
     label.pack(side="left")
-    def toggleHiddableFrame(event):
+    def toggleParameterFrame(event):
         actual = state.get()
         actual = not actual
         if (actual):
-            hiddableFrame.pack(side="bottom")
+            parameterFrame.pack(side="bottom")
         else:
-            hiddableFrame.pack_forget()
+            parameterFrame.pack_forget()
         state.set(actual)
 
-    label.bind('<Double-1>', toggleHiddableFrame)
+    label.bind('<Double-1>', toggleParameterFrame)
 
-    locationText = tk.Text(locationFrame)
+    locationText = tk.Text(frame)
     locationText.config(
         height=configuration["location"]["height"],
         width=configuration["location"]["width"]
     )
     locationText.pack(side="left")
 
-    locationDict = {
+    valueHolder = {
         "value": locationText,
         "state": state,
         "altrep": altrepInput,
         "language": languageInput
     }
 
-    return locationFrame, locationDict
+    return frame, valueHolder
 
-def makePercentFrame(masterFrame):
-    percentFrame = tk.Frame(masterFrame)
+def makePercentFrame(root):
+    frame = tk.Frame(root)
 
-    hiddableFrame = tk.Frame(percentFrame)
+    parameterFrame = tk.Frame(frame)
     percentVar = tk.StringVar(value="")
-    tk.Label(hiddableFrame, text=" %").pack(side="right")
-    latSpinbox = ttk.Spinbox(hiddableFrame, from_=0, to=100, increment=1, textvariable=percentVar)
+    tk.Label(parameterFrame, text=" %").pack(side="right")
+    latSpinbox = ttk.Spinbox(parameterFrame, from_=0, to=100, increment=1, textvariable=percentVar)
     latSpinbox.pack(side="right")
 
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            checkbutton.config(text="Task completed at ")
-            hiddableFrame.pack(side="right")
+    state = tk.BooleanVar(value=False)
+    def toggleParameterFrame():
+        if (state.get()):
+            button.config(text="Task completed at ")
+            parameterFrame.pack(side="right")
         else:
-            checkbutton.config(text="Completed ? ")
-            hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(percentFrame, text="Completed ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
+            button.config(text="Completed ? ")
+            parameterFrame.pack_forget()
+    button = tk.Checkbutton(frame, text="Completed ? ", variable=state, offvalue=False, onvalue=True, command=toggleParameterFrame)
+    button.pack(side="left")
 
-    percentDict = {
-        "state": buttonState,
+    valueHolder = {
+        "state": state,
         "value": percentVar
     }
 
-    return percentFrame, percentDict
+    return frame, valueHolder
 
-def makePriorityFrame(masterFrame):
-    priorityFrame = tk.Frame(masterFrame)
+def makePriorityFrame(root):
+    frame = tk.Frame(root)
 
-    tk.Label(priorityFrame, text="Priority level: ").pack(side="left")
+    tk.Label(frame, text="Priority level: ").pack(side="left")
     priorityVar = tk.StringVar(value="")
-    prioritySpinbox = ttk.Spinbox(priorityFrame, from_=0, to=9, increment=1, textvariable=priorityVar, wrap=True)
+    prioritySpinbox = ttk.Spinbox(frame, from_=0, to=9, increment=1, textvariable=priorityVar, wrap=True)
     prioritySpinbox.pack(side="right")
 
-    priorityDict = {
+    valueHolder = {
         "value": priorityVar
     }
 
-    return priorityFrame, priorityDict
+    return frame, valueHolder
 
-def makeResourceFrame(masterFrame):
-    resourceFrame = tk.Frame(masterFrame)
+def makeResourceFrame(root):
+    frame = tk.Frame(root)
 
-    hiddableFrame = tk.Frame(resourceFrame)
-    resourceText = tk.Text(hiddableFrame)
+    parameterFrame = tk.Frame(frame)
+    resourceText = tk.Text(parameterFrame)
     resourceText.config(
         height=configuration["resources"]["height"],
         width=configuration["resources"]["width"]
     )
     resourceText.pack()
 
-    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(hiddableFrame)
+    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(parameterFrame)
     altrepFrame.pack()
 
-    languageFrame, languageInput = makeLanguageFrame(hiddableFrame)
+    languageFrame, languageInput = makeLanguageFrame(parameterFrame)
     languageFrame.pack()
 
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            checkbutton.config(text="Resource : ")
-            hiddableFrame.pack()
+    state = tk.BooleanVar(value=False)
+    def toggleParameterFrame():
+        if (state.get()):
+            button.config(text="Resource : ")
+            parameterFrame.pack()
         else:
-            checkbutton.config(text="Resource ? ")
-            hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(resourceFrame, text="Resource ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack()
+            button.config(text="Resource ? ")
+            parameterFrame.pack_forget()
+    button = tk.Checkbutton(frame, text="Resource ? ", variable=state, offvalue=False, onvalue=True, command=toggleParameterFrame)
+    button.pack()
 
-    resourceDict = {
-        "state": buttonState,
+    valueHolder = {
+        "state": state,
         "value": resourceText,
         "altrep": altrepInput,
         "language": languageInput
     }
 
-    return resourceFrame, resourceDict
+    return frame, valueHolder
 
-def makeStatusFrame(masterFrame, componentType: str):
-    statusFrame = tk.Frame(masterFrame)
+def makeStatusFrame(frame, componentType: str):
+    frame = tk.Frame(root)
 
     value = tk.StringVar(value="")
     statusCombobox = ttk.Combobox(
-        statusFrame,
+        frame,
         values=configuration["status"][f"{componentType}"],
         state="readonly",
         textvariable=value
     )
     statusCombobox.pack()
 
-    return statusFrame, value
+    return frame, value
 
-def makeSummaryFrame(masterFrame, title):
-    summaryFrame = tk.Frame(masterFrame)
+def makeSummaryFrame(frame, title):
+    frame = tk.Frame(root)
 
-    label = tk.Label(summaryFrame, text="Title: ")
+    label = tk.Label(frame, text="Title: ")
     label.pack(side="left")
 
-    summaryEntry = tk.Entry(summaryFrame, textvariable=title)
+    summaryEntry = tk.Entry(frame, textvariable=title)
     summaryEntry.pack(side="left")
     
-    hiddableFrame = tk.Frame(summaryFrame)
-    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(hiddableFrame)
+    parameterFrame = tk.Frame(frame)
+    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(parameterFrame)
     altrepFrame.pack()
-    languageFrame, languageInput = makeLanguageFrame(hiddableFrame)
+    languageFrame, languageInput = makeLanguageFrame(parameterFrame)
     languageFrame.pack()
 
     state = tk.BooleanVar(value=False)
-    def toggleHiddableFrame(event):
+    def toggleParameterFrame(event):
         actual = not state.get()
         if (actual):
             logging.debug(f"User toggled hiddable frame from a {title.get()} event frame.")
-            hiddableFrame.pack(side="bottom")
+            parameterFrame.pack(side="bottom")
         else:
-            hiddableFrame.pack_forget()
+            parameterFrame.pack_forget()
             logging.debug(f"User untoggled hiddable frame from a {title.get()} event frame.")
         state.set(actual)
-    label.bind('<Double-1>', toggleHiddableFrame)
+    label.bind('<Double-1>', toggleParameterFrame)
 
-    summaryDict = {
+    valueHolder = {
         "value": title,
         "state": state,
         "altrep": altrepInput,
         "language": languageInput
     }
 
-    return summaryFrame, summaryDict
+    return frame, valueHolder
 
-def makeDtFrame(masterFrame, typename: str):
+def makeDtFrame(frame, typename: str):
     # typename is the name of the type of the datime
     if (typename not in ["completed", "end", "due", "start"]):
         return None, None
 
-    dtFrame = tk.Frame(masterFrame)
+    dtFrame = tk.Frame(root)
 
     if (typename == "start"):
         tk.Label(dtFrame, text="From ").pack(side="left")
@@ -458,57 +458,57 @@ def makeDtFrame(masterFrame, typename: str):
     tk.Label(timeFrame, text="h ").pack(side="right")
     hourSpinbox.pack(side="right")
 
-    timebuttonState = tk.BooleanVar(value=
+    timestate = tk.BooleanVar(value=
         configuration[f"general"]["time-status"] or configuration[f"dt{typename}"]["datetime-default"]
     )
     def toggleHiddableTimeFrame():
-        if (timebuttonState.get()):
-            timecheckbutton.config(text=" at ")
+        if (timestate.get()):
+            timebutton.config(text=" at ")
             timeFrame.pack(side="right")
         else:
-            timecheckbutton.config(text="Time ? ")
+            timebutton.config(text="Time ? ")
             timeFrame.pack_forget()
-    timecheckbutton = tk.Checkbutton(dtFrame, text="Time ? ", variable=timebuttonState, offvalue=False, onvalue=True, command=toggleHiddableTimeFrame)
-    timecheckbutton.pack(side="left")
-    if (timebuttonState.get()):
-        timecheckbutton.config(text=" at ")
+    timebutton = tk.Checkbutton(dtFrame, text="Time ? ", variable=timestate, offvalue=False, onvalue=True, command=toggleHiddableTimeFrame)
+    timebutton.pack(side="left")
+    if (timestate.get()):
+        timebutton.config(text=" at ")
         timeFrame.pack(side="right")
 
-    dtDict = {
+    valueHolder = {
         "date": dateEntry,
-        "time-status": timebuttonState,
+        "time-status": timestate,
         "hour": hourVar,
         "minute": minuteVar,
         "second": secondVar
     }
 
-    return dtFrame, dtDict
+    return dtFrame, valueHolder
 
-def makeDurationFrame(masterFrame):
-    durationFrame = tk.Frame(masterFrame)
+def makeDurationFrame(root):
+    frame = tk.Frame(root)
 
     week = tk.StringVar(value="0")
-    weekEntry = tk.Spinbox(durationFrame, textvariable=week, width=3, from_=0, wrap=True, justify=tk.RIGHT)
+    weekEntry = tk.Spinbox(frame, textvariable=week, width=3, from_=0, wrap=True, justify=tk.RIGHT)
     weekEntry.pack(side="left")
-    tk.Label(durationFrame, text=configuration["duration"]["week-text"]).pack(side="left")
+    tk.Label(frame, text=configuration["duration"]["week-text"]).pack(side="left")
     day = tk.StringVar(value="")
-    dayEntry = tk.Spinbox(durationFrame, textvariable=day, width=2, from_=0, to=31, wrap=True, justify=tk.RIGHT)
+    dayEntry = tk.Spinbox(frame, textvariable=day, width=2, from_=0, to=31, wrap=True, justify=tk.RIGHT)
     dayEntry.pack(side="left")
-    tk.Label(durationFrame, text=configuration["duration"]["day-text"]).pack(side="left")
+    tk.Label(frame, text=configuration["duration"]["day-text"]).pack(side="left")
     hour = tk.StringVar(value="")
-    hourEntry = tk.Spinbox(durationFrame, textvariable=hour, width=2, from_=0, to=23, wrap=True, justify=tk.RIGHT)
+    hourEntry = tk.Spinbox(frame, textvariable=hour, width=2, from_=0, to=23, wrap=True, justify=tk.RIGHT)
     hourEntry.pack(side="left")
-    tk.Label(durationFrame, text=configuration["duration"]["hour-text"]).pack(side="left")
+    tk.Label(frame, text=configuration["duration"]["hour-text"]).pack(side="left")
     minute = tk.StringVar(value="")
-    minuteEntry = tk.Spinbox(durationFrame, textvariable=minute, width=2, from_=0, to=59, wrap=True, justify=tk.RIGHT)
+    minuteEntry = tk.Spinbox(frame, textvariable=minute, width=2, from_=0, to=59, wrap=True, justify=tk.RIGHT)
     minuteEntry.pack(side="left")
-    tk.Label(durationFrame, text=configuration["duration"]["minute-text"]).pack(side="left")
+    tk.Label(frame, text=configuration["duration"]["minute-text"]).pack(side="left")
     second = tk.StringVar(value="")
-    secondEntry = tk.Spinbox(durationFrame, textvariable=second, width=2, from_=0, to=59, wrap=True, justify=tk.RIGHT)
+    secondEntry = tk.Spinbox(frame, textvariable=second, width=2, from_=0, to=59, wrap=True, justify=tk.RIGHT)
     secondEntry.pack(side="left")
-    tk.Label(durationFrame, text=configuration["duration"]["second-text"]).pack(side="left")
+    tk.Label(frame, text=configuration["duration"]["second-text"]).pack(side="left")
 
-    duration = {
+    valueHolder = {
         "week": week,
         "day": day,
         "hour": hour,
@@ -516,36 +516,32 @@ def makeDurationFrame(masterFrame):
         "second": second
     }
 
-    return durationFrame, duration
+    return frame, valueHolder
 
-def makeTranspFrame(masterFrame):
-    transpFrame = tk.Frame(masterFrame)
+def makeTranspFrame(root):
+    frame = tk.Frame(root)
 
     value = tk.StringVar(value=configuration["transparency"]["choices"][0])
-    tk.Label(transpFrame, text="Transparency of the event: ").pack(side="left")
+    tk.Label(frame, text="Transparency of the event: ").pack(side="left")
     transpCombobox = ttk.Combobox(
-        transpFrame,
+        frame,
         values=configuration["transparency"]["choices"],
         state="readonly",
         textvariable=value
     )
     transpCombobox.pack()
 
-    transpDict = {
-        "value": value
-    }
+    return frame, value
 
-    return transpFrame, transpDict
+def makeOrganizerFrame(root):
+    frame = ttk.Frame(root)
 
-def makeOrganizerFrame(masterFrame):
-    organizerFrame = ttk.Frame(masterFrame)
-
-    label = ttk.Label(organizerFrame, text="Organizer: ")
+    label = ttk.Label(frame, text="Organizer: ")
     label.pack(side="left")
 
     value = tk.StringVar(value="")
     combobox = ttk.Combobox(
-        organizerFrame,
+        frame,
         values=[elt["common-name"] for elt in configuration["attendees"]["choices"]],
         exportselection=False,
         height=min(configuration["attendees"]["height"], len(configuration["attendees"]["choices"])),
@@ -553,10 +549,10 @@ def makeOrganizerFrame(masterFrame):
     )
     combobox.pack(side="right")
 
-    return organizerFrame, value
+    return frame, value
 
-def makeAttendeeFrame(masterFrame):
-    frame = tk.Frame(masterFrame)
+def makeAttendeeFrame(frame, eventType: str):
+    frame = tk.Frame(root)
 
     label = tk.Label(frame, text=f"Attendees: ")
     label.pack(side="left")
@@ -572,53 +568,41 @@ def makeAttendeeFrame(masterFrame):
 
     listbox.pack()
 
-    return frame, listbox
-
-    # userFrame = tk.Frame(attendeeFrame)
-
-    # hiddableFrame = tk.Frame(attendeeFrame)
-    # cutypeFrame, cutypeDict = makeCutypeFrame(hiddableFrame)
+    # parameterFrame = tk.Frame(root)
+    # cutypeFrame, cutypeDict = makeCutypeFrame(parameterFrame)
     # cutypeFrame.pack()
-
-    # label = tk.Label(attendeeFrame, text=f"{labelText}")
-    # state = tk.BooleanVar(value=False)
-    # def toggleHiddableFrame(event):
-    #     actual = not state.get()
-    #     if (actual):
-    #         hiddableFrame.pack(side="bottom")
-    #     else:
-    #         hiddableFrame.pack_forget()
-    #     state.set(actual)
-
-    # label.bind('<Double-1>', toggleHiddableFrame)
-    # label.pack(side="left")
-
-    # value = tk.StringVar(value="ORGANIZER ENTRY (TODO)")
-    # userInput = tk.Entry(attendeeFrame, textvariable=value)
-    # userInput.pack()
-
-    # memberFrame, memberDict = makeMemberFrame(hiddableFrame, configuration)
+    # memberFrame, memberDict = makeMemberFrame(parameterFrame)
     # memberFrame.pack()
-    # roleFrame, roleDict = makeRoleFrame(hiddableFrame, configuration)
+    # roleFrame, roleDict = makeRoleFrame(parameterFrame)
     # roleFrame.pack()
-    # partstatFrame, parstatDict = makePartstatFrame(hiddableFrame, configuration, eventType)
+    # partstatFrame, parstatDict = makePartstatFrame(parameterFrame, eventType)
     # partstatFrame.pack()
-    # rsvpFrame, rsvpDict = makeRsvpFrame(hiddableFrame, configuration)
+    # rsvpFrame, rsvpDict = makeRsvpFrame(parameterFrame)
     # rsvpFrame.pack()
-    # deltoFrame, deltoDict = makeDelegatedToFrame(hiddableFrame)
+    # deltoFrame, deltoDict = makeDelegatedToFrame(parameterFrame)
     # deltoFrame.pack()
-    # delfromFrame, delfromDict = makeDelegatedFromFrame(hiddableFrame)
+    # delfromFrame, delfromDict = makeDelegatedFromFrame(parameterFrame)
     # delfromFrame.pack()
-    # sentbyFrame, sentbyDict = makeSentByFrame(hiddableFrame)
+    # sentbyFrame, sentbyDict = makeSentByFrame(parameterFrame)
     # sentbyFrame.pack()
-    # cnFrame, cnDict = makeCommonNameFrame(hiddableFrame)
+    # cnFrame, cnDict = makeCommonNameFrame(parameterFrame)
     # cnFrame.pack()
-    # dirFrame, dirDict = makeDirFrame(hiddableFrame)
+    # dirFrame, dirDict = makeDirFrame(parameterFrame)
     # dirFrame.pack() 
-    # languageFrame, languageDict = makeLanguageFrame(hiddableFrame)
+    # languageFrame, languageDict = makeLanguageFrame(parameterFrame)
     # languageFrame.pack()
 
-    return attendeeFrame
+    # state = tk.BooleanVar(value=False)
+    # def toggleParameterFrame(event):
+    #     actual = not state.get()
+    #     if (actual):
+    #         parameterFrame.pack(side="bottom")
+    #     else:
+    #         parameterFrame.pack_forget()
+    #     state.set(actual)
+    # label.bind('<Double-1>', toggleParameterFrame)
+
+    return frame, listbox
 
 def makeURLFrame(master):
     frame = tk.Frame(master)
