@@ -5,9 +5,9 @@ from src.gui.components.event import makeEventFrame
 from src.utils import configuration, exportConfigToJSONFile, logging
 from src.backend.components.calendar import Calendar
 
-def export(root: tk.Frame, calendar: Calendar):
+def export(calendar: Calendar):
     if (not calendar):
-        logging.warning(f"User attempted to add an empty calendar. Should display (not implemented yet) a warning popup")
+        logging.warning(f"User attempted to add an unexisting calendar. Should display (not implemented yet) a warning popup")
         return None
 
     # Open dialog
@@ -21,7 +21,7 @@ def export(root: tk.Frame, calendar: Calendar):
     if file_path:
         with open(file_path, 'w') as f:
             f.write(str(calendar))
-            logging.info(f"Calendar successfully saved")
+            logging.info(f"Calendar successfully saved with {len(calendar.components)} component(s)")
     else:
         logging.warning("Save operation cancelled.")
 
@@ -45,7 +45,6 @@ def create(master):
         eventFrame = makeEventFrame(notebook, eventHolder)
         notebook.add(eventFrame, text="New event")
         events.append(eventHolder)
-        print("eventHolder added to the list")
     eventButton = tk.Button(buttonsFrame, text="Create new event", command=addEvent)
     eventButton.pack()
 
@@ -54,8 +53,7 @@ def create(master):
         for event in events:
             if (event["value"]):
                 calendar.add_component(event["value"])
-        print(str(calendar))
-        export(root, calendar)
+        export(calendar)
     submitButton = tk.Button(buttonsFrame, text="Submit", command=submit)
     submitButton.pack()
     buttonsFrame.pack()
