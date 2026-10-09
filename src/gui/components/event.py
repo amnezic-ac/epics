@@ -77,7 +77,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
     geoFrame, geoDict = makeGeoFrame(frame)
     # last-mod
     locationFrame, locationDict = makeLocationFrame(frame)
-    organizerFrame, organizerListbox = makeAttendeeFrame(frame, "event", "Organizer: ")
+    organizerFrame, organizerValue = makeOrganizerFrame(frame)
     priorityFrame, priorityDict = makePriorityFrame(frame)
     # seq
     statusFrame, statusValue = makeStatusFrame(frame, "event")
@@ -90,7 +90,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
 
     # optional and may occur more than once
     attachmentFrame, attachmentDict = makeAttachmentFrame(frame)
-    attendeesFrame, attendeesListbox = makeAttendeeFrame(frame, "event", "Attendees: ")
+    attendeesFrame, attendeesListbox = makeAttendeeFrame(frame)
     categoriesFrame, categoriesDict = makeCategoriesFrame(frame)
     commentFrame, commentDict = makeCommentFrame(frame)
     # contact
@@ -132,15 +132,6 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
     label.grid(row=7, column=2, columnspan=2, sticky=tk.EW)
     submitButton.grid(row=7, column=4, sticky=tk.E, columnspan=2)
 
-    # additional infos
-    # classificationFrame.grid_forget()
-    # priorityFrame.grid_forget()
-    # tranparencyFrame.grid_forget()
-    # geoFrame.grid_forget()
-    # urlFrame.grid_forget()
-    # commentFrame.grid_forget()
-    
-
     state = tk.BooleanVar(value=False)
     def toggleHiddableFrame(event):
         actual = not state.get()
@@ -151,12 +142,6 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
             geoFrame.grid(row=9, column=3, columnspan=3, sticky=tk.E)
             urlFrame.grid(row=10, column=0, columnspan=6, sticky=tk.W)
             commentFrame.grid(row=11, column=0, columnspan=6, sticky=tk.NSEW)
-            # classificationFrame.grid()
-            # priorityFrame.grid()
-            # tranparencyFrame.grid()
-            # geoFrame.grid()
-            # urlFrame.grid()
-            # commentFrame.grid()
             destroyButton.grid(row=12, column=0, columnspan=2, sticky=tk.W)
             label.grid(row=12, column=2, columnspan=2, sticky=tk.EW)
             label.config(text="Show less")
@@ -240,6 +225,10 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
         description = None
         if (descriptionDict["value"].get("1.0", "end-1c")):
             description = Description(descriptionDict["value"].get("1.0", "end-1c"), descriptionDict["altrep"].get("1.0", "end-1c"), findLangIdFromLangValue(configuration["language"]["choices"], descriptionDict["language"].get()))
+        
+        organizer = None
+        if (organizerValue.get()):
+            organizer = Organizer(organizerValue.get())
 
         geo = None
         location = None
@@ -294,7 +283,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
             geo,
             datetime.now(),
             location,
-            None,
+            organizer,
             priority,
             None,
             status,

@@ -537,15 +537,32 @@ def makeTranspFrame(masterFrame):
 
     return transpFrame, transpDict
 
-def makeAttendeeFrame(masterFrame, eventType: str, labelText: str):
-    logging.debug(f"Creation of a {labelText} attendee frame")
+def makeOrganizerFrame(masterFrame):
+    organizerFrame = ttk.Frame(masterFrame)
+
+    label = ttk.Label(organizerFrame, text="Organizer: ")
+    label.pack(side="left")
+
+    value = tk.StringVar(value="")
+    combobox = ttk.Combobox(
+        organizerFrame,
+        values=[elt["common-name"] for elt in configuration["attendees"]["choices"]],
+        exportselection=False,
+        height=min(configuration["attendees"]["height"], len(configuration["attendees"]["choices"])),
+        textvariable=value
+    )
+    combobox.pack(side="right")
+
+    return organizerFrame, value
+
+def makeAttendeeFrame(masterFrame):
     frame = tk.Frame(masterFrame)
 
-    label = tk.Label(frame, text=f"{labelText}")
+    label = tk.Label(frame, text=f"Attendees: ")
     label.pack(side="left")
     listbox = tk.Listbox(
         frame,
-        selectmode="multiple" if labelText != "Organizer: " else "single",
+        selectmode="multiple",
         exportselection=False,
         height=min(configuration["attendees"]["height"], len(configuration["attendees"]["choices"]))
     )
