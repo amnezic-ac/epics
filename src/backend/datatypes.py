@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum, auto
+import re
 
 DEFAULT_HOUR_DURATION = 2
 
@@ -50,34 +51,50 @@ class DurationType():
 
 class Rrule():
     # cf section 3.3.10
-    class Frequence(Enum):
-        YEARLY      = 1
-        MONTHLY     = auto()
-        WEEKLY      = auto()
-        DAILY       = auto()
-        HOURLY      = auto()
-        MINUTELY    = auto()
-        SECONDLY    = auto()
-
-    # cf section 3.3.10
     # TODO: re read the specs to make negative values possible
     def __init__(self,
-        freq: Frequence,
+        freq: str,
         until: datetime = None,
-        count: int = 0,
-        interval: int = None,
-        byseclist: [int] = None,
-        byminlist: [int] = None,
-        byhrlist: [int] = None,
-        bywdaylist: [str] = None,
-        bymodaylist: [int] = None,
-        byyrdaylist: [int] = None,
-        bywknolist: [int] = None,
-        bymolist: [int] = None,
-        bysplit: [int] = None,
-        weekday: str = None,
+        count: int = None,
+        interval: int = 1,
+        bysecond: [int] = None,
+        byminute: [int] = None,
+        byhour: [int] = None,
+        byday: [str] = None,
+        bymonthday: [int] = None,
+        byyearday: [int] = None,
+        byweekno: [int] = None,
+        bymonth: [int] = None,
+        bysetpos: [int] = None,
+        wkst: str = "MO",
         datetime_format: bool = True # indicate if DTSTART has datetime format or not
     ):
+        """
+        create the rrule property object
+
+        Params:
+        ------
+        - freq: str ["SECONDLY", "MINUTELY", "HOURLY", "DAILY", "WEEKLY", "MONTHLY", "YEARLY"]
+            indicate the regularity scale of the component
+        - until: datetime
+            indicate when the repetition ends
+        - count: int
+            specify the number of repetition of the event
+        - interval: int
+            space the component repetition by _interval_ _freq_
+        - byXXXX: [int]
+            specify the number of the moment of repetition of the event inside a _freq_ time period
+        - byday: [str]
+            specify the week day name when the component has to occured
+        - bysetpos: [int]
+            represent the position of the byXXXX sequence relatively to the _freq_
+        - wkst: str
+            specify the name of the first day of the week
+        - datetime_format: bool
+            specify if the enddate, if any, has to got a time specified
+        """
+        if (not freq or freq not in ["SECONDLY", "MINUTELY", "HOURLY", "DAILY", "WEEKLY", "MONTHLY", "YEARLY"]):
+            raise Exception(f"Unable to make a recurrent event with an invalid frequence (f{freq})")
         if (until and count):
             raise Exception(f"Can't take a count and an until")
 
@@ -90,41 +107,98 @@ class Rrule():
             raise Exception(f"Impossible to have a 0 or negative interval")
         self.interval = interval
 
-        self.byseclist = None
-        self.byminlist = None
-        self.byhrlist = None
+        self.bysecond = None
+        self.byminute = None
+        self.byhour = None
         if (datetime_format):
-            if (byseclist and any([(value < 0 or value > 60) for value in byseclist])):
+            if (bysecond and any([(value < 0 or value > 60) for value in bysecond])):
                 raise Exception(f"There is at least one second value not included between 0 and 60")
-            self.byseclist = byseclist
-            if (byminlist and any([(value < 0 or value > 59) for value in byminlist])):
+            self.bysecond = bysecond
+            if (byminute and any([(value < 0 or value > 59) for value in byminute])):
                 raise Exception(f"There is at least one minute value not included between 0 and 59")
-            self.byminlist = byminlist
-            if (byhrlist and any([(value < 0 or value > 23) for value in byhrlist])):
+            self.byminute = byminute
+            if (byhour and any([(value < 0 or value > 23) for value in byhour])):
                 raise Exception(f"There is at least one hour value not included between 0 and 23")
-            self.byhrlist = byhrlist
+            self.byhour = byhour
 
-        self.bywdaylist = None
-        if (self.freq.value not in [Rrule.Frequence.MONTHLY, Rrule.Frequence.YEARLY]):
-            self.bywdaylist = bywdaylist
-        if (bymodaylist and any([(value < -31 or value > 31 or value == 0) for value in bymodaylist])):
-            raise Exception(f"There is at least one day number of the month value not included between -31 and 31")
-        self.bymodaylist = bymodaylist
-        if (byyrdaylist and any([(value < -366 or value > 366 or value == 0) for value in byyrdaylist])):
-            raise Exception(f"There is at least one day number of the year value not included between 1 and 366")
-        self.byyrdaylist = byrdaylist
-        if (bywknolist and any([(value < -53 or value > 53 or value == 0) for value in byyrdaylist])):
-            raise Exception(f"There is at least one week number of the year value not included between -53 and 53")
-        self.bywknolist = bywknolist
-        if (bymolist and any([(value < 1 or value > 12) for value in byyrdaylist])):
-            raise Exception(f"There is at least one month number of the year value not included between 1 and 53")
-        self.bymolist = bymolist
-        if (bymolist and any([(value < 1 or value > 12) for value in byyrdaylist])):
-            raise Exception(f"There is at least one month number of the year value not included between 1 and 53")
-        self.bysplit = bysplit
-        if (bysplit and any([(value < -366 or value > 366 or value == 0) for value in byyrdaylist])):
-            raise Exception(f"There is at least one month number of the year value not included between -53 and 53")
-        self.weekday = weekday
+        self.byday = None
+        if (byday):
+            if (not freq in ["MONTHLY", "YEARLY"]):
+                raise Exception(f"Can't add a list of days for not a monthly or yearly frequence")
+            if (not all([re.match( "([+-]?([1-9]|[1-4][0-9]|5[0-3]))?(SU|MO|TU|WE|TH|FR|SA)", day) for day in byday])):
+                raise Exception(f"Invalid byday expression")
+            if (freq == "MONTHLY"):
+                for day in byday:
+                    tmp = re.search(r"\d+", day)
+                    if (tmp and int(tmp.group()) >= 5):
+                        raise Exception(f"A month can't have five times the same weekday")
+            self.byday = byday
+
+        self.bymonthday = None
+        if (bymonthday):
+            if (freq == "WEEKLY"):
+                raise Exception(f"The BYMONTHDAY rule part MUST NOT be specified when the FREQ rule part is set to WEEKLY")
+            if (any([(value < -31 or value > 31 or value == 0) for value in bymonthday])):
+                raise Exception(f"BYMONTHDAY valid values are 1 to 31 or -31 to -1")
+            self.bymonthday = bymonthday
+
+        self.byyearday = None
+        if (byyearday):
+            if (freq != "YEARLY"):
+                raise Exception(f"The BYYEARDAY rule part MUST NOT be specified when the FREQ rule part is set to DAILY, WEEKLY, or MONTHLY")
+            if (any([(value < -366 or value > 366 or value == 0) for value in byyearday])):
+                raise Exception(f"BYYEARDAY valid values are 1 to 366 or -366 to -1")
+            self.byyearday = byyearday
+
+        self.byweekno = None
+        if (byweekno):
+            if (freq != "YEARLY"):
+                raise Exception(f"The BYWEEKNO rule MUST NOT be used when the FREQ rule part is set to anything other than YEARLY")
+            if (any([(value < -53 or value > 53 or value == 0) for value in byyearday])):
+                raise Exception(f"BYWEEKNO valid values are 1 to 53 or -53 to -1")
+            if (byday and re.search(r"\d+", byday).group()):
+                raise Exception(f"the BYDAY rule part MUST NOT be specified with a numeric value with the FREQ rule part set to YEARLY when the BYWEEKNO rule part is specified")
+            self.byweekno = byweekno
+
+        self.bymonth = None
+        if (bymonth):
+            if (any([(value < 1 or value > 12) for value in byyearday])):
+                raise Exception(f"BYMONTH valid values are 1 to 12")
+            self.bymonth = bymonth
+
+        self.bysetpos = None
+        if (bysetpos):
+            if ([bysecond, byminute, byhour, byday, bymonthday, byyearday, byweekno, bymonth] == [None]*8):
+                raise Exception(f"BYSETPOS rule MUST only be used in conjunction with another BYxxx rule part")
+            if (any([(value < -366 or value > 366 or value == 0) for value in byyearday])):
+                raise Exception(f"BYSETPOS valid values are 1 to 366 or -366 to -1")
+            self.bysetpos = bysetpos
+
+            # not sure if it's my role to implement this, maybe for ICS usage on a real calendar
+            # """
+            # If multiple BYxxx rule parts are specified, then after evaluating the specified FREQ and INTERVAL rule parts, the BYxxx rule parts are applied to the current set of evaluated occurrences in the following order: BYMONTH, BYWEEKNO, BYYEARDAY, BYMONTHDAY, BYDAY, BYHOUR, BYMINUTE, BYSECOND and BYSETPOS
+            # """
+            # self.bysetposOwner = None
+            # if (self.bymonth):
+            #     self.bysetposOwner = "BYMONTH"
+            # elif (self.byweekno):
+            #     self.bysetposOwner = "BYWEEKNO"
+            # elif (self.byyearday):
+            #     self.bysetposOwner = "byyearday"
+            # elif (self.bymonthday):
+            #     self.bysetposOwner = "bymonthday"
+            # elif (self.byday):
+            #     self.bysetposOwner = "byday"
+            # elif (self.byhour):
+            #     self.bysetposOwner = "byhour"
+            # elif (self.byminute):
+            #     self.bysetposOwner = "byminute"
+            # elif (self.bysecond):
+            #     self.bysetposOwner = "bysecond"
+
+        if (wkst and not wkst in ["SU", "MO", "TU", "WE", "TH", "FR", "SA"]):
+            raise Exception(f"Invalid day of the week name ({wkst})")
+        self.wkst = wkst
 
 
     def __str__(self):
