@@ -343,7 +343,7 @@ def makeResourceFrame(root):
 
     return frame, valueHolder
 
-def makeStatusFrame(frame, componentType: str):
+def makeStatusFrame(root, componentType: str):
     frame = tk.Frame(root)
 
     value = tk.StringVar(value="")
@@ -357,7 +357,7 @@ def makeStatusFrame(frame, componentType: str):
 
     return frame, value
 
-def makeSummaryFrame(frame, title):
+def makeSummaryFrame(root, title):
     frame = tk.Frame(root)
 
     label = tk.Label(frame, text="Title: ")
@@ -393,7 +393,7 @@ def makeSummaryFrame(frame, title):
 
     return frame, valueHolder
 
-def makeDtFrame(frame, typename: str):
+def makeDtFrame(root, typename: str):
     # typename is the name of the type of the datime
     if (typename not in ["completed", "end", "due", "start"]):
         return None, None
@@ -551,7 +551,7 @@ def makeOrganizerFrame(root):
 
     return frame, value
 
-def makeAttendeeFrame(frame, eventType: str):
+def makeAttendeeFrame(root, eventType: str):
     frame = tk.Frame(root)
 
     label = tk.Label(frame, text=f"Attendees: ")
@@ -613,3 +613,97 @@ def makeURLFrame(master):
     entry.pack(side="right")
 
     return frame, value
+
+def makeRruleFrame(root):
+    frame = ttk.Frame(root)
+
+    mandatoryFrame = ttk.Frame(frame)
+    for row in range (2):
+        mandatoryFrame.rowconfigure(row, weight=1)
+    for col in range (6):
+        mandatoryFrame.columnconfigure(col, weight=1)
+    tk.Label(mandatoryFrame, text="Frequency ").grid(row=0, column=0, sticky=tk.W)
+    freqValue = tk.StringVar(value="")
+    frequencyCombobox = ttk.Combobox(
+        mandatoryFrame,
+        values = ["yearly", "monthly", "weekly", "daily", "hourly", "minutely", "secondly"],
+        state="readonly",
+        textvariable=freqValue
+    )
+    frequencyCombobox.grid(row=0, column=1, sticky=tk.W)
+    intervalValue = tk.IntVar(value=1)
+    intervalSpinbox = ttk.Spinbox(
+        mandatoryFrame,
+        from_=1,
+        to=configuration["rrule"]["interval"]["max"],
+        wrap=True,
+        textvariable=intervalValue,
+        width=4
+    )
+    ttk.Label(mandatoryFrame, text="Interval").grid(row=1, column=0, sticky=tk.W)
+    intervalSpinbox.grid(row=1, column=1, columnspan=5, sticky=tk.W)
+
+    tk.Label(mandatoryFrame, text="Repeat ").grid(row=0, column=2, rowspan=2, columnspan=4, sticky=tk.NW)
+    repeatCombobox = ttk.Combobox(
+        mandatoryFrame,
+        values = ["until", "for", "undetermined"],
+        state="readonly"
+    )
+    repeatCombobox.grid(row=0, column=3, rowspan=2, sticky=tk.NE)
+
+    untilCalendar = tkc.DateEntry(
+        mandatoryFrame,
+        selectmode="day",
+        date_pattern="y/mm/dd"
+    )
+    untilCalendar._top_cal.lift()
+
+    countValue = tk.IntVar(value=0)
+    countLabel = ttk.Label(mandatoryFrame, text=" times")
+    countSpinbox = ttk.Spinbox(mandatoryFrame, from_=0, increment=1, width=3, justify=tk.RIGHT, textvariable=countValue)
+
+    repetitionType = tk.StringVar(value="undetermined")
+    def displayRepetition(event):
+        selected_value = event.widget.get()
+        match selected_value:
+            case "until":
+                countSpinbox.grid_forget()
+                countLabel.grid_forget()
+                untilCalendar.grid(row=0, column=4, columnspan=2, rowspan=2, sticky=tk.N)
+                repetitionType.set("until")
+            case "for":
+                untilCalendar.grid_forget()
+                countSpinbox.grid(row=0, column=4, rowspan=2, sticky=tk.N)
+                countLabel.grid(row=0, column=5, rowspan=2, sticky=tk.N)
+                repetitionType.set("count")
+            case "undetermined":
+                countLabel.grid_forget()
+                countSpinbox.grid_forget()
+                untilCalendar.grid_forget()
+                repetitionType.set("forever")
+            case _:
+                raise Exception(f"This error shouldn't be displayed")
+
+    repeatCombobox.bind("<<ComboboxSelected>>", displayRepetition)
+
+    yearlyFrame = ttk.Frame(frame)
+    def displayFreqFrame(event):
+        selected_value = event.widget.get()
+        match selected_value:
+            case "yearly":
+                yearlyFrame.pack(fill="x")
+            case _:
+                yearlyFrame.pack_forget()
+    frequencyCombobox.bind("<<ComboboxSelected>>", displayFreqFrame)
+
+    mandatoryFrame.pack(fill="x")
+
+    valueHolder = {
+        "freq": freqValue,
+        "repetition": repetitionType,
+        "interval": intervalValue,
+        "until": None,
+        "count": countValue,
+    }
+
+    return frame, valueHolder

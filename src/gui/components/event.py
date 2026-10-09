@@ -90,7 +90,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
 
     # optional and may occur more than once
     attachmentFrame, attachmentDict = makeAttachmentFrame(frame)
-    attendeesFrame, attendeesListbox = makeAttendeeFrame(frame)
+    attendeesFrame, attendeesListbox = makeAttendeeFrame(frame, "event")
     categoriesFrame, categoriesDict = makeCategoriesFrame(frame)
     commentFrame, commentDict = makeCommentFrame(frame)
     # contact

@@ -8,10 +8,17 @@ from tkinter import filedialog as fd
 from src.gui.components import event, calendar
 from src.utils import configuration, exportConfigToJSONFile, logging
 
+from src.gui.properties import makeRruleFrame
+
 
 logging.debug(f"New session activated")
 
 root = tk.Tk()
+root.rowconfigure(1, weight=1)
+root.columnconfigure(1, weight=1)
+
+frame, _ = makeRruleFrame(root)
+frame.grid(row=1, column=1, sticky=tk.NSEW)
 
 menubar = tk.Menu(root)
 filemenu = tk.Menu(menubar, tearoff=0)

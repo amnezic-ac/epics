@@ -859,5 +859,10 @@
                 "email": "alexandre.peltot@epita.fr"
             }
         ]
+    },
+    "rrule": {
+        "interval": {
+            "max": 99
+        }
     }
 }
