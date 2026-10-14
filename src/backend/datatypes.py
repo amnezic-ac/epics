@@ -219,3 +219,21 @@ class Rrule():
             result += f";"
 
         return result[:-1]
+
+# test = Rrule(
+#     freq = "MONTHLY",
+#     until = None,
+#     count = 3,
+#     interval = 1,
+#     bysecond= None,
+#     byminute=[30],
+#     byhour=[18],
+#     byday=["-1TU", "FR", "SU"],
+#     bymonth=None,
+#     bymonthday=None,
+#     byyearday=None,
+#     byweekno=None,
+#     bysetpos=None
+# )
+# 
+# print(test)

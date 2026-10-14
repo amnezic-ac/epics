@@ -5,6 +5,7 @@ from datetime import datetime
 
 from src.utils import configuration, findLangIdFromLangValue, logging
 from src.gui.parameters import *
+from src.gui.rrule import *
 
 # NOTE: put the user input part in a hiddable frame iff the frame is optional for all the types of event it can appears
 
@@ -614,7 +615,7 @@ def makeURLFrame(master):
 
     return frame, value
 
-def makeRruleFrame(root):
+def makeRruleFrame(root, time_included: bool = True):
     frame = ttk.Frame(root)
 
     mandatoryFrame = ttk.Frame(frame)
@@ -683,10 +684,10 @@ def makeRruleFrame(root):
                 repetitionType.set("forever")
             case _:
                 raise Exception(f"This error shouldn't be displayed")
-
     repeatCombobox.bind("<<ComboboxSelected>>", displayRepetition)
 
-    yearlyFrame = ttk.Frame(frame)
+
+    yearlyFrame, _ = makeYearlyFrame(frame)
     def displayFreqFrame(event):
         selected_value = event.widget.get()
         match selected_value:
@@ -701,9 +702,19 @@ def makeRruleFrame(root):
     valueHolder = {
         "freq": freqValue,
         "repetition": repetitionType,
-        "interval": intervalValue,
         "until": None,
         "count": countValue,
+        "interval": intervalValue,
+        "bysecond": None,
+        "byminute": None,
+        "byhour": None,
+        "byday": None,
+        "bymonthday": None,
+        "byyearday": None,
+        "byweekno": None,
+        "bymonth":None,
+        "bysetpos": None,
+        "time_included": time_included
     }
 
     return frame, valueHolder
