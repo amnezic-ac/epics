@@ -75,40 +75,61 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict) 
     frame.grid_remove()
     for i in range(3):
         frame.rowconfigure(i, weight=0)
-    for i in range(5):
+    for i in range(4):
         frame.columnconfigure(i, weight=0)
+
+    hiddableFrame = ttk.Frame(frame)
+    for i in range(3):
+        hiddableFrame.rowconfigure(i, weight=0)
+    for i in range(3):
+        hiddableFrame.columnconfigure(i, weight=0)
+    hiddableFrame.grid(row=0, rowspan=3, column=1, columnspan=2)
+    hiddableFrame.grid_remove()
 
     # display all the categories
     listbox = tk.Listbox(
-        frame,
+        hiddableFrame,
         selectmode="multiple",
         height=min(configuration["height"], len(configuration["choices"]))
     )
     for i in range(len(configuration["choices"])):
         listbox.insert(i, configuration["choices"][i])
-    listbox.grid(row=0, rowspan=3, column=1)
-    listbox.grid_remove()
+    listbox.grid(row=0, rowspan=3, column=0, sticky=[tk.N])
     valueHolder["value"] = listbox
 
+    entry = tk.StringVar()
+    entryWidget = ttk.Entry(hiddableFrame, textvariable=entry)
+    entryWidget.grid(row=0, column=1, columnspan=2, sticky=[tk.W, tk.E])
     # let the user add a new category for this particular component
+    addButton = tk.Button(hiddableFrame, text="Add")
+    addButton.grid(row=1, column=1, sticky=[tk.W, tk.E])
+
     # let the user add a new category in the configuration
+    addConfigButton = tk.Button(hiddableFrame, text="Add to configuration")
+    addConfigButton.grid(row=1, column=2, sticky=[tk.W, tk.E])
+
     # let the user remove a category from the configuration
+    removeConfigButton = tk.Button(hiddableFrame, text="Remove from configuration")
+    removeConfigButton.grid(row=2, column=2, sticky=[tk.W, tk.E])
+
     # let the user remove a category for this particular component
+    removeButton = tk.Button(hiddableFrame, text="Remove")
+    removeButton.grid(row=2, column=1, sticky=[tk.W, tk.E])
 
     # check button logic
     state = tk.BooleanVar(value=False)
     valueHolder["state"] = state
     def displayChoicesFrame():
         if (state.get()):
-            listbox.grid()
+            hiddableFrame.grid()
             checkbutton.config(text="Categories: ")
             pass
         else:
-            listbox.grid_remove()
+            hiddableFrame.grid_remove()
             checkbutton.config(text="Categories ?")
             pass
     checkbutton = ttk.Checkbutton(frame, text="Categories ? ", variable=state, offvalue=False, onvalue=True, command=displayChoicesFrame)
-    checkbutton.grid(row=0, rowspan = 3, column=0, sticky=[tk.N])
+    checkbutton.grid(row=0, column=0, sticky=[tk.N])
 
     return frame
 
