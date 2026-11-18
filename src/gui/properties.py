@@ -69,6 +69,22 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
     return frame
 
 def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> tk.Frame :
+    """
+    create a frame for categories property
+
+    Params:
+    -------
+    - root: tk.Frame
+        parent frame
+    - valueHolder: dict
+        dictionary that will contain infos about categories values
+    - configuration: dict
+        dictionary containing default values for user choices
+
+    Returns:
+    --------
+    - tk.Frame: newly created frame (still need to be grid)
+    """
     # main frame
     frame = tk.Frame(root)
     frame.grid(sticky=[tk.W])
@@ -107,6 +123,7 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict) 
         value = entry.get()
         if (value and value not in listbox.get(0, tk.END)):
             listbox.insert(listbox.size(), value)
+        # the listbox height resize dynamically
         listbox.config(height=min(configuration["height"], listbox.size()))
         entry.set(value="")
     addButton = tk.Button(hiddableFrame, text="Add", command=add)
@@ -136,6 +153,8 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict) 
         selection = listbox.curselection()
         for index in reversed(selection):
             listbox.delete(index)
+        # the listbox height resize dynamically
+        listbox.config(height=min(configuration["height"], listbox.size()))
     removeButton = tk.Button(hiddableFrame, text="Remove", command=remove)
     removeButton.grid(row=2, column=1, sticky=[tk.W, tk.E])
 
@@ -155,75 +174,6 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict) 
     checkbutton.grid(row=0, column=0, sticky=[tk.N])
 
     return frame
-
-    # frame.rowconfigure(0, weight=0)
-    # frame.columnconfigure(0, weight=1)
-
-    # label = ttk.Label(frame, text="Categories: ")
-    # label.grid(row=0, column=0)
-
-    # listbox = tk.Listbox(
-    #     frame,
-    #     selectmode="multiple",
-    #     height=min(configuration["height"], len(configuration["choices"]))
-    # )
-    # for i in range(len(configuration["categories"]["choices"])):
-    #     listbox.insert(i, configuration["categories"]["choices"][i])
-    # listbox.pack()
-
-    # parameterFrame = tk.Frame(frame)
-    # userInput = tk.Entry(parameterFrame)
-    # userInput.pack()
-
-    # languageFrame, languageInput = makeLanguageFrame(parameterFrame)
-    # languageFrame.pack(side="bottom")
-
-
-    # def addToConfiguration():
-    #     value = userInput.get()
-    #     if value and value not in configuration["categories"]["choices"]:
-    #         add()
-    #         configuration["categories"]["choices"].append(value)
-
-    # def remove():
-    #     value = listbox.get()
-    #     values = list(listbox["values"])
-    #     if value in values:
-    #         values.remove(value)
-    #         listbox["values"] = values
-    #         listbox.delete(0, tk.END)
-    #         if (len(listbox["values"]) != 0):
-    #             listbox.set(values[0])
-    #         else:
-    #             listbox.set("")
-
-    # def removeFromConfiguration():
-    #     value = combobox.get()
-    #     if value in configuration["categories"]["choices"]:
-    #         remove()
-    #         configuration["cutype"]["choices"].remove(value)
-
-    # buttonsFrame = tk.Frame(parameterFrame)
-    # tk.Button(buttonsFrame, text="Add", command=add).pack()
-    # tk.Button(buttonsFrame, text="Add to configuration", command=addToConfiguration).pack()
-    # tk.Button(buttonsFrame, text="Remove", command=remove).pack()
-    # tk.Button(buttonsFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
-    # buttonsFrame.pack(side="right")
-
-    # state = tk.BooleanVar(value=False)
-    # def toggleParameterFrame(event):
-    #     actual = not state.get()
-    #     if (state.get()):
-    #         parameterFrame.pack()
-    #     else:
-    #         parameterFrame.pack_forget()
-    #     state.set(actual)
-    # label.bind('<Double-1>', toggleParameterFrame)
-
-    # valueHolder = {
-    #     "listbox": listbox,
-    # }
-
 
 def makeClassificationFrame(root):
     frame = tk.Frame(root)
