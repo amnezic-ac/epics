@@ -68,83 +68,126 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
 
     return frame
 
-def makeCategoriesFrame(root):
+def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> tk.Frame :
+    # main frame
     frame = tk.Frame(root)
+    frame.grid(sticky=[tk.W])
+    frame.grid_remove()
+    for i in range(3):
+        frame.rowconfigure(i, weight=0)
+    for i in range(5):
+        frame.columnconfigure(i, weight=0)
 
-    label = tk.Label(frame, text="Categories: ")
-    label.pack(side="left")
-
+    # display all the categories
     listbox = tk.Listbox(
         frame,
         selectmode="multiple",
-        height=min(configuration["categories"]["height"], len(configuration["categories"]["choices"]))
+        height=min(configuration["height"], len(configuration["choices"]))
     )
-    for i in range(len(configuration["categories"]["choices"])):
-        listbox.insert(i, configuration["categories"]["choices"][i])
-    listbox.pack()
+    for i in range(len(configuration["choices"])):
+        listbox.insert(i, configuration["choices"][i])
+    listbox.grid(row=0, rowspan=3, column=1)
+    listbox.grid_remove()
+    valueHolder["value"] = listbox
 
-    parameterFrame = tk.Frame(frame)
-    userInput = tk.Entry(parameterFrame)
-    userInput.pack()
+    # let the user add a new category for this particular component
+    # let the user add a new category in the configuration
+    # let the user remove a category from the configuration
+    # let the user remove a category for this particular component
 
-    languageFrame, languageInput = makeLanguageFrame(parameterFrame)
-    languageFrame.pack(side="bottom")
-
-    def add():
-        value = userInput.get()
-        values = list(listbox["values"])
-        if value and value not in values:
-            values.append(value)
-            listbox["values"] = values
-            userInput.delete(0, tk.END)
-            listbox.set(listbox["values"][-1])
-
-    def addToConfiguration():
-        value = userInput.get()
-        if value and value not in configuration["categories"]["choices"]:
-            add()
-            configuration["categories"]["choices"].append(value)
-
-    def remove():
-        value = listbox.get()
-        values = list(listbox["values"])
-        if value in values:
-            values.remove(value)
-            listbox["values"] = values
-            listbox.delete(0, tk.END)
-            if (len(listbox["values"]) != 0):
-                listbox.set(values[0])
-            else:
-                listbox.set("")
-
-    def removeFromConfiguration():
-        value = combobox.get()
-        if value in configuration["categories"]["choices"]:
-            remove()
-            configuration["cutype"]["choices"].remove(value)
-
-    buttonsFrame = tk.Frame(parameterFrame)
-    tk.Button(buttonsFrame, text="Add", command=add).pack()
-    tk.Button(buttonsFrame, text="Add to configuration", command=addToConfiguration).pack()
-    tk.Button(buttonsFrame, text="Remove", command=remove).pack()
-    tk.Button(buttonsFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
-    buttonsFrame.pack(side="right")
-
+    # check button logic
     state = tk.BooleanVar(value=False)
-    def toggleParameterFrame(event):
-        actual = not state.get()
+    valueHolder["state"] = state
+    def displayChoicesFrame():
         if (state.get()):
-            parameterFrame.pack()
+            listbox.grid()
+            checkbutton.config(text="Categories: ")
+            pass
         else:
-            parameterFrame.pack_forget()
-        state.set(actual)
-    label.bind('<Double-1>', toggleParameterFrame)
+            listbox.grid_remove()
+            checkbutton.config(text="Categories ?")
+            pass
+    checkbutton = ttk.Checkbutton(frame, text="Categories ? ", variable=state, offvalue=False, onvalue=True, command=displayChoicesFrame)
+    checkbutton.grid(row=0, rowspan = 3, column=0, sticky=[tk.N])
 
-    valueHolder = {
-        "listbox": listbox,
-    }
+    return frame
 
-    return frame, valueHolder
+    # frame.rowconfigure(0, weight=0)
+    # frame.columnconfigure(0, weight=1)
+
+    # label = ttk.Label(frame, text="Categories: ")
+    # label.grid(row=0, column=0)
+
+    # listbox = tk.Listbox(
+    #     frame,
+    #     selectmode="multiple",
+    #     height=min(configuration["height"], len(configuration["choices"]))
+    # )
+    # for i in range(len(configuration["categories"]["choices"])):
+    #     listbox.insert(i, configuration["categories"]["choices"][i])
+    # listbox.pack()
+
+    # parameterFrame = tk.Frame(frame)
+    # userInput = tk.Entry(parameterFrame)
+    # userInput.pack()
+
+    # languageFrame, languageInput = makeLanguageFrame(parameterFrame)
+    # languageFrame.pack(side="bottom")
+
+    # def add():
+    #     value = userInput.get()
+    #     values = list(listbox["values"])
+    #     if value and value not in values:
+    #         values.append(value)
+    #         listbox["values"] = values
+    #         userInput.delete(0, tk.END)
+    #         listbox.set(listbox["values"][-1])
+
+    # def addToConfiguration():
+    #     value = userInput.get()
+    #     if value and value not in configuration["categories"]["choices"]:
+    #         add()
+    #         configuration["categories"]["choices"].append(value)
+
+    # def remove():
+    #     value = listbox.get()
+    #     values = list(listbox["values"])
+    #     if value in values:
+    #         values.remove(value)
+    #         listbox["values"] = values
+    #         listbox.delete(0, tk.END)
+    #         if (len(listbox["values"]) != 0):
+    #             listbox.set(values[0])
+    #         else:
+    #             listbox.set("")
+
+    # def removeFromConfiguration():
+    #     value = combobox.get()
+    #     if value in configuration["categories"]["choices"]:
+    #         remove()
+    #         configuration["cutype"]["choices"].remove(value)
+
+    # buttonsFrame = tk.Frame(parameterFrame)
+    # tk.Button(buttonsFrame, text="Add", command=add).pack()
+    # tk.Button(buttonsFrame, text="Add to configuration", command=addToConfiguration).pack()
+    # tk.Button(buttonsFrame, text="Remove", command=remove).pack()
+    # tk.Button(buttonsFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
+    # buttonsFrame.pack(side="right")
+
+    # state = tk.BooleanVar(value=False)
+    # def toggleParameterFrame(event):
+    #     actual = not state.get()
+    #     if (state.get()):
+    #         parameterFrame.pack()
+    #     else:
+    #         parameterFrame.pack_forget()
+    #     state.set(actual)
+    # label.bind('<Double-1>', toggleParameterFrame)
+
+    # valueHolder = {
+    #     "listbox": listbox,
+    # }
+
 
 def makeClassificationFrame(root):
     frame = tk.Frame(root)
