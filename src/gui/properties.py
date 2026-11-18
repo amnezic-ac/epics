@@ -4,7 +4,7 @@ import tkinter as tk
 import tkcalendar as tkc
 from datetime import datetime
 
-from src.utils import configuration, findLangIdFromLangValue, logging
+from src.utils import findLangIdFromLangValue
 from src.gui.parameters import *
 from src.gui.rrule import *
 
@@ -95,25 +95,48 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict) 
     for i in range(len(configuration["choices"])):
         listbox.insert(i, configuration["choices"][i])
     listbox.grid(row=0, rowspan=3, column=0, sticky=[tk.N])
-    valueHolder["value"] = listbox
+    def getChoices():
+        return [listbox.get(index) for index in listbox.curselection()]
+    valueHolder["value"] = getChoices
 
     entry = tk.StringVar()
     entryWidget = ttk.Entry(hiddableFrame, textvariable=entry)
     entryWidget.grid(row=0, column=1, columnspan=2, sticky=[tk.W, tk.E])
     # let the user add a new category for this particular component
-    addButton = tk.Button(hiddableFrame, text="Add")
+    def add():
+        value = entry.get()
+        if (value and value not in listbox.get(0, tk.END)):
+            listbox.insert(listbox.size(), value)
+        listbox.config(height=min(configuration["height"], listbox.size()))
+        entry.set(value="")
+    addButton = tk.Button(hiddableFrame, text="Add", command=add)
     addButton.grid(row=1, column=1, sticky=[tk.W, tk.E])
 
     # let the user add a new category in the configuration
-    addConfigButton = tk.Button(hiddableFrame, text="Add to configuration")
+    def addToConfig():
+        value = entry.get()
+        if (value and value not in configuration["choices"]):
+            configuration["choices"].append(value)
+        add()
+        entry.set(value="")
+    addConfigButton = tk.Button(hiddableFrame, text="Add to configuration", command=addToConfig)
     addConfigButton.grid(row=1, column=2, sticky=[tk.W, tk.E])
 
     # let the user remove a category from the configuration
-    removeConfigButton = tk.Button(hiddableFrame, text="Remove from configuration")
+    def removeFromConfig():
+        selection = listbox.curselection()
+        for index in reversed(selection):
+            configuration["choices"].pop(index)
+        remove()
+    removeConfigButton = tk.Button(hiddableFrame, text="Remove from configuration", command=removeFromConfig)
     removeConfigButton.grid(row=2, column=2, sticky=[tk.W, tk.E])
 
     # let the user remove a category for this particular component
-    removeButton = tk.Button(hiddableFrame, text="Remove")
+    def remove():
+        selection = listbox.curselection()
+        for index in reversed(selection):
+            listbox.delete(index)
+    removeButton = tk.Button(hiddableFrame, text="Remove", command=remove)
     removeButton.grid(row=2, column=1, sticky=[tk.W, tk.E])
 
     # check button logic
@@ -155,14 +178,6 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict) 
     # languageFrame, languageInput = makeLanguageFrame(parameterFrame)
     # languageFrame.pack(side="bottom")
 
-    # def add():
-    #     value = userInput.get()
-    #     values = list(listbox["values"])
-    #     if value and value not in values:
-    #         values.append(value)
-    #         listbox["values"] = values
-    #         userInput.delete(0, tk.END)
-    #         listbox.set(listbox["values"][-1])
 
     # def addToConfiguration():
     #     value = userInput.get()
