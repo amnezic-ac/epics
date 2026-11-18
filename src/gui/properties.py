@@ -379,45 +379,59 @@ def makeGeoFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
 
     return frame
 
-def makeLocationFrame(root):
+def makeLocationFrame(root, valueHolder, configuration):
     frame = tk.Frame(root)
+    frame.rowconfigure(0, weight=0)
+    frame.rowconfigure(1, weight=0)
+    frame.columnconfigure(0, weight=0)
+    frame.columnconfigure(1, weight=0)
+    frame.columnconfigure(2, weight=0)
 
-    state = tk.BooleanVar(value=False)
-    parameterFrame = tk.Frame(frame)
-    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(parameterFrame)
-    altrepFrame.pack()
-    languageFrame, languageInput = makeLanguageFrame(parameterFrame)
-    languageFrame.pack()
+    state = tk.BooleanVar(value = False)
+    label = tk.Label(frame, text="Location")
+    label.grid(row=0, rowspan=2, column=0)
+    entry = tk.StringVar()
+    entryWidget = tk.Entry(frame, textvariable=entry)
+    entryWidget.grid(row=0, rowspan=2, column=1, sticky=[tk.N, tk.S])
 
+    altrep = tk.StringVar()
+    altrepEntry = ttk.Entry(frame, textvariable=altrep)
+    altrepEntry.grid(row=0, column=2, sticky=[tk.W, tk.E])
+    altrepEntry.grid_remove()
 
-    label = tk.Label(frame, text="Location: ")
-    label.pack(side="left")
-    def toggleParameterFrame(event):
-        actual = state.get()
-        actual = not actual
-        if (actual):
-            parameterFrame.pack(side="bottom")
-        else:
-            parameterFrame.pack_forget()
-        state.set(actual)
-
-    label.bind('<Double-1>', toggleParameterFrame)
-
-    locationText = tk.Text(frame)
-    locationText.config(
-        height=configuration["location"]["height"],
-        width=configuration["location"]["width"]
+    languageCombobox = ttk.Combobox(
+        frame,
+        values=[value[1] for value in configuration["choices"]],
+        height=10
     )
-    locationText.pack(side="left")
+    languageCombobox.state(["readonly"])
+    languageCombobox.grid(row=1, column=2)
+    languageCombobox.grid_remove()
+    
 
-    valueHolder = {
-        "value": locationText,
-        "state": state,
-        "altrep": altrepInput,
-        "language": languageInput
-    }
+    def toggleParameters(event):
+        tmp = state.get()
+        if (tmp):
+            altrepEntry.grid()
+            languageCombobox.grid()
+        else:
+            altrepEntry.grid_remove()
+            languageCombobox.grid_remove()
+        state.set(not tmp)
+    label.bind('<Double-1>', toggleParameters)
 
-    return frame, valueHolder
+    def getLocation():
+        if (not entry.get()):
+            return None
+        language = None
+        for [key, value] in configuration["choices"]:
+            if (value == languageCombobox.get()):
+                language = key
+                break
+        return Location(entry.get(), altrep.get(), language)
+    valueHolder["getValue"] = getLocation
+
+    return frame
 
 def makePercentFrame(root):
     frame = tk.Frame(root)
