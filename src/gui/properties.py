@@ -5,6 +5,7 @@ import tkcalendar as tkc
 from datetime import datetime
 
 from src.utils import findLangIdFromLangValue
+from src.backend.properties import *
 from src.gui.parameters import *
 from src.gui.rrule import *
 
@@ -12,7 +13,8 @@ from src.gui.rrule import *
 - grid documentation: https://tkdocs.com/tutorial/grid.html
 
 Some guidelines:
-- manage the maximum of the properties frames features in the dedicated function, so the caller just has to grid it
+- the grid management has to be managed in the dedicated function for each property, so the caller just has to grid it
+- each function must put in the valueHolder["getValue"] a lambda function that returns the property object, None if there is an error
 """
 
 # create a frame for attachment property
@@ -289,42 +291,48 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: di
 
     return frame
 
-def makeCommentFrame(root):
+# FIXME: when resized, the second column could disappear below the first one
+def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str, configuration: [dict]) -> tk.Frame:
+    if (_type not in ["comment", "description"]):
+        return None
+
     frame = tk.Frame(root)
+    frame.rowconfigure(0, weight=1)
+    frame.rowconfigure(1, weight=1)
+    frame.columnconfigure(0, weight=1)
+    frame.columnconfigure(1, weight=1)
 
-    label = tk.Label(frame, text="Comment")
-    label.pack()
-    commentText = tk.Text(
+    textWidget = tk.Text(frame)
+    textWidget.grid(row=0, rowspan=2, column=0)
+
+    altrepEntry = ttk.Entry(frame)
+    altrepEntry.grid(row=0, column=1)
+
+    languageCombobox = ttk.Combobox(
         frame,
-        height=configuration["comment"]["height"],
-        width=configuration["comment"]["width"]
+        values=[value[1] for value in configuration["choices"]],
+        height=10
     )
-    commentText.pack(expand=True, fill="both")
+    languageCombobox.state(["readonly"])
+    languageCombobox.grid(row=1, column=1)
 
-    parameterFrame = tk.Frame(frame)
-    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(parameterFrame)
-    altrepFrame.pack()
-    languageFrame, languageInput = makeLanguageFrame(parameterFrame)
-    languageFrame.pack()
-
-    state = tk.BooleanVar(value=False)
-    def toggleParameterFrame(event):
-        actual = not state.get()
-        if (actual):
-            parameterFrame.pack()
+    def getCommentOrDescription():
+        text = textWidget.get('1.0', 'end')
+        language = None
+        for [key, value] in configuration["choices"]:
+            if (value == languageCombobox.get()):
+                language = key
+                break
+        altrep = altrepEntry.get()
+        truc = None
+        if (_type == "comment"):
+            truc = Comment(text, altrep, language)
         else:
-            parameterFrame.pack_forget()
-        state.set(actual)
-    label.bind('<Double-1>', toggleParameterFrame) 
+            truc = Description(text, altrep, language)
+        return truc
+    valueHolder["getValue"] = getCommentOrDescription
 
-    valueHolder = {
-        "value": commentText,
-        "state": state,
-        "altrep": altrepInput,
-        "language": languageInput
-    }
-
-    return frame, valueHolder
+    return frame
 
 def makeDescriptionFrame(root):
     frame = tk.Frame(root)
