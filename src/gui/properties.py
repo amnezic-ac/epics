@@ -379,7 +379,7 @@ def makeGeoFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
 
     return frame
 
-def makeLocationFrame(root, valueHolder, configuration):
+def makeLocationFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> tk.Frame:
     frame = tk.Frame(root)
     frame.rowconfigure(0, weight=0)
     frame.rowconfigure(1, weight=0)
@@ -424,15 +424,18 @@ def makeLocationFrame(root, valueHolder, configuration):
         if (not entry.get()):
             return None
         language = None
-        for [key, value] in configuration["choices"]:
-            if (value == languageCombobox.get()):
-                language = key
-                break
-        return Location(entry.get(), altrep.get(), language)
+        altrepValue = None
+        if (state.get()):
+            for [key, value] in configuration["choices"]:
+                if (value == languageCombobox.get()):
+                    language = key
+                    break
+        return Location(entry.get(), altrepValue, language)
     valueHolder["getValue"] = getLocation
 
     return frame
 
+# FIXME: make it comply with the other functions
 def makePercentFrame(root):
     frame = tk.Frame(root)
 
@@ -460,19 +463,32 @@ def makePercentFrame(root):
 
     return frame, valueHolder
 
-def makePriorityFrame(root):
+def makePriorityFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> tk.Frame:
     frame = tk.Frame(root)
+    frame.rowconfigure(0, weight=0)
+    frame.columnconfigure(0, weight=0)
+    frame.columnconfigure(1, weight=0)
 
-    tk.Label(frame, text="Priority level: ").pack(side="left")
-    priorityVar = tk.StringVar(value="")
-    prioritySpinbox = ttk.Spinbox(frame, from_=0, to=9, increment=1, textvariable=priorityVar, wrap=True)
-    prioritySpinbox.pack(side="right")
+    tk.Label(frame, text="Priority level: ").grid(row=0, column=0)
+    priority = tk.StringVar(value="")
+    spinbox = ttk.Spinbox(
+        frame,
+        from_=configuration["min"],
+        to=configuration["max"],
+        increment=configuration["step"],
+        textvariable=priority,
+        wrap=True
+    )
+    spinbox.set(configuration["default"])
+    spinbox.grid(row=0, column=1)
 
-    valueHolder = {
-        "value": priorityVar
-    }
+    def getPriority():
+        if (not priority.get()):
+            return None
+        return Priority(int(priority.get()))
+    valueHolder["getValue"] = getPriority
 
-    return frame, valueHolder
+    return frame
 
 def makeResourceFrame(root):
     frame = tk.Frame(root)
