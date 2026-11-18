@@ -27,7 +27,7 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
     - root: tk.Frame
         frame in which the newly created frame will be contained
     - valueHolder: dict
-        dictionnary that will hold the entry widget
+        dictionnary that will hold the attachment infos
 
     Returns:
     -------
@@ -66,7 +66,9 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
     button.grid(row=0, column=0)
 
     valueHolder["state"] = state
-    valueHolder["value"] = entry
+    def getAttachment():
+        return Attachement(entry.get(), None, None, None)
+    valueHolder["getValue"] = getAttachment
 
     return frame
 
@@ -113,9 +115,9 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict) 
     for i in range(len(configuration["choices"])):
         listbox.insert(i, configuration["choices"][i])
     listbox.grid(row=0, rowspan=3, column=0, sticky=[tk.N])
-    def getChoices():
-        return [listbox.get(index) for index in listbox.curselection()]
-    valueHolder["value"] = getChoices
+    def getCategories():
+        return Categories([listbox.get(index) for index in listbox.curselection()])
+    valueHolder["getValue"] = getCategories
 
     entry = tk.StringVar()
     entryWidget = ttk.Entry(hiddableFrame, textvariable=entry)
@@ -223,7 +225,9 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: di
     )
     combobox.state(["readonly"])
     combobox.grid(row=0, rowspan=3, column=0, sticky=[tk.N])
-    valueHolder["getValue"] = combobox.get
+    def getClassification():
+        return Classification(combobox.get())
+    valueHolder["getValue"] = getClassification
 
     entry = tk.StringVar()
     entryWidget = ttk.Entry(hiddableFrame, textvariable=entry)
@@ -333,43 +337,6 @@ def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str,
     valueHolder["getValue"] = getCommentOrDescription
 
     return frame
-
-def makeDescriptionFrame(root):
-    frame = tk.Frame(root)
-
-    label = tk.Label(frame, text="Description")
-    label.pack(anchor="w")
-    descriptionText = tk.Text(frame)
-    descriptionText.config(
-        height=configuration["description"]["height"],
-        width=configuration["description"]["width"]
-    )
-    descriptionText.pack()
-
-    parameterFrame = tk.Frame(frame)
-    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(parameterFrame)
-    altrepFrame.pack()
-    languageFrame, languageInput = makeLanguageFrame(parameterFrame)
-    languageFrame.pack()
-
-    state = tk.BooleanVar(value=False)
-    def toggleParameterFrame(event):
-        actual = not state.get()
-        if (state.get()):
-            parameterFrame.pack()
-        else:
-            parameterFrame.pack_forget()
-        state.set(actual)
-    label.bind('<Double-1>', toggleParameterFrame)
-
-    valueHolder = {
-        "state": state,
-        "value": descriptionText,
-        "altrep": altrepInput,
-        "language": languageInput
-    }
-
-    return frame, valueHolder
 
 def makeGeoFrame(root):
     frame = tk.Frame(root)
