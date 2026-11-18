@@ -296,6 +296,7 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: di
     return frame
 
 # FIXME: when resized, the second column could disappear below the first one
+# TODO: add a text inside showing if it's a description or comment component
 def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str, configuration: [dict]) -> tk.Frame:
     if (_type not in ["comment", "description"]):
         return None
@@ -338,24 +339,45 @@ def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str,
 
     return frame
 
-def makeGeoFrame(root):
+def makeGeoFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     frame = tk.Frame(root)
+    for i in range(2):
+        frame.rowconfigure(i, weight=0)
+    for i in range(3):
+        frame.columnconfigure(i, weight=0)
 
-    tk.Label(frame, text="Geographical position: ").pack(side="left")
     latVar = tk.StringVar(value=None)
     latSpinbox = ttk.Spinbox(frame, from_=-90.000000, to=90.000000, wrap=True, increment=0.000001, textvariable=latVar)
-    latSpinbox.pack(side="right")
-    tk.Label(frame, text=" ; ").pack(side="right")
+    latSpinbox.grid(row=1, column=0)
+    latSpinbox.grid_remove()
+    sep = tk.Label(frame, text=" ; ")
+    sep.grid(row=1, column=1)
+    sep.grid_remove()
     longVar = tk.StringVar(value=None)
     longSpinbox = ttk.Spinbox(frame, from_=-180.000000, to=180.000000, wrap=True, increment=0.000001, textvariable=longVar)
-    longSpinbox.pack(side="right")
+    longSpinbox.grid(row=1, column=3)
+    longSpinbox.grid_remove()
 
-    valueHolder = {
-        "lat": latVar,
-        "long": longVar
-    }
+    
+    state = tk.BooleanVar(value=False)
+    def toggleGeo():
+        if (state.get()):
+            latSpinbox.grid()
+            sep.grid()
+            longSpinbox.grid()
+        else:
+            latSpinbox.grid_remove()
+            sep.grid_remove()
+            longSpinbox.grid_remove()
+            pass
+    checkbutton = ttk.Checkbutton(frame, text="Geographical position", variable=state, offvalue=False, onvalue=True, command=toggleGeo)
+    checkbutton.grid(row=0, column=0, columnspan=3, sticky=[tk.W, tk.E])
 
-    return frame, valueHolder
+    def getGeo():
+        return Geo(int(latVar.get()), int(longVar.get()))
+    valueHolder["getValue"] = getGeo
+
+    return frame
 
 def makeLocationFrame(root):
     frame = tk.Frame(root)
