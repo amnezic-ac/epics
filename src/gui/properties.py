@@ -620,97 +620,69 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> 
 
     return frame
 
-# TODO
-def makeDtFrame(root, typename: str):
-    # typename is the name of the type of the datime
-    if (typename not in ["completed", "end", "due", "start"]):
-        return None, None
+# FIXME: spinbox of second does not display a default value contrarly of minute and hour ones
+def makeDtFrame(root, typename: str, valueHolder: dict) -> tk.Frame:
+    frame = tk.Frame(root)
+    for i in range(2):
+        frame.rowconfigure(i, weight=0)
+    for i in range(3):
+        frame.columnconfigure(i, weight=0)
 
-    dtFrame = tk.Frame(root)
+    timestamp = datetime.now()
 
-    if (typename == "start"):
-        tk.Label(dtFrame, text="From ").pack(side="left")
-    elif (typename == "end"):
-        tk.Label(dtFrame, text="to ").pack(side="left")
-    elif (typename == "due"):
-        tk.Label(dtFrame, text="Due for ").pack(side="left")
-    elif (typename == "completed"):
-            tk.Label(dtFrame, text="Completed on ").pack(side="left")
-    today = datetime.now()
+    labeltext = "From" if typename == "start" else "to"
+    label = tk.Label(frame, text=labeltext)
+    label.grid(row=0, column=0)
+
     dateEntry = tkc.DateEntry(
-        dtFrame,
+        frame,
         selectmode="day",
         date_pattern="y/mm/dd"
     )
-    dateEntry.pack(side="left")
+    dateEntry.grid(row=0, column=1, columnspan=2)
     # line below is mandatroy: let the calendar be clickable even if there is a widget below it on the z-axis
     dateEntry._top_cal.lift()
 
-    timeFrame = tk.Frame(dtFrame)
-    secondVar = tk.StringVar(value="0")
-    secondSpinbox = tk.Spinbox(
-        timeFrame,
-        from_=0,
-        to=59,
-        increment=1,
-        width=2,
-        textvariable=secondVar,
-        justify=tk.RIGHT
-    )
-    minuteVar = tk.StringVar(value="")
-    minuteSpinbox = tk.Spinbox(
-        timeFrame,
-        from_=0,
-        to=59,
-        increment=1,
-        width=2,
-        textvariable=minuteVar ,
-        justify=tk.RIGHT
-
-    )
-    hourVar = tk.StringVar(value="9")
     hourSpinbox = tk.Spinbox(
-        timeFrame,
+        frame,
         from_=0,
         to=23,
         increment=1,
-        width=2,
-        textvariable=hourVar,
-        justify=tk.RIGHT
-
+        width=3,
+        wrap=True
     )
-    tk.Label(timeFrame, text="s").pack(side="right")
-    secondSpinbox.pack(side="right")
-    tk.Label(timeFrame, text="m ").pack(side="right")
-    minuteSpinbox.pack(side="right")
-    tk.Label(timeFrame, text="h ").pack(side="right")
-    hourSpinbox.pack(side="right")
-
-    timestate = tk.BooleanVar(value=
-        configuration[f"general"]["time-status"] or configuration[f"dt{typename}"]["datetime-default"]
+    hourSpinbox.grid(row=2, column=0)
+    minuteSpinbox = tk.Spinbox(
+        frame,
+        from_=0,
+        to=59,
+        increment=1,
+        width=3,
+        wrap=True
     )
-    def toggleHiddableTimeFrame():
-        if (timestate.get()):
-            timebutton.config(text=" at ")
-            timeFrame.pack(side="right")
-        else:
-            timebutton.config(text="Time ? ")
-            timeFrame.pack_forget()
-    timebutton = tk.Checkbutton(dtFrame, text="Time ? ", variable=timestate, offvalue=False, onvalue=True, command=toggleHiddableTimeFrame)
-    timebutton.pack(side="left")
-    if (timestate.get()):
-        timebutton.config(text=" at ")
-        timeFrame.pack(side="right")
+    minuteSpinbox.grid(row=2, column=1)
+    secondSpinbox = ttk.Spinbox(
+        frame,
+        from_=0,
+        to=59,
+        increment=1,
+        width=3,
+        wrap=True
+    )
+    secondSpinbox.grid(row=2, column=2)
 
-    valueHolder = {
-        "date": dateEntry,
-        "time-status": timestate,
-        "hour": hourVar,
-        "minute": minuteVar,
-        "second": secondVar
-    }
+    def getDT():
+        return datetime(
+            year=int(dateEntry.get_date().strftime("%Y")),
+            month=int(dateEntry.get_date().strftime("%m")),
+            day=int(dateEntry.get_date().strftime("%d")),
+            hour=int(hourSpinbox.get()),
+            minute=int(minuteSpinbox.get()),
+            second=int(secondSpinbox.get())
+        )
+    valueHolder["getValue"] = getDT
 
-    return dtFrame, valueHolder
+    return frame
 
 # TODO
 def makeDurationFrame(root):
@@ -859,6 +831,7 @@ def makeURLFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
 
     return frame
 
+# TODO
 def makeRruleFrame(root, time_included: bool = True):
     frame = ttk.Frame(root)
     rules = {
