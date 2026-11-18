@@ -41,33 +41,14 @@ def makeByXxxFrame(root: tk.Frame, userChoice: str) -> tk.Listbox :
     else:
         choices = [i for i in range (config["min"], config["max"]+1, config["step"])]
 
-    listbox = tk.Listbox(frame, listvariable=tk.Variable(value=choices), height=5)
-
-    # spinbox = ttk.Spinbox(
-    #     frame,
-    #     exportselection=False,
-    #     justify=tk.RIGHT,
-    # )
-    # if (xxx in ["month", "day"]):
-    #     spinbox.config(
-    #         values=configuration["rrule"][f"{xxx}"]["choices"]
-    #     )
-    # else:
-    #     spinbox.config(
-    #         from_=configuration["rrule"][f"{xxx}"]["min"],
-    #         to=configuration["rrule"][f"{xxx}"]["max"],
-    #         increment=configuration["rrule"][f"{xxx}"]["step"],
-    #         wrap=True,
-    #         width = 4,
-    #     )
-    # spinbox.pack(side="left")
+    listbox = tk.Listbox(frame, listvariable=tk.Variable(value=choices), height=5, selectmode="multiple")
     listbox.pack(side="left")
     ttk.Label(frame, text=configuration["rrule"][f"{xxx}"]["label"]).pack(side="right")
 
     result = {
         "frame": frame,
         "xxx": xxx,
-        "spinbox": listbox
+        "listbox": listbox
     }
 
     return result
@@ -82,7 +63,11 @@ def makeRuleFrame(root: tk.Frame, freq: str, removable: bool = True, remaining: 
     choices = None
     match freq:
         case "yearly":
-            choices = ["day number of the month", "day number of the year", "week number of the year", "month number of the year"]
+            choices = ["day number of the month", "day number of the year", "week number of the year", "month"]
+        case "monthly":
+            choices = ["day number of the month", "month"]
+        case "weekly"|"daily"|"hourly"|"minutely"|"secondly":
+            raise NotImplementedError()
         case _:
             raise Exception(f"{freq} is not a valid frequence")
     combobox = ttk.Combobox(
@@ -109,17 +94,3 @@ def makeRuleFrame(root: tk.Frame, freq: str, removable: bool = True, remaining: 
     else:
         ttk.Button(frame, text="+", command=foo).grid(row=0, column=3, columnspan=2, sticky=tk.E)
     return frame
-
-
-def makeYearlyFrame(root: tk.Frame) -> (tk.Frame, dict):
-    frame = ttk.Frame(root)
-
-    ruleFrame = makeRuleFrame(frame, "yearly", False)
-    ruleFrame.pack(fil="x")
-
-    valueHolder = {
-        "byday": None,
-        "bymonthday": None,
-    }
-
-    return frame, None

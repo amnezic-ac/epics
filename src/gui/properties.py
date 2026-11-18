@@ -617,6 +617,23 @@ def makeURLFrame(master):
 
 def makeRruleFrame(root, time_included: bool = True):
     frame = ttk.Frame(root)
+    rules = {
+        "freq": None,
+        "until": None,
+        "count": None,
+        "interval": None,
+        "bysecond": None,
+        "byminute": None,
+        "byhour": None,
+        "byday": None,
+        "bymonthday": None,
+        "byyyearday": None,
+        "byweekno": None,
+        "bymonth": None,
+        "bysetpos": None,
+        "wkst": None
+    }
+
 
     mandatoryFrame = ttk.Frame(frame)
     for row in range (2):
@@ -685,19 +702,44 @@ def makeRruleFrame(root, time_included: bool = True):
             case _:
                 raise Exception(f"This error shouldn't be displayed")
     repeatCombobox.bind("<<ComboboxSelected>>", displayRepetition)
+    mandatoryFrame.pack(fill="x")
 
-
-    yearlyFrame, _ = makeYearlyFrame(frame)
+    frames = [{"frame": None, "values": None}] * 7
+    rulesFrameContainer = ttk.Frame(frame)
     def displayFreqFrame(event):
+        for elt in frames:
+            if elt["frame"]:
+                elt["frame"].pack_forget()
+        
         selected_value = event.widget.get()
+        print(f"{selected_value=}")
         match selected_value:
             case "yearly":
-                yearlyFrame.pack(fill="x")
+                if (not frames[0]["frame"]):
+                    print("No frame yet")
+                    frames[0]["frame"] = makeRuleFrame(rulesFrameContainer, selected_value, False)
+                frames[0]["frame"].pack(fill="x")
             case _:
-                yearlyFrame.pack_forget()
+                print("No no")
+
+        pass
     frequencyCombobox.bind("<<ComboboxSelected>>", displayFreqFrame)
 
-    mandatoryFrame.pack(fill="x")
+    #     match selected_value:
+    #         case "yearly":
+    #             if (not frames[0]["frame"]):
+    #                 frames[0]["frame"] = makeRuleFrame(rulesFrame, selected_value)
+    #             frames[0]["frame"].pack(fill="x")
+    #         case "monthly":
+    #             if (not frames[1]["frame"]):
+    #                 frames[1]["frame"] = makeRuleFrame(rulesFrame, selected_value)
+    #             frames[1]["frame"].pack(fill="x")
+    #         case _:
+    #             raise Exception(f"Unimplemented")
+    #     tmp = makeRuleFrame(frame, selected_value, False)
+    #     tmp.pack(fill="x")
+
+    rulesFrameContainer.pack(fill="x")
 
     valueHolder = {
         "freq": freqValue,
