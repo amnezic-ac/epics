@@ -767,6 +767,7 @@ def makeTranspFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> t
 
     return frame
 
+# TODO: work on how to use cal-addresses
 def makeOrganizerFrame(root):
     frame = ttk.Frame(root)
 
@@ -785,6 +786,7 @@ def makeOrganizerFrame(root):
 
     return frame, value
 
+# TODO: work on how to use cal-addresses
 def makeAttendeeFrame(root, eventType: str):
     frame = tk.Frame(root)
 
@@ -838,15 +840,24 @@ def makeAttendeeFrame(root, eventType: str):
 
     return frame, listbox
 
-def makeURLFrame(master):
-    frame = tk.Frame(master)
+def makeURLFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+    frame = tk.Frame(root)
+    frame.rowconfigure(0, weight=0)
+    frame.columnconfigure(0, weight=0)
+    frame.columnconfigure(1, weight=0)
 
-    tk.Label(frame, text="URL: ").pack(side="left")
+    tk.Label(frame, text="URL: ").grid(row=0, column=0)
     value = tk.StringVar(value="")
     entry = tk.Entry(frame, textvariable=value)
-    entry.pack(side="right")
+    entry.grid(row=0, column=1)
 
-    return frame, value
+    def getURL():
+        if not (entry.get()):
+            return None
+        return Url(entry.get())
+    valueHolder["getValue"] = getURL
+
+    return frame
 
 def makeRruleFrame(root, time_included: bool = True):
     frame = ttk.Frame(root)
