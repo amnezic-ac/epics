@@ -620,6 +620,7 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> 
 
     return frame
 
+# TODO
 def makeDtFrame(root, typename: str):
     # typename is the name of the type of the datime
     if (typename not in ["completed", "end", "due", "start"]):
@@ -711,6 +712,7 @@ def makeDtFrame(root, typename: str):
 
     return dtFrame, valueHolder
 
+# TODO
 def makeDurationFrame(root):
     frame = tk.Frame(root)
 
@@ -745,20 +747,25 @@ def makeDurationFrame(root):
 
     return frame, valueHolder
 
-def makeTranspFrame(root):
+def makeTranspFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> tk.Frame:
     frame = tk.Frame(root)
 
-    value = tk.StringVar(value=configuration["transparency"]["choices"][0])
-    tk.Label(frame, text="Transparency of the event: ").pack(side="left")
+    value = tk.StringVar(value=configuration["choices"][0])
     transpCombobox = ttk.Combobox(
         frame,
-        values=configuration["transparency"]["choices"],
+        values=configuration["choices"],
         state="readonly",
         textvariable=value
     )
-    transpCombobox.pack()
+    transpCombobox.grid()
 
-    return frame, value
+    ToolTip(transpCombobox, msg="Tells if the event should block overlapping events")
+
+    def getTransp():
+        return Transparency(value.get())
+    valueHolder["getValue"] = getTransp
+
+    return frame
 
 def makeOrganizerFrame(root):
     frame = ttk.Frame(root)
