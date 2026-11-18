@@ -1,4 +1,5 @@
 from tkinter import ttk
+from tktooltip import ToolTip
 import tkinter as tk
 import tkcalendar as tkc
 from datetime import datetime
@@ -7,34 +8,61 @@ from src.utils import configuration, findLangIdFromLangValue, logging
 from src.gui.parameters import *
 from src.gui.rrule import *
 
-# NOTE: put the user input part in a hiddable frame iff the frame is optional for all the types of event it can appears
+"""
+- grid documentation: https://tkdocs.com/tutorial/grid.html
 
-def makeAttachmentFrame(root):
+Some guidelines:
+- manage the maximum of the properties frames features in the dedicated function, so the caller just has to grid it
+"""
+
+# create a frame for attachment property
+def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
+    """
+    create a frame for attachment property
+
+    Params:
+    ------
+    - root: tk.Frame
+        frame in which the newly created frame will be contained
+    - valueHolder: dict
+        dictionnary that will hold the entry widget
+    """
     frame = tk.Frame(root)
+    frame.grid(sticky=[tk.W])
+    frame.grid_remove()
+    # label place
+    frame.columnconfigure(0, weight=0)
+    # value place
+    frame.columnconfigure(1, weight=1)
+    # tooltip place
+    frame.columnconfigure(2, weight=0)
+    frame.rowconfigure(0, weight=0)
 
-    parameterFrame = tk.Frame(frame)
-    entry = tk.Entry(parameterFrame)
-    entry.pack()
-    fmttypeFrame, fmttypeInput = makeFmtTypeFrame(parameterFrame)
-    fmttypeFrame.pack()
+    entry = tk.Entry(frame)
+    entry.grid(row=0, column=1)
+    entry.grid_remove()
+
+    tooltipLabel = ttk.Label(frame, text=" ? ")
+    tooltipLabel.grid(row=0, column=2)
+
+    ToolTip(tooltipLabel, msg="Please enter a link to access the document", follow=True)
 
     state = tk.BooleanVar(value=False)
     def toggleParameterFrame():
         if (state.get()):
-            parameterFrame.pack()
             button.config(text="Attachment : ")
+            entry.grid()
         else:
-            parameterFrame.pack_forget()
-            button.config(text="Attachment ? ")
-    button = tk.Checkbutton(frame, text="Attachment ? ", variable=state, offvalue=False, onvalue=True, command=toggleParameterFrame)
-    button.pack()
+            entry.grid_remove()
+            button.config(text="Attachment ?")
 
-    valueHolder = {
-        "state": state,
-        "value": entry,
-        "fmttype": fmttypeInput
-    }
-    return frame, valueHolder
+    button = tk.Checkbutton(frame, text="Attachment ?", variable=state, offvalue=False, onvalue=True, command=toggleParameterFrame)
+    button.grid(row=0, column=0)
+
+    valueHolder["state"] = state
+    valueHolder["value"] = entry
+
+    return frame
 
 def makeCategoriesFrame(root):
     frame = tk.Frame(root)
