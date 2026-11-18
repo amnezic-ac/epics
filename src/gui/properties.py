@@ -565,41 +565,60 @@ def makeStatusFrame(root: tk.Frame, valueHolder: dict, componentType: str, confi
 
     return frame
 
-def makeSummaryFrame(root, title):
+def makeSummaryFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> tk.Frame:
     frame = tk.Frame(root)
+    frame.rowconfigure(0, weight=0)
+    frame.rowconfigure(1, weight=0)
+    frame.columnconfigure(0, weight=0)
+    frame.columnconfigure(1, weight=0)
 
-    label = tk.Label(frame, text="Title: ")
-    label.pack(side="left")
+    label = ttk.Label(frame, text="Title: ")
+    label.grid(row=0, column=0)
 
-    summaryEntry = tk.Entry(frame, textvariable=title)
-    summaryEntry.pack(side="left")
-    
-    parameterFrame = tk.Frame(frame)
-    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(parameterFrame)
-    altrepFrame.pack()
-    languageFrame, languageInput = makeLanguageFrame(parameterFrame)
-    languageFrame.pack()
+    title = tk.StringVar()
+    summaryEntry = ttk.Entry(frame, textvariable=title)
+    summaryEntry.grid(row=0, column=1, sticky="nsew")
+
+    altrep = tk.StringVar()
+    altrepEntry = ttk.Entry(frame, textvariable=altrep)
+    altrepEntry.grid(row=1, column=0, sticky=[tk.W, tk.E])
+    altrepEntry.grid_remove()
+
+    languageCombobox = ttk.Combobox(
+        frame,
+        values=[value[1] for value in configuration["choices"]],
+        height=10
+    )
+    languageCombobox.state(["readonly"])
+    languageCombobox.grid(row=1, column=1)
+    languageCombobox.grid_remove()
 
     state = tk.BooleanVar(value=False)
-    def toggleParameterFrame(event):
-        actual = not state.get()
-        if (actual):
-            logging.debug(f"User toggled hiddable frame from a {title.get()} event frame.")
-            parameterFrame.pack(side="bottom")
+    def toggleParameters(event):
+        tmp = state.get()
+        if (tmp):
+            altrepEntry.grid()
+            languageCombobox.grid()
         else:
-            parameterFrame.pack_forget()
-            logging.debug(f"User untoggled hiddable frame from a {title.get()} event frame.")
-        state.set(actual)
-    label.bind('<Double-1>', toggleParameterFrame)
+            altrepEntry.grid_remove()
+            languageCombobox.grid_remove()
+        state.set(not tmp)
+    label.bind('<Double-1>', toggleParameters)
 
-    valueHolder = {
-        "value": title,
-        "state": state,
-        "altrep": altrepInput,
-        "language": languageInput
-    }
+    def getSummary():
+        if (not title.get()):
+            return None
+        language = None
+        altrepValue = None
+        if (state.get()):
+            for [key, value] in configuration["choices"]:
+                if (value == languageCombobox.get()):
+                    language = key
+                    break
+        return Summary(title.get(), altrepValue, language)
+    valueHolder["getValue"] = getSummary
 
-    return frame, valueHolder
+    return frame
 
 def makeDtFrame(root, typename: str):
     # typename is the name of the type of the datime
