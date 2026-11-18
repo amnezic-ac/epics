@@ -26,6 +26,10 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
         frame in which the newly created frame will be contained
     - valueHolder: dict
         dictionnary that will hold the entry widget
+
+    Returns:
+    -------
+    - tk.Frame: the newly created attachment frame
     """
     frame = tk.Frame(root)
     frame.grid(sticky=[tk.W])
