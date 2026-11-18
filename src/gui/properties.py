@@ -490,6 +490,7 @@ def makePriorityFrame(root: tk.Frame, valueHolder: dict, configuration: dict) ->
 
     return frame
 
+# TODO: flemme la tout de suite
 def makeResourceFrame(root):
     frame = tk.Frame(root)
 
@@ -527,19 +528,42 @@ def makeResourceFrame(root):
 
     return frame, valueHolder
 
-def makeStatusFrame(root, componentType: str):
+def makeStatusFrame(root: tk.Frame, valueHolder: dict, componentType: str, configuration: dict) -> tk.Frame:
     frame = tk.Frame(root)
+    frame.rowconfigure(0, weight=0)
+    frame.rowconfigure(1, weight=0)
+    frame.columnconfigure(0, weight=0)
+
+    label = ttk.Label(frame, text="Status ?")
+    label.grid(row=0, column=0)
+    state = tk.BooleanVar(value=False)
+    def showStatus(event):
+        tmp = not state.get()
+        if (tmp):
+            statusCombobox.grid(row=1, column=0)
+        else:
+            statusCombobox.grid_remove()
+        state.set(tmp)
+    label.bind('<Double-1>', showStatus)
 
     value = tk.StringVar(value="")
     statusCombobox = ttk.Combobox(
         frame,
-        values=configuration["status"][f"{componentType}"],
+        values=configuration[f"{componentType}"],
         state="readonly",
         textvariable=value
     )
-    statusCombobox.pack()
+    statusCombobox.grid(row=0, column=0)
+    statusCombobox.grid_remove()
 
-    return frame, value
+    def getStatus():
+        if (not state.get() or not statusCombobox.get()):
+            return None
+        else:
+            return Status(statusCombobox.get())
+    valueHolder["getValue"] = getStatus
+
+    return frame
 
 def makeSummaryFrame(root, title):
     frame = tk.Frame(root)
