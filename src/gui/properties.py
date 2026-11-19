@@ -322,7 +322,7 @@ def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str,
     languageCombobox.grid(row=1, column=1)
 
     def getCommentOrDescription():
-        text = textWidget.get('1.0', 'end')
+        text = textWidget.get('1.0', 'end').strip()
         language = None
         for [key, value] in configuration["choices"]:
             if (value == languageCombobox.get()):
