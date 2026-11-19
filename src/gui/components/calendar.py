@@ -4,6 +4,7 @@ from tkinter import filedialog as fd
 from src.gui.components.event import makeEventFrame
 from src.utils import exportConfigToJSONFile
 from src.backend.components.calendar import Calendar
+import uuid
 
 def export(calendar: Calendar):
     if (not calendar):
@@ -27,6 +28,8 @@ def export(calendar: Calendar):
 
 
 def foo(root: tk.frame, holder: dict, configuration: dict) -> tk.Frame:
+    id_ = uuid.uuid4()
+    logging.debug(f"User opened a calendar creation frame (uuid: {id_})")
     notebook = ttk.Notebook(root)
     # list containing all components of the calendar
     components = []
@@ -43,6 +46,7 @@ def foo(root: tk.frame, holder: dict, configuration: dict) -> tk.Frame:
 
     # let the user open a new event
     def addEvent():
+        logging.debug(f"User began to add an event to {calendarTitle.get()} calendar ({id_})")
         eventHolder = {}
         eventFrame = makeEventFrame(notebook, eventHolder, configuration)
         notebook.add(eventFrame, text="New event")
@@ -59,7 +63,9 @@ def foo(root: tk.frame, holder: dict, configuration: dict) -> tk.Frame:
 
     # let the user clear the calendar
     def clearCalendar():
+        logging.debug(f"User attempt to clear {calendarTitle.get()} calendar ({id_})")
         if (len(components) == 0):
+            logging.debug(f"{calendarTitle.get()} can't be clear: no component yet")
             return
         confirmation = messagebox.askyesno(
             message=f"Are you sure to reset {calendarTitle.get()} calendar ?",
@@ -67,11 +73,13 @@ def foo(root: tk.frame, holder: dict, configuration: dict) -> tk.Frame:
             title="Confirm"
         )
         if (not confirmation):
+            logging.debug(f"User cancelled {calendarTitle.get()} clear ({id_})")
             return
         components.clear() 
         tabs = notebook.tabs()
         for i in range(len(tabs)-1, 0, -1):
             notebook.forget(i)
+        logging.debug(f"{calendarTitle.get} calendar ({id_}) cleared")
     clearButton = ttk.Button(main, text="Clear the calendar", command=clearCalendar)
     clearButton.grid()
 

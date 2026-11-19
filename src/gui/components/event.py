@@ -1,6 +1,7 @@
 from tkinter import ttk
 import tkinter as tk
 from datetime import datetime, timedelta
+import uuid
 
 from src.backend.components.vevent import Vevent
 from src.backend.properties import *
@@ -22,6 +23,8 @@ from src.gui.properties import *
 """
 
 def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict) -> tk.Frame:
+    id_ = uuid.uuid4()
+    logging.debug(f"User opened a new event frame ({id_})")
     frame = tk.Frame(root)
     frame.columnconfigure(0, weight=1)
     frame.columnconfigure(1, weight=1)
@@ -82,6 +85,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict) -> tk
     cancelButton = tk.Button(frame, text="Cancel")
     cancelButton.grid(row=9, column=0)
     def createEvent():
+        logging.debug(f"User attempted to create {titleHolder["getValue"]()} event ({id_})")
         now = datetime.now()
         eventHolder["value"] = Vevent(
             now,
@@ -107,6 +111,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict) -> tk
             resources=None,
             url=None
         )
+        logging.debug(f"User succeed to create {titleHolder["getValue"]()} event ({id_})")
     confirmButton = tk.Button(frame, text="Confirm", command=createEvent)
     confirmButton.grid(row=9, column=1)
 
