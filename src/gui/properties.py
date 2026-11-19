@@ -34,15 +34,13 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
     - tk.Frame: the newly created attachment frame
     """
     frame = tk.Frame(root)
-    frame.grid(sticky=[tk.W])
-    frame.grid_remove()
+    frame.rowconfigure(0, weight=0)
     # label place
     frame.columnconfigure(0, weight=0)
     # value place
     frame.columnconfigure(1, weight=1)
     # tooltip place
     frame.columnconfigure(2, weight=0)
-    frame.rowconfigure(0, weight=0)
 
     entry = tk.Entry(frame)
     entry.grid(row=0, column=1)
@@ -617,6 +615,8 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> 
                     break
         return Summary(title.get(), altrepValue, language)
     valueHolder["getValue"] = getSummary
+    # to be able to display the title in real time
+    valueHolder["titleEntry"] = summaryEntry
 
     return frame
 

@@ -6,34 +6,43 @@ from tkinter import ttk
 from tkinter import filedialog as fd
 
 from src.gui.components import event, calendar
-from src.utils import configuration, exportConfigToJSONFile, logging
+from src.utils import exportConfigToJSONFile, launchLogging, importConfigFromJSONFile
 
-from src.gui.properties import makeRruleFrame
-
-
+configuration = importConfigFromJSONFile("default_config.json")
+logging = launchLogging(configuration["general"]["log-file"])
 logging.debug(f"New session activated")
 
 root = tk.Tk()
-root.rowconfigure(1, weight=1)
-root.columnconfigure(1, weight=1)
+root.rowconfigure(0, weight=1)
+root.columnconfigure(0, weight=1)
 
-frame, _ = makeRruleFrame(root)
-frame.grid(row=1, column=1, sticky=tk.NSEW)
 
-menubar = tk.Menu(root)
-filemenu = tk.Menu(menubar, tearoff=0)
-def createNewCalendar(master):
-    logging.debug(f"User tries to create a new calendar")
-    frame, _ = calendar.create(master)
+dico = {}
+frame = calendar.foo(root, dico, configuration)
+frame.grid(row=0, column=0, sticky="nsew")
 
-def createEvent(masterFrame):
-    eventFrame, eventDict = event.makeEventFrame(masterFrame)
+# def display():
+#     choices = dico["value"]
+#     print(f"{str(choices)}")
+# tk.Button(root, text="Show selection", command=display).grid(row=1, column=2)
 
-filemenu.add_command(label="Create", command=lambda : createNewCalendar(root))
-filemenu.add_command(label="Export", command=lambda: logging.debug(f"User clicked on calendar export"))
-filemenu.add_command(label="Import", command=lambda: logging.debug(f"User clicked on calendar import"))
-filemenu.add_command(label="Remove", command=lambda: logging.debug(f"User clicked on calendar removal"))
-menubar.add_cascade(label="Calendar", menu=filemenu)
+# frame, _ = makeRruleFrame(root)
+# frame.grid(row=1, column=1, sticky=tk.NSEW)
+# 
+# menubar = tk.Menu(root)
+# filemenu = tk.Menu(menubar, tearoff=0)
+# def createNewCalendar(master):
+#     logging.debug(f"User tries to create a new calendar")
+#     frame, _ = calendar.create(master)
+# 
+# def createEvent(masterFrame):
+#     eventFrame, eventDict = event.makeEventFrame(masterFrame)
+# 
+# filemenu.add_command(label="Create", command=lambda : createNewCalendar(root))
+# filemenu.add_command(label="Export", command=lambda: logging.debug(f"User clicked on calendar export"))
+# filemenu.add_command(label="Import", command=lambda: logging.debug(f"User clicked on calendar import"))
+# filemenu.add_command(label="Remove", command=lambda: logging.debug(f"User clicked on calendar removal"))
+# menubar.add_cascade(label="Calendar", menu=filemenu)
 
 # file = None
 # text = tk.Text(root, height=12)
@@ -44,8 +53,8 @@ menubar.add_cascade(label="Calendar", menu=filemenu)
 # calendarChoiceButton = tk.Button(root, text="Choose a calendar", command = getICSFile)
 # calendarChoiceButton.pack()
 
-root.config(menu=menubar)
+# root.config(menu=menubar)
 root.mainloop()
 
-exportConfigToJSONFile("default_config.json")
+exportConfigToJSONFile("default_config.json", configuration)
 logging.debug(f"Session ended")

@@ -31,13 +31,47 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict) -> tk
     # title and classification
     titleHolder = {}
     titleFrame = makeSummaryFrame(frame, titleHolder, configuration["language"])
-    titleFrame.grid()
+    # to be able to display the title in real time
+    eventHolder["titleEntry"] = titleHolder["titleEntry"]
+    titleFrame.grid(row=0, column=0, sticky=[tk.W])
+
+    classificationHolder = {}
+    classificationFrame = makeClassificationFrame(frame, classificationHolder, configuration["classification"])
+    classificationFrame.grid(row=0, column=1, sticky=[tk.W])
+
     # start, end and duration
+    dtStartHolder = {}
+    dtStartFrame = makeDtFrame(frame, "start", dtStartHolder)
+    dtStartFrame.grid(row=1, rowspan=2, column=0, sticky=[tk.W])
+
+    dtEndHolder = {}
+    dtEndFrame = makeDtFrame(frame, "end", dtEndHolder)
+    dtEndFrame.grid(row=1, rowspan=2, column=1, sticky=[tk.W])
+
     # location and priority
+    locationHolder = {}
+    locationFrame = makeLocationFrame(frame, locationHolder, configuration["language"])
+    locationFrame.grid(row=5, column=0, sticky=[tk.W])
+
+    priorityHolder = {}
+    priorityFrame = makePriorityFrame(frame, priorityHolder, configuration["priority"])
+    priorityFrame.grid(row=4, column=2, sticky=[tk.W])
+
     # categories
+    categoriesHolder = {}
+    categoriesFrame = makeCategoriesFrame(frame, categoriesHolder, configuration["categories"])
+    categoriesFrame.grid(row=5, column=0, columnspan=2, sticky=[tk.W])
+
     # organizer and attendees
     # attachment
+    attachmentHolder = {}
+    attachmentFrame = makeAttachmentFrame(frame, attachmentHolder)
+    attachmentFrame.grid(row=6, column=0, columnspan=2, sticky=[tk.W])
+
     # description
+    descriptionHolder = {}
+    descriptionFrame = makeCommentOrDescriptionFrame(frame, descriptionHolder, "description", configuration["language"])
+    descriptionFrame.grid(row=7, column=0, columnspan=2, sticky="nsew")
     # optional
         # rrule
         # transp and geo
@@ -51,23 +85,23 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict) -> tk
         now = datetime.now()
         eventHolder["value"] = Vevent(
             now,
-            dtstart=now,
-            end=now,
-            classification=None,
+            dtstart=dtStartHolder["getValue"](),
+            end=dtEndHolder["getValue"](),
+            classification=classificationHolder["getValue"](),
             created=None,
-            description=None,
+            description=descriptionHolder["getValue"](),
             geo=None,
             lastmod=None,
-            location=None,
+            location=locationHolder["getValue"](),
             organizer=None,
-            priority=None,
+            priority=priorityHolder["getValue"](),
             seq=None,
             status=None,
             title=titleHolder["getValue"](),
             transp=None,
-            attach=None,
+            attach=attachmentHolder["getValue"](),
             attendee=None,
-            categories=None,
+            categories=categoriesHolder["getValue"](),
             comment=None,
             contact=None,
             resources=None,
