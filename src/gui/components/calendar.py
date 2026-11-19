@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from tkinter import filedialog as fd
 from src.gui.components.event import makeEventFrame
 from src.utils import exportConfigToJSONFile
@@ -46,6 +46,7 @@ def foo(root: tk.frame, holder: dict, configuration: dict) -> tk.Frame:
         eventHolder = {}
         eventFrame = makeEventFrame(notebook, eventHolder, configuration)
         notebook.add(eventFrame, text="New event")
+        components.append(eventHolder)
         # redirect automatically the user to the new frame
         notebook.select(eventFrame)
         # let the tab title update in real time
@@ -55,6 +56,24 @@ def foo(root: tk.frame, holder: dict, configuration: dict) -> tk.Frame:
     addButton = ttk.Button(main, text="Add a new event", command=addEvent)
     addButton.grid()
     notebook.add(main, text="Main")
+
+    # let the user clear the calendar
+    def clearCalendar():
+        if (len(components) == 0):
+            return
+        confirmation = messagebox.askyesno(
+            message=f"Are you sure to reset {calendarTitle.get()} calendar ?",
+            icon="question",
+            title="Confirm"
+        )
+        if (not confirmation):
+            return
+        components.clear() 
+        tabs = notebook.tabs()
+        for i in range(len(tabs)-1, 0, -1):
+            notebook.forget(i)
+    clearButton = ttk.Button(main, text="Clear the calendar", command=clearCalendar)
+    clearButton.grid()
 
     return notebook
 
