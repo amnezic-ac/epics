@@ -58,7 +58,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict, loggi
 
     priorityHolder = {}
     priorityFrame = makePriorityFrame(frame, priorityHolder, configuration["priority"])
-    priorityFrame.grid(row=4, column=2, sticky=[tk.W])
+    priorityFrame.grid(row=4, column=1, sticky=[tk.W])
 
     # categories
     categoriesHolder = {}

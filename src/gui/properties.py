@@ -176,7 +176,6 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict) 
 
     return frame
 
-# FIXME: once a choice is done, the text is blue highlighted, need to be removed
 def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> tk.Frame:
     """
     create a frame for classification property
