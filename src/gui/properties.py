@@ -620,7 +620,7 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> 
 
     return frame
 
-# FIXME: spinbox of second does not display a default value contrarly of minute and hour ones
+# TODO: put default value for start are now and for end its start + default duration
 def makeDtFrame(root, typename: str, valueHolder: dict) -> tk.Frame:
     frame = tk.Frame(root)
     for i in range(2):
@@ -643,31 +643,55 @@ def makeDtFrame(root, typename: str, valueHolder: dict) -> tk.Frame:
     # line below is mandatroy: let the calendar be clickable even if there is a widget below it on the z-axis
     dateEntry._top_cal.lift()
 
-    hourSpinbox = tk.Spinbox(
+    # check that user inpput for spinboxes are valid
+    def validateSpinboxInputWhenKey(max, text):
+        if (not text):
+            return True
+        if (text and len(text) > 2):
+            return False
+        try:
+            tmp = int(text)
+            return tmp >= 0 and tmp <= max
+        except:
+            return False
+
+    hour = tk.StringVar(value="0")
+    hourSpinbox = ttk.Spinbox(
         frame,
         from_=0,
         to=23,
         increment=1,
         width=3,
-        wrap=True
+        textvariable=hour,
+        wrap=True,
+        validate="key", # this line and the one below ensure that what is typed in the keyboard is a valid value
+        validatecommand=(frame.register(lambda t: validateSpinboxInputWhenKey(23, t)), "%P")
     )
     hourSpinbox.grid(row=2, column=0)
-    minuteSpinbox = tk.Spinbox(
+    minute = tk.StringVar(value="0")
+    minuteSpinbox = ttk.Spinbox(
         frame,
         from_=0,
         to=59,
         increment=1,
         width=3,
-        wrap=True
+        textvariable=minute,
+        wrap=True,
+        validate="key",
+        validatecommand=(frame.register(lambda t: validateSpinboxInputWhenKey(59, t)), "%P")
     )
     minuteSpinbox.grid(row=2, column=1)
+    second = tk.StringVar(value="0")
     secondSpinbox = ttk.Spinbox(
         frame,
         from_=0,
         to=59,
         increment=1,
         width=3,
-        wrap=True
+        textvariable=second,
+        wrap=True,
+        validate="key",
+        validatecommand=(frame.register(lambda t: validateSpinboxInputWhenKey(59, t)), "%P")
     )
     secondSpinbox.grid(row=2, column=2)
 
@@ -676,9 +700,9 @@ def makeDtFrame(root, typename: str, valueHolder: dict) -> tk.Frame:
             year=int(dateEntry.get_date().strftime("%Y")),
             month=int(dateEntry.get_date().strftime("%m")),
             day=int(dateEntry.get_date().strftime("%d")),
-            hour=int(hourSpinbox.get()),
-            minute=int(minuteSpinbox.get()),
-            second=int(secondSpinbox.get())
+            hour=hour.get(),
+            minute=minute.get(),
+            second=second.get()
         )
     valueHolder["getValue"] = getDT
 
