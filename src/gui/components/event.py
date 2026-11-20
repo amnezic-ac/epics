@@ -22,7 +22,7 @@ from src.gui.properties import *
 - rdate
 """
 
-def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict) -> tk.Frame:
+def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict, logging) -> tk.Frame:
     id_ = uuid.uuid4()
     logging.debug(f"User opened a new event frame ({id_})")
     frame = tk.Frame(root)

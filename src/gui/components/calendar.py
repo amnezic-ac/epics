@@ -27,7 +27,7 @@ def export(calendar: Calendar):
         logging.warning("Save operation cancelled.")
 
 
-def foo(root: tk.frame, holder: dict, configuration: dict) -> tk.Frame:
+def foo(root: tk.frame, holder: dict, configuration: dict, logging) -> tk.Frame:
     id_ = uuid.uuid4()
     logging.debug(f"User opened a calendar creation frame (uuid: {id_})")
     notebook = ttk.Notebook(root)
@@ -48,7 +48,7 @@ def foo(root: tk.frame, holder: dict, configuration: dict) -> tk.Frame:
     def addEvent():
         logging.debug(f"User began to add an event to {calendarTitle.get()} calendar ({id_})")
         eventHolder = {}
-        eventFrame = makeEventFrame(notebook, eventHolder, configuration)
+        eventFrame = makeEventFrame(notebook, eventHolder, configuration, logging)
         notebook.add(eventFrame, text="New event")
         components.append(eventHolder)
         # redirect automatically the user to the new frame

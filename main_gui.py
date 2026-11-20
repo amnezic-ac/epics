@@ -18,7 +18,7 @@ root.columnconfigure(0, weight=1)
 
 
 dico = {}
-frame = calendar.foo(root, dico, configuration)
+frame = calendar.foo(root, dico, configuration, logging)
 frame.grid(row=0, column=0, sticky="nsew")
 
 # def display():

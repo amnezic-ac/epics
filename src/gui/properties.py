@@ -1,13 +1,13 @@
 from tkinter import ttk
-from tktooltip import ToolTip
+from TkToolTip import ToolTip
 import tkinter as tk
 import tkcalendar as tkc
 from datetime import datetime
 
 from src.utils import findLangIdFromLangValue
 from src.backend.properties import *
-from src.gui.parameters import *
-from src.gui.rrule import *
+# from src.gui.parameters import *
+# from src.gui.rrule import *
 
 """
 - grid documentation: https://tkdocs.com/tutorial/grid.html
