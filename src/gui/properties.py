@@ -17,7 +17,6 @@ Some guidelines:
 - each function must put in the valueHolder["getValue"] a lambda function that returns the property object, None if there is an error
 """
 
-# create a frame for attachment property
 def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
     """
     create a frame for attachment property
@@ -218,10 +217,11 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: di
         hiddableFrame,
         textvariable=userChoice,
         values=configuration["choices"],
-        # state=readonly,
-        height=min(configuration["height"], len(configuration["choices"]))
+        state=["readonly"],
+        height=min(configuration["height"], len(configuration["choices"])),
     )
-    combobox.state(["readonly"])
+    # avoid selected item to be blue highlighted
+    combobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
     combobox.grid(row=0, rowspan=3, column=0, sticky=[tk.N])
     def getClassification():
         return Classification(combobox.get())
@@ -314,9 +314,11 @@ def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str,
     languageCombobox = ttk.Combobox(
         frame,
         values=[value[1] for value in configuration["choices"]],
-        height=10
+        height=10,
+        state=["readonly"]
     )
-    languageCombobox.state(["readonly"])
+    # avoid selected item to be blue highlighted
+    languageCombobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
     languageCombobox.grid(row=1, column=1)
 
     def getCommentOrDescription():
@@ -400,9 +402,11 @@ def makeLocationFrame(root: tk.Frame, valueHolder: dict, configuration: dict) ->
     languageCombobox = ttk.Combobox(
         frame,
         values=[value[1] for value in configuration["choices"]],
-        height=10
+        height=10,
+        state=["readonly"]
     )
-    languageCombobox.state(["readonly"])
+    # avoid the selected item to be blue highlighted
+    languageCombobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
     languageCombobox.grid(row=1, column=2)
     languageCombobox.grid_remove()
     
@@ -548,9 +552,11 @@ def makeStatusFrame(root: tk.Frame, valueHolder: dict, componentType: str, confi
     statusCombobox = ttk.Combobox(
         frame,
         values=configuration[f"{componentType}"],
-        state="readonly",
-        textvariable=value
+        state=["readonly"],
+        textvariable=value,
     )
+    # avoid the selected item to be blue highlighted
+    combobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
     statusCombobox.grid(row=0, column=0)
     statusCombobox.grid_remove()
 
@@ -585,9 +591,11 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> 
     languageCombobox = ttk.Combobox(
         frame,
         values=[value[1] for value in configuration["choices"]],
-        height=10
+        height=10,
+        state=["readonly"]
     )
-    languageCombobox.state(["readonly"])
+    # avoid the selected item to be blue highlighted
+    languageCombobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
     languageCombobox.grid(row=1, column=1)
     languageCombobox.grid_remove()
 
@@ -750,9 +758,11 @@ def makeTranspFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> t
     transpCombobox = ttk.Combobox(
         frame,
         values=configuration["choices"],
-        state="readonly",
+        state=["readonly"],
         textvariable=value
     )
+    # avoid the selected item to be blue highlighted
+    combobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
     transpCombobox.grid()
 
     ToolTip(transpCombobox, msg="Tells if the event should block overlapping events")
@@ -776,8 +786,11 @@ def makeOrganizerFrame(root):
         values=[elt["common-name"] for elt in configuration["attendees"]["choices"]],
         exportselection=False,
         height=min(configuration["attendees"]["height"], len(configuration["attendees"]["choices"])),
-        textvariable=value
+        textvariable=value,
+        state=["readonly"]
     )
+    # avoid the selected item to be blue highlighted
+    combobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
     combobox.pack(side="right")
 
     return frame, value
