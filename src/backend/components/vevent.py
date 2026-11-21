@@ -11,12 +11,6 @@ from datetime import datetime, timedelta
 import hashlib
 
 class Vevent(Component):
-    # for further information, please refer to 3.6.1
-
-    # TODO:
-    """
-    - tester d'avoir plusieurs comments
-    """
     def __init__(self,
         dtstamp: datetime,
         dtstart: datetime,

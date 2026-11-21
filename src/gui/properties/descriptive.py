@@ -2,7 +2,7 @@ from src.gui.imports import *
 from TkToolTip import ToolTip
 from src.backend.properties.descriptive import Attachment, Categories, Classification, Comment, Description, Geo, Location, Percent, Priority, Resources, Status, Summary
 
-def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
+def makeAttachmentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame :
     """
     create a frame for attachment property
 
@@ -53,17 +53,17 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
             tmp = None
             if (entry.get()):
                 tmp = Attachment(entry.get(), None, None, None)
-                logging.debug(f"{entry.get()} attachment successfully created")
+                # logging.debug(f"{entry.get()} attachment successfully created")
             return tmp
         except:
-            logging.error(f"Failed to create {entry.get()} attachement")
+            logging.warn(f"[Component {id_}] Failed to create attachement")
             return None
     valueHolder["getValue"] = getAttachment
 
     return frame
 
 # TODO: make it work
-def makeCategoriesFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
+def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame :
     """
     create a frame for categories property
 
@@ -112,10 +112,10 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
             return None
         try:
             tmp = Categories(tmpList)
-            logging.debug("Categories successfully created")
+            # logging.debug("Categories successfully created")
             return tmp
         except:
-            logging.error("Unable to create categories")
+            logging.warn(f"[Component {componentId}] Unable to create categories")
             return None
     valueHolder["getValue"] = getCategories
 
@@ -179,7 +179,7 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
 
     return frame
 
-def makeClassificationFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+def makeClassificationFrame(root: tk.Frame, valueHolder: dict, componentId) -> tk.Frame:
     """
     create a frame for classification property
 
@@ -230,10 +230,10 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
             tmp = None
             if (userChoice.get()):
                 tmp = Classification(userChoice.get())
-                logging.debug(f"User choosed {userChoice.get()} classification")
+                # logging.debug(f"User choosed {userChoice.get()} classification")
             return tmp
         except:
-            logging.error(f"Error while creating the classification")
+            logging.warn(f"[Component {componentId}] Error while creating the classification")
     valueHolder["getValue"] = getClassification
 
     entry = tk.StringVar()
@@ -348,7 +348,7 @@ def makeCommentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
 
 # FIXME: when resized, the second column could disappear below the first one
 # TODO: add a text inside showing if it's a description or comment component
-def makeDescriptionFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+def makeDescriptionFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
     frame = tk.Frame(root)
     frame.rowconfigure(0, weight=1)
     frame.rowconfigure(1, weight=1)
@@ -439,7 +439,7 @@ def makeGeoFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
 
     return frame
 
-def makeLocationFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+def makeLocationFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
     frame = tk.Frame(root)
     frame.rowconfigure(0, weight=0)
     frame.rowconfigure(1, weight=0)
@@ -494,9 +494,10 @@ def makeLocationFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
                         language = key
                         break
             tmp = Location(entry.get(), altrepValue, language)
-            logging.debug(f"{entry.get()} location successfully created")
+            # logging.debug(f"{entry.get()} location successfully created")
+            return tmp
         except:
-            logging.error(f"Location failed")
+            logging.warn(f"[Component {componentId}] Location creation failed ({entry.get()})")
             return None
     valueHolder["getValue"] = getLocation
 
@@ -530,7 +531,7 @@ def makePercentFrame(root):
 
     return frame, valueHolder
 
-def makePriorityFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+def makePriorityFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
     frame = tk.Frame(root)
     frame.rowconfigure(0, weight=0)
     frame.columnconfigure(0, weight=0)
@@ -554,10 +555,10 @@ def makePriorityFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
             return None
         try:
             tmp = Priority(int(priority.get()))
-            logging.debug(f"priority successfully created")
+            # logging.debug(f"priority successfully created")
             return tmp
         except:
-            logging.error(f"unable to create priority")
+            logging.error(f"[Component {componentId}] Unable to create priority")
             return None
     valueHolder["getValue"] = getPriority
 
@@ -645,7 +646,7 @@ def makeStatusFrame(root: tk.Frame, valueHolder: dict, componentType: str) -> tk
 
     return frame
 
-def makeSummaryFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+def makeSummaryFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
     frame = tk.Frame(root)
     frame.rowconfigure(0, weight=0)
     frame.rowconfigure(1, weight=0)
@@ -699,10 +700,10 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
                     break
         try:
             tmp = Summary(title.get(), altrepValue, language)
-            logging.debug(f"Summary successfully created")
+            # logging.debug(f"[Component {componentId}] Summary successfully created")
             return tmp
         except:
-            logging.error(f"Unable to create summary")
+            logging.error(f"[Component {componentId}] Unable to create summary ({title.get()})")
             return None
     valueHolder["getValue"] = getSummary
     # to be able to display the title in real time

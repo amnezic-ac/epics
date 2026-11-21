@@ -39,7 +39,7 @@ def makeDurationFrame(root):
     return frame, valueHolder
 
 # TODO: put default value for start are now and for end its start + default duration
-def makeDtFrame(root, typename: str, valueHolder: dict) -> tk.Frame:
+def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame:
     frame = tk.Frame(root)
     for i in range(2):
         frame.rowconfigure(i, weight=0)
@@ -47,6 +47,9 @@ def makeDtFrame(root, typename: str, valueHolder: dict) -> tk.Frame:
         frame.columnconfigure(i, weight=0)
 
     timestamp = datetime.now()
+
+    if (typename not in ["start", "end"]):
+        logging.error(f"[Component {componentId}] {typename} is not a valid typename value for datime frame creation (should be \"start\" or \"end\")")
 
     labeltext = "From" if typename == "start" else "to"
     label = tk.Label(frame, text=labeltext)
@@ -123,10 +126,10 @@ def makeDtFrame(root, typename: str, valueHolder: dict) -> tk.Frame:
                 minute = int(minute.get()),
                 second = int(second.get())
             )
-            logging.debug(f"Timestamp successfully created ({typename})")
+            # logging.debug(f"Timestamp successfully created ({typename})")
             return tmp
         except:
-            logging.error(f"Unable to create the timestamp ({typename})")
+            logging.error(f"[Component {componentId}] Unable to create the {typename} timestamp")
             return None
     valueHolder["getValue"] = getDT
 

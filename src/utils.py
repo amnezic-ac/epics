@@ -8,12 +8,6 @@ def importConfigFromJSONFile(filepath: str) -> dict:
         data = json.load(file)
     return data
 
-def exportConfigToJSONFile(filepath: str, configuration) -> bool:
-    with open(filepath, "w", encoding='utf-8') as file:
-        json.dump(configuration, file, indent=4)
-
-# configuration = importConfigFromJSONFile("default_config.json")
-
 def launchLogging(logfile):
     logging.basicConfig(
         filename=f"{logfile}",
@@ -33,3 +27,8 @@ def findLangIdFromLangValue(language: str):
 
 configuration = importConfigFromJSONFile("default_config.json")
 logging = launchLogging(configuration["general"]["log-file"])
+
+def exportConfigToJSONFile(filepath: str, configuration) -> bool:
+    with open(filepath, "w", encoding='utf-8') as file:
+        json.dump(configuration, file, indent=4)
+        logging.debug(f"Configuration successfully saved")

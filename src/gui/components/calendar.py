@@ -2,42 +2,38 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from tkinter import filedialog as fd
 from src.gui.components.event import makeEventFrame
-from src.utils import exportConfigToJSONFile
 from src.backend.components.calendar import Calendar
 import uuid
-
-from src.utils import configuration, logging
+from src.utils import logging
 
 def export(calendar: Calendar, notebook):
     if (not calendar):
-        logging.warning(f"User attempted to add an unexisting calendar. Should display (not implemented yet) a warning popup")
+        logging.warning(f"[Calendar {calendar.uid}] User attempted to add a None calendar object")
         return None
 
-    # Open dialog
     file_path = fd.asksaveasfilename(
         defaultextension=".ics",
         filetypes=[("ICal files", "*.ics"), ("Text files", "*.txt"), ("All files", "*.*")],
         title="Save File"
     )
 
-    # Check if user selected a file (not cancelled)
+    # save the calendar only if a file has been selected
     if file_path:
         with open(file_path, 'w') as f:
             f.write(str(calendar))
-            logging.info(f"Calendar successfully saved with {len(calendar.components)} component(s)")
-            notebook.destroy()
+            logging.info(f"[Calendar {calendar.uid}] Calendar successfully saved with {len(calendar.components)} component(s)")
     else:
-        logging.warning("Save operation cancelled.")
+        logging.warning(f"[Calendar {calendar.uid}] Save operation cancelled.")
 
 
 def foo(root: tk.frame, holder: dict) -> tk.Frame:
     id_ = uuid.uuid4()
-    logging.debug(f"User opened a calendar creation frame (uuid: {id_})")
+    logging.debug(f"[Calendar {id_}] User opened a calendar creation frame")
     notebook = ttk.Notebook(root)
     # list containing all components of the calendar
     components = []
 
-    # frame that will contain features button
+    # frame that will contain feature buttons
     main = ttk.Frame(notebook)
 
     # frame for letting the user type the calendar name
@@ -49,9 +45,9 @@ def foo(root: tk.frame, holder: dict) -> tk.Frame:
 
     # let the user open a new event
     def addEvent():
-        logging.debug(f"User began to add an event to {calendarTitle.get()} calendar ({id_})")
+        logging.debug(f"[Calendar {id_}] User began to add an event to {calendarTitle.get()} calendar")
         eventHolder = {}
-        eventFrame = makeEventFrame(notebook, eventHolder)
+        eventFrame = makeEventFrame(notebook, eventHolder, id_)
         notebook.add(eventFrame, text="New event")
         components.append(eventHolder)
         # redirect automatically the user to the new frame
@@ -66,9 +62,9 @@ def foo(root: tk.frame, holder: dict) -> tk.Frame:
 
     # let the user clear the calendar
     def clearCalendar():
-        logging.debug(f"User attempt to clear {calendarTitle.get()} calendar ({id_})")
+        logging.debug(f"[Calendar {id_}] User attempt to clear {calendarTitle.get()} calendar")
         if (len(components) == 0):
-            logging.debug(f"{calendarTitle.get()} can't be clear: no component yet")
+            logging.warn(f"[Calendar {id_}] User attempted to clear an empty calendar ({calendarTitle.get()})")
             return
         confirmation = messagebox.askyesno(
             message=f"Are you sure to reset {calendarTitle.get()} calendar ?",
@@ -76,18 +72,19 @@ def foo(root: tk.frame, holder: dict) -> tk.Frame:
             title="Confirm"
         )
         if (not confirmation):
-            logging.debug(f"User cancelled {calendarTitle.get()} clear ({id_})")
+            logging.warn(f"[Calendar {id_}] User cancelled {calendarTitle.get()} clear ({id_})")
             return
         components.clear() 
         tabs = notebook.tabs()
         for i in range(len(tabs)-1, 0, -1):
             notebook.forget(i)
-        logging.debug(f"{calendarTitle.get} calendar ({id_}) cleared")
+        logging.debug(f"[Calendar {id_}] User cleared {calendarTitle.get()} calendar")
     clearButton = ttk.Button(main, text="Clear the calendar", command=clearCalendar)
     clearButton.grid()
 
     def exportCalendar():
         if (components == []):
+            logging.warn(f"[Calendar {id_}] User tried to export an empty calendar")
             return None
         calendar = Calendar(id_)
         for holder in components:

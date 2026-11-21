@@ -4,11 +4,6 @@ import tkinter as tk
 from src.backend.parameters import *
 from src.utils import configuration, logging
 
-"""
-Disclaimer
-    Except the first two functions, all the other one have been AI generated for convenience purpose
-"""
-
 def makeAlternativeRepresentationFrame(masterFrame):
     altrepFrame = tk.Frame(masterFrame)
 
