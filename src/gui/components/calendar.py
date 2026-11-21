@@ -6,7 +6,7 @@ from src.utils import exportConfigToJSONFile
 from src.backend.components.calendar import Calendar
 import uuid
 
-def export(calendar: Calendar):
+def export(calendar: Calendar, logging):
     if (not calendar):
         logging.warning(f"User attempted to add an unexisting calendar. Should display (not implemented yet) a warning popup")
         return None
@@ -90,7 +90,7 @@ def foo(root: tk.frame, holder: dict, configuration: dict, logging) -> tk.Frame:
         for holder in components:
             component = holder["getValue"]()
             calendar.add_component(component)
-        export(calendar)
+        export(calendar, logging)
     exportButton = ttk.Button(main, text="Create calendar", command=exportCalendar)
     exportButton.grid()
 

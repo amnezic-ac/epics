@@ -53,16 +53,16 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict, loggi
 
     # location and priority
     locationHolder = {}
-    locationFrame = makeLocationFrame(frame, locationHolder, configuration["language"])
+    locationFrame = makeLocationFrame(frame, locationHolder, configuration["language"], logging)
     locationFrame.grid(row=5, column=0, sticky=[tk.W])
 
     priorityHolder = {}
-    priorityFrame = makePriorityFrame(frame, priorityHolder, configuration["priority"])
+    priorityFrame = makePriorityFrame(frame, priorityHolder, configuration["priority"], logging)
     priorityFrame.grid(row=4, column=1, sticky=[tk.W])
 
     # categories
     categoriesHolder = {}
-    categoriesFrame = makeCategoriesFrame(frame, categoriesHolder, configuration["categories"])
+    categoriesFrame = makeCategoriesFrame(frame, categoriesHolder, configuration["categories"], logging)
     categoriesFrame.grid(row=5, column=0, columnspan=2, sticky=[tk.W])
 
     # organizer and attendees
@@ -73,7 +73,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict, loggi
 
     # description
     descriptionHolder = {}
-    descriptionFrame = makeCommentOrDescriptionFrame(frame, descriptionHolder, "description", configuration["language"])
+    descriptionFrame = makeCommentOrDescriptionFrame(frame, descriptionHolder, "description", configuration["language"], logging)
     descriptionFrame.grid(row=7, column=0, columnspan=2, sticky="nsew")
     # optional
         # rrule
@@ -112,6 +112,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict, loggi
                 url=None
             )
             logging.debug(f"User successfully created {titleHolder["getValue"]()} event ({id_})")
+            print(event)
             return event
         except:
             logging.error(f"Unable to create {id_} event")

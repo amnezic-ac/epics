@@ -72,12 +72,13 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict, logging) -> tk.Frame 
             return tmp
         except:
             logging.error(f"Failed to create {entry.get()} attachement")
+            return None
     valueHolder["getValue"] = getAttachment
 
     return frame
 
 # TODO: make it work
-def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> tk.Frame :
+def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict, logging) -> tk.Frame :
     """
     create a frame for categories property
 
@@ -319,7 +320,7 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: di
 
 # FIXME: when resized, the second column could disappear below the first one
 # TODO: add a text inside showing if it's a description or comment component
-def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str, configuration: [dict]) -> tk.Frame:
+def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str, configuration: [dict], logging) -> tk.Frame:
     if (_type not in ["comment", "description"]):
         return None
 
@@ -416,7 +417,7 @@ def makeGeoFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
 
     return frame
 
-def makeLocationFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> tk.Frame:
+def makeLocationFrame(root: tk.Frame, valueHolder: dict, configuration: dict, logging) -> tk.Frame:
     frame = tk.Frame(root)
     frame.rowconfigure(0, weight=0)
     frame.rowconfigure(1, weight=0)
@@ -462,14 +463,19 @@ def makeLocationFrame(root: tk.Frame, valueHolder: dict, configuration: dict) ->
     def getLocation():
         if (not entry.get()):
             return None
-        language = None
-        altrepValue = None
-        if (state.get()):
-            for [key, value] in configuration["choices"]:
-                if (value == languageCombobox.get()):
-                    language = key
-                    break
-        return Location(entry.get(), altrepValue, language)
+        try:
+            language = None
+            altrepValue = None
+            if (state.get()):
+                for [key, value] in configuration["choices"]:
+                    if (value == languageCombobox.get()):
+                        language = key
+                        break
+            tmp = Location(entry.get(), altrepValue, language)
+            logging.debug(f"{entry.get()} location successfully created")
+        except:
+            logging.error(f"Location failed")
+            return None
     valueHolder["getValue"] = getLocation
 
     return frame
@@ -502,7 +508,7 @@ def makePercentFrame(root):
 
     return frame, valueHolder
 
-def makePriorityFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> tk.Frame:
+def makePriorityFrame(root: tk.Frame, valueHolder: dict, configuration: dict, logging) -> tk.Frame:
     frame = tk.Frame(root)
     frame.rowconfigure(0, weight=0)
     frame.columnconfigure(0, weight=0)
@@ -524,7 +530,13 @@ def makePriorityFrame(root: tk.Frame, valueHolder: dict, configuration: dict) ->
     def getPriority():
         if (not priority.get()):
             return None
-        return Priority(int(priority.get()))
+        try:
+            tmp = Priority(int(priority.get()))
+            logging.debug(f"priority successfully created")
+            return tmp
+        except:
+            logging.error(f"unable to create priority")
+            return None
     valueHolder["getValue"] = getPriority
 
     return frame
