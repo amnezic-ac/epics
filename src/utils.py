@@ -25,7 +25,7 @@ def findLangIdFromLangValue(language: str):
                 return key
     return None
 
-configuration = importConfigFromJSONFile("default_config.json")
+configuration = importConfigFromJSONFile("configuration.json")
 logging = launchLogging(configuration["general"]["log-file"])
 
 def exportConfigToJSONFile(filepath: str, configuration) -> bool:

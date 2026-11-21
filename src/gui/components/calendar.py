@@ -26,7 +26,7 @@ def export(calendar: Calendar, notebook):
         logging.warning(f"[Calendar {calendar.uid}] Save operation cancelled.")
 
 
-def foo(root: tk.frame, holder: dict) -> tk.Frame:
+def makeCalendarFrame(root: tk.frame, holder: dict) -> tk.Frame:
     id_ = uuid.uuid4()
     logging.debug(f"[Calendar {id_}] User opened a calendar creation frame")
     notebook = ttk.Notebook(root)

@@ -2,8 +2,6 @@ from datetime import datetime
 from enum import Enum, auto
 import re
 
-DEFAULT_HOUR_DURATION = 2
-
 class Caladress():
     def __init__(self):
         self.value = "ERROR"
