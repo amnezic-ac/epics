@@ -17,7 +17,7 @@ Some guidelines:
 - each function must put in the valueHolder["getValue"] a lambda function that returns the property object, None if there is an error
 """
 
-def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
+def makeAttachmentFrame(root: tk.Frame, valueHolder: dict, logging) -> tk.Frame :
     """
     create a frame for attachment property
 
@@ -64,11 +64,19 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
 
     valueHolder["state"] = state
     def getAttachment():
-        return Attachement(entry.get(), None, None, None)
+        try:
+            tmp = None
+            if (entry.get()):
+                tmp = Attachement(entry.get(), None, None, None)
+                logging.debug(f"{entry.get()} attachment successfully created")
+            return tmp
+        except:
+            logging.error(f"Failed to create {entry.get()} attachement")
     valueHolder["getValue"] = getAttachment
 
     return frame
 
+# TODO: make it work
 def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> tk.Frame :
     """
     create a frame for categories property
@@ -113,7 +121,16 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict) 
         listbox.insert(i, configuration["choices"][i])
     listbox.grid(row=0, rowspan=3, column=0, sticky=[tk.N])
     def getCategories():
-        return Categories([listbox.get(index) for index in listbox.curselection()])
+        tmpList = [listbox.get(index) for index in listbox.curselection()]
+        if (tmpList == []):
+            return None
+        try:
+            tmp = Categories(tmpList)
+            logging.debug("Categories successfully created")
+            return tmp
+        except:
+            logging.error("Unable to create categories")
+            return None
     valueHolder["getValue"] = getCategories
 
     entry = tk.StringVar()
@@ -176,7 +193,7 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict) 
 
     return frame
 
-def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> tk.Frame:
+def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: dict, logging) -> tk.Frame:
     """
     create a frame for classification property
 
@@ -223,12 +240,20 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: di
     combobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
     combobox.grid(row=0, rowspan=3, column=0, sticky=[tk.N])
     def getClassification():
-        return Classification(combobox.get())
+        try:
+            tmp = None
+            if (userChoice.get()):
+                tmp = Classification(userChoice.get())
+                logging.debug(f"User choosed {userChoice.get()} classification")
+            return tmp
+        except:
+            logging.error(f"Error while creating the classification")
     valueHolder["getValue"] = getClassification
 
     entry = tk.StringVar()
     entryWidget = ttk.Entry(hiddableFrame, textvariable=entry)
     entryWidget.grid(row=0, column=1, columnspan=2, sticky=[tk.W, tk.E])
+
     # let the user add a new classification for this particular component
     def add():
         value = entry.get()
@@ -322,6 +347,9 @@ def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str,
 
     def getCommentOrDescription():
         text = textWidget.get('1.0', 'end').strip()
+        if (not text):
+            return None
+
         language = None
         for [key, value] in configuration["choices"]:
             if (value == languageCombobox.get()):
@@ -373,7 +401,17 @@ def makeGeoFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     checkbutton.grid(row=0, column=0, columnspan=3, sticky=[tk.W, tk.E])
 
     def getGeo():
-        return Geo(int(latVar.get()), int(longVar.get()))
+        if (not state.get()):
+            return None
+        
+        try:
+            lat = int(latVar.get())
+            long = int(longVar.get())
+            tmp = Geo(lat, long)
+            logging.debug(f"Geographical location successfully created")
+            return tmp
+        except:
+            logging.error(f"Unable to make a geographical coordinates with {latVar.get()} and {longVar.get()}")
     valueHolder["getValue"] = getGeo
 
     return frame
@@ -560,15 +598,20 @@ def makeStatusFrame(root: tk.Frame, valueHolder: dict, componentType: str, confi
     statusCombobox.grid_remove()
 
     def getStatus():
-        if (not state.get() or not statusCombobox.get()):
+        if (not state.get() or not value.get()):
             return None
-        else:
-            return Status(statusCombobox.get())
+        try:
+            tmp = Status(value.get())
+            logging.debug(f"Status successfully created") 
+            return tmp
+        except:
+            logging.debug(f"Unable to create {state.get()} status")
+            return None
     valueHolder["getValue"] = getStatus
 
     return frame
 
-def makeSummaryFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> tk.Frame:
+def makeSummaryFrame(root: tk.Frame, valueHolder: dict, configuration: dict, logging) -> tk.Frame:
     frame = tk.Frame(root)
     frame.rowconfigure(0, weight=0)
     frame.rowconfigure(1, weight=0)
@@ -620,7 +663,13 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> 
                 if (value == languageCombobox.get()):
                     language = key
                     break
-        return Summary(title.get(), altrepValue, language)
+        try:
+            tmp = Summary(title.get(), altrepValue, language)
+            logging.debug(f"Summary successfully created")
+            return tmp
+        except:
+            logging.error(f"Unable to create summary")
+            return None
     valueHolder["getValue"] = getSummary
     # to be able to display the title in real time
     valueHolder["titleEntry"] = summaryEntry
@@ -628,7 +677,7 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> 
     return frame
 
 # TODO: put default value for start are now and for end its start + default duration
-def makeDtFrame(root, typename: str, valueHolder: dict) -> tk.Frame:
+def makeDtFrame(root, typename: str, valueHolder: dict, logging) -> tk.Frame:
     frame = tk.Frame(root)
     for i in range(2):
         frame.rowconfigure(i, weight=0)
@@ -703,14 +752,20 @@ def makeDtFrame(root, typename: str, valueHolder: dict) -> tk.Frame:
     secondSpinbox.grid(row=2, column=2)
 
     def getDT():
-        return datetime(
-            year=int(dateEntry.get_date().strftime("%Y")),
-            month=int(dateEntry.get_date().strftime("%m")),
-            day=int(dateEntry.get_date().strftime("%d")),
-            hour=hour.get(),
-            minute=minute.get(),
-            second=second.get()
-        )
+        try:
+            tmp = datetime(
+                year = int(dateEntry.get_date().strftime("%Y")),
+                month = int(dateEntry.get_date().strftime("%m")),
+                day = int(dateEntry.get_date().strftime("%d")),
+                hour = int(hour.get()),
+                minute = int(minute.get()),
+                second = int(second.get())
+            )
+            logging.debug(f"Timestamp successfully created ({typename})")
+            return tmp
+        except:
+            logging.error(f"Unable to create the timestamp ({typename})")
+            return None
     valueHolder["getValue"] = getDT
 
     return frame
@@ -750,7 +805,7 @@ def makeDurationFrame(root):
 
     return frame, valueHolder
 
-def makeTranspFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> tk.Frame:
+def makeTranspFrame(root: tk.Frame, valueHolder: dict, configuration: dict, logging) -> tk.Frame:
     frame = tk.Frame(root)
 
     value = tk.StringVar(value=configuration["choices"][0])
@@ -767,7 +822,16 @@ def makeTranspFrame(root: tk.Frame, valueHolder: dict, configuration: dict) -> t
     ToolTip(transpCombobox, msg="Tells if the event should block overlapping events")
 
     def getTransp():
-        return Transparency(value.get())
+        if (not value.get()):
+            return None
+        
+        try:
+            tmp = Transparency(value.get())
+            logging.debug(f"Transp successfully created")
+            return tmp
+        except:
+            logging.error(f"Unable to create transp")
+            return None
     valueHolder["getValue"] = getTransp
 
     return frame

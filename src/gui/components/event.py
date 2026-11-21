@@ -33,22 +33,22 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict, loggi
 
     # title and classification
     titleHolder = {}
-    titleFrame = makeSummaryFrame(frame, titleHolder, configuration["language"])
+    titleFrame = makeSummaryFrame(frame, titleHolder, configuration["language"], logging)
     # to be able to display the title in real time
     eventHolder["titleEntry"] = titleHolder["titleEntry"]
     titleFrame.grid(row=0, column=0, sticky=[tk.W])
 
     classificationHolder = {}
-    classificationFrame = makeClassificationFrame(frame, classificationHolder, configuration["classification"])
+    classificationFrame = makeClassificationFrame(frame, classificationHolder, configuration["classification"], logging)
     classificationFrame.grid(row=0, column=1, sticky=[tk.W])
 
     # start, end and duration
     dtStartHolder = {}
-    dtStartFrame = makeDtFrame(frame, "start", dtStartHolder)
+    dtStartFrame = makeDtFrame(frame, "start", dtStartHolder, logging)
     dtStartFrame.grid(row=1, rowspan=2, column=0, sticky=[tk.W])
 
     dtEndHolder = {}
-    dtEndFrame = makeDtFrame(frame, "end", dtEndHolder)
+    dtEndFrame = makeDtFrame(frame, "end", dtEndHolder, logging)
     dtEndFrame.grid(row=1, rowspan=2, column=1, sticky=[tk.W])
 
     # location and priority
@@ -68,7 +68,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict, loggi
     # organizer and attendees
     # attachment
     attachmentHolder = {}
-    attachmentFrame = makeAttachmentFrame(frame, attachmentHolder)
+    attachmentFrame = makeAttachmentFrame(frame, attachmentHolder, logging)
     attachmentFrame.grid(row=6, column=0, columnspan=2, sticky=[tk.W])
 
     # description
@@ -85,33 +85,38 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict, loggi
     cancelButton = tk.Button(frame, text="Cancel")
     cancelButton.grid(row=9, column=0)
     def createEvent():
-        logging.debug(f"User attempted to create {titleHolder["getValue"]()} event ({id_})")
         now = datetime.now()
-        eventHolder["value"] = Vevent(
-            now,
-            dtstart=dtStartHolder["getValue"](),
-            end=dtEndHolder["getValue"](),
-            classification=classificationHolder["getValue"](),
-            created=None,
-            description=descriptionHolder["getValue"](),
-            geo=None,
-            lastmod=None,
-            location=locationHolder["getValue"](),
-            organizer=None,
-            priority=priorityHolder["getValue"](),
-            seq=None,
-            status=None,
-            title=titleHolder["getValue"](),
-            transp=None,
-            attach=attachmentHolder["getValue"](),
-            attendee=None,
-            categories=categoriesHolder["getValue"](),
-            comment=None,
-            contact=None,
-            resources=None,
-            url=None
-        )
-        logging.debug(f"User succeed to create {titleHolder["getValue"]()} event ({id_})")
+        try:
+            event = Vevent(
+                now,
+                dtstart=dtStartHolder["getValue"](),
+                end=dtEndHolder["getValue"](),
+                classification=classificationHolder["getValue"](),
+                created=None,
+                description=descriptionHolder["getValue"](),
+                geo=None,
+                lastmod=None,
+                location=locationHolder["getValue"](),
+                organizer=None,
+                priority=priorityHolder["getValue"](),
+                seq=None,
+                status=None,
+                title=titleHolder["getValue"](),
+                transp=None,
+                attach=attachmentHolder["getValue"](),
+                attendee=None,
+                categories=categoriesHolder["getValue"](),
+                comment=None,
+                contact=None,
+                resources=None,
+                url=None
+            )
+            logging.debug(f"User successfully created {titleHolder["getValue"]()} event ({id_})")
+            return event
+        except:
+            logging.error(f"Unable to create {id_} event")
+            return None
+    eventHolder["getValue"] = createEvent
     confirmButton = tk.Button(frame, text="Confirm", command=createEvent)
     confirmButton.grid(row=9, column=1)
 

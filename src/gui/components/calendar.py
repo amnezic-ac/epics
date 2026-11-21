@@ -83,44 +83,15 @@ def foo(root: tk.frame, holder: dict, configuration: dict, logging) -> tk.Frame:
     clearButton = ttk.Button(main, text="Clear the calendar", command=clearCalendar)
     clearButton.grid()
 
+    def exportCalendar():
+        if (components == []):
+            return None
+        calendar = Calendar(id_)
+        for holder in components:
+            component = holder["getValue"]()
+            calendar.add_component(component)
+        export(calendar)
+    exportButton = ttk.Button(main, text="Create calendar", command=exportCalendar)
+    exportButton.grid()
+
     return notebook
-
-
-# def create(master):
-#     root = tk.Toplevel(master)
-#     notebook = ttk.Notebook(root)
-#     notebook.pack(expand=True, fill='both')
-#     events = []
-#     main = tk.Frame(notebook)
-#     notebook.add(main, text="Main")
-#     logging.debug(f"Calendar notebook created")
-# 
-#     calendar = None
-# 
-#     buttonsFrame = tk.Frame(main)
-#     def addEvent():
-#         title = tk.StringVar(value="New event")
-#         eventHolder = {"value": None}
-#         eventFrame = makeEventFrame(notebook, eventHolder)
-#         notebook.add(eventFrame, text="New event")
-#         events.append(eventHolder)
-#     eventButton = tk.Button(buttonsFrame, text="Create new event", command=addEvent)
-#     eventButton.pack()
-# 
-#     def submit():
-#         calendar = Calendar()
-#         for event in events:
-#             if (event["value"]):
-#                 calendar.add_component(event["value"])
-#         export(calendar)
-#     submitButton = tk.Button(buttonsFrame, text="Submit", command=submit)
-#     submitButton.pack()
-#     buttonsFrame.pack()
-#     
-#     def tab_selected(event):
-#         notebook = event.widget
-#         tab_id = notebook.select()
-#         tab_text = notebook.tab(tab_id, 'text')
-#     notebook.bind("<<NotebookTabChanged>>", tab_selected)
-# 
-#     return root, None
