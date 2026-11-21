@@ -5,11 +5,9 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
 
-from src.gui.components import event, calendar
-from src.utils import exportConfigToJSONFile, launchLogging, importConfigFromJSONFile
+from src.gui.components import event, calendar, exportConfigToJSONFile
+from src.utils import configuration, logging
 
-configuration = importConfigFromJSONFile("default_config.json")
-logging = launchLogging(configuration["general"]["log-file"])
 logging.debug(f"New session activated")
 
 root = tk.Tk()
@@ -18,7 +16,7 @@ root.columnconfigure(0, weight=1)
 
 
 dico = {}
-frame = calendar.foo(root, dico, configuration, logging)
+frame = calendar.foo(root, dico)
 frame.grid(row=0, column=0, sticky="nsew")
 
 # def display():

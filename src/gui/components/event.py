@@ -6,6 +6,7 @@ import uuid
 from src.backend.components.vevent import Vevent
 from src.backend.properties import *
 from src.gui.properties import *
+from src.utils import configuration, logging
 
 # TODO
 """
@@ -22,7 +23,7 @@ from src.gui.properties import *
 - rdate
 """
 
-def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict, logging) -> tk.Frame:
+def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
     id_ = uuid.uuid4()
     logging.debug(f"User opened a new event frame ({id_})")
     frame = tk.Frame(root)
@@ -33,47 +34,47 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict, loggi
 
     # title and classification
     titleHolder = {}
-    titleFrame = makeSummaryFrame(frame, titleHolder, configuration["language"], logging)
+    titleFrame = makeSummaryFrame(frame, titleHolder)
     # to be able to display the title in real time
     eventHolder["titleEntry"] = titleHolder["titleEntry"]
     titleFrame.grid(row=0, column=0, sticky=[tk.W])
 
     classificationHolder = {}
-    classificationFrame = makeClassificationFrame(frame, classificationHolder, configuration["classification"], logging)
+    classificationFrame = makeClassificationFrame(frame, classificationHolder)
     classificationFrame.grid(row=0, column=1, sticky=[tk.W])
 
     # start, end and duration
     dtStartHolder = {}
-    dtStartFrame = makeDtFrame(frame, "start", dtStartHolder, logging)
+    dtStartFrame = makeDtFrame(frame, "start", dtStartHolder)
     dtStartFrame.grid(row=1, rowspan=2, column=0, sticky=[tk.W])
 
     dtEndHolder = {}
-    dtEndFrame = makeDtFrame(frame, "end", dtEndHolder, logging)
+    dtEndFrame = makeDtFrame(frame, "end", dtEndHolder)
     dtEndFrame.grid(row=1, rowspan=2, column=1, sticky=[tk.W])
 
     # location and priority
     locationHolder = {}
-    locationFrame = makeLocationFrame(frame, locationHolder, configuration["language"], logging)
+    locationFrame = makeLocationFrame(frame, locationHolder)
     locationFrame.grid(row=5, column=0, sticky=[tk.W])
 
     priorityHolder = {}
-    priorityFrame = makePriorityFrame(frame, priorityHolder, configuration["priority"], logging)
+    priorityFrame = makePriorityFrame(frame, priorityHolder)
     priorityFrame.grid(row=4, column=1, sticky=[tk.W])
 
     # categories
     categoriesHolder = {}
-    categoriesFrame = makeCategoriesFrame(frame, categoriesHolder, configuration["categories"], logging)
+    categoriesFrame = makeCategoriesFrame(frame, categoriesHolder)
     categoriesFrame.grid(row=5, column=0, columnspan=2, sticky=[tk.W])
 
     # organizer and attendees
     # attachment
     attachmentHolder = {}
-    attachmentFrame = makeAttachmentFrame(frame, attachmentHolder, logging)
+    attachmentFrame = makeAttachmentFrame(frame, attachmentHolder)
     attachmentFrame.grid(row=6, column=0, columnspan=2, sticky=[tk.W])
 
     # description
     descriptionHolder = {}
-    descriptionFrame = makeCommentOrDescriptionFrame(frame, descriptionHolder, "description", configuration["language"], logging)
+    descriptionFrame = makeCommentOrDescriptionFrame(frame, descriptionHolder, "description")
     descriptionFrame.grid(row=7, column=0, columnspan=2, sticky="nsew")
     # optional
         # rrule
@@ -112,7 +113,6 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, configuration: dict, loggi
                 url=None
             )
             logging.debug(f"User successfully created {titleHolder["getValue"]()} event ({id_})")
-            print(event)
             return event
         except:
             logging.error(f"Unable to create {id_} event")

@@ -6,7 +6,9 @@ from src.utils import exportConfigToJSONFile
 from src.backend.components.calendar import Calendar
 import uuid
 
-def export(calendar: Calendar, logging):
+from src.utils import configuration, logging
+
+def export(calendar: Calendar, notebook):
     if (not calendar):
         logging.warning(f"User attempted to add an unexisting calendar. Should display (not implemented yet) a warning popup")
         return None
@@ -23,11 +25,12 @@ def export(calendar: Calendar, logging):
         with open(file_path, 'w') as f:
             f.write(str(calendar))
             logging.info(f"Calendar successfully saved with {len(calendar.components)} component(s)")
+            notebook.destroy()
     else:
         logging.warning("Save operation cancelled.")
 
 
-def foo(root: tk.frame, holder: dict, configuration: dict, logging) -> tk.Frame:
+def foo(root: tk.frame, holder: dict) -> tk.Frame:
     id_ = uuid.uuid4()
     logging.debug(f"User opened a calendar creation frame (uuid: {id_})")
     notebook = ttk.Notebook(root)
@@ -48,7 +51,7 @@ def foo(root: tk.frame, holder: dict, configuration: dict, logging) -> tk.Frame:
     def addEvent():
         logging.debug(f"User began to add an event to {calendarTitle.get()} calendar ({id_})")
         eventHolder = {}
-        eventFrame = makeEventFrame(notebook, eventHolder, configuration, logging)
+        eventFrame = makeEventFrame(notebook, eventHolder)
         notebook.add(eventFrame, text="New event")
         components.append(eventHolder)
         # redirect automatically the user to the new frame
@@ -90,7 +93,7 @@ def foo(root: tk.frame, holder: dict, configuration: dict, logging) -> tk.Frame:
         for holder in components:
             component = holder["getValue"]()
             calendar.add_component(component)
-        export(calendar, logging)
+        export(calendar, notebook)
     exportButton = ttk.Button(main, text="Create calendar", command=exportCalendar)
     exportButton.grid()
 

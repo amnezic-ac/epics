@@ -30,3 +30,6 @@ def findLangIdFromLangValue(language: str):
             if (value == language):
                 return key
     return None
+
+configuration = importConfigFromJSONFile("default_config.json")
+logging = launchLogging(configuration["general"]["log-file"])

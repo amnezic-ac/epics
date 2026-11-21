@@ -4,10 +4,8 @@ import tkinter as tk
 import tkcalendar as tkc
 from datetime import datetime
 
-from src.utils import findLangIdFromLangValue
+from src.utils import findLangIdFromLangValue, configuration, logging
 from src.backend.properties import *
-# from src.gui.parameters import *
-# from src.gui.rrule import *
 
 """
 - grid documentation: https://tkdocs.com/tutorial/grid.html
@@ -17,7 +15,7 @@ Some guidelines:
 - each function must put in the valueHolder["getValue"] a lambda function that returns the property object, None if there is an error
 """
 
-def makeAttachmentFrame(root: tk.Frame, valueHolder: dict, logging) -> tk.Frame :
+def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
     """
     create a frame for attachment property
 
@@ -78,7 +76,7 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict, logging) -> tk.Frame 
     return frame
 
 # TODO: make it work
-def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict, logging) -> tk.Frame :
+def makeCategoriesFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
     """
     create a frame for categories property
 
@@ -116,10 +114,10 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict, 
     listbox = tk.Listbox(
         hiddableFrame,
         selectmode="multiple",
-        height=min(configuration["height"], len(configuration["choices"]))
+        height=min(configuration["categories"]["height"], len(configuration["categories"]["choices"]))
     )
-    for i in range(len(configuration["choices"])):
-        listbox.insert(i, configuration["choices"][i])
+    for i in range(len(configuration["categories"]["choices"])):
+        listbox.insert(i, configuration["categories"]["choices"][i])
     listbox.grid(row=0, rowspan=3, column=0, sticky=[tk.N])
     def getCategories():
         tmpList = [listbox.get(index) for index in listbox.curselection()]
@@ -143,7 +141,7 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict, 
         if (value and value not in listbox.get(0, tk.END)):
             listbox.insert(listbox.size(), value)
         # the listbox height resize dynamically
-        listbox.config(height=min(configuration["height"], listbox.size()))
+        listbox.config(height=min(configuration["categories"]["height"], listbox.size()))
         entry.set(value="")
     addButton = tk.Button(hiddableFrame, text="Add", command=add)
     addButton.grid(row=1, column=1, sticky=[tk.W, tk.E])
@@ -151,7 +149,7 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict, 
     # let the user add a new category in the configuration
     def addToConfig():
         value = entry.get()
-        if (value and value not in configuration["choices"]):
+        if (value and value not in configuration["categories"]["choices"]):
             configuration["choices"].append(value)
         add()
         entry.set(value="")
@@ -162,7 +160,7 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict, 
     def removeFromConfig():
         selection = listbox.curselection()
         for index in reversed(selection):
-            configuration["choices"].pop(index)
+            configuration["categories"]["choices"].pop(index)
         remove()
     removeConfigButton = tk.Button(hiddableFrame, text="Remove from configuration", command=removeFromConfig)
     removeConfigButton.grid(row=2, column=2, sticky=[tk.W, tk.E])
@@ -173,7 +171,7 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict, 
         for index in reversed(selection):
             listbox.delete(index)
         # the listbox height resize dynamically
-        listbox.config(height=min(configuration["height"], listbox.size()))
+        listbox.config(height=min(configuration["categories"]["height"], listbox.size()))
     removeButton = tk.Button(hiddableFrame, text="Remove", command=remove)
     removeButton.grid(row=2, column=1, sticky=[tk.W, tk.E])
 
@@ -194,7 +192,7 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, configuration: dict, 
 
     return frame
 
-def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: dict, logging) -> tk.Frame:
+def makeClassificationFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     """
     create a frame for classification property
 
@@ -233,9 +231,9 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: di
     combobox = ttk.Combobox(
         hiddableFrame,
         textvariable=userChoice,
-        values=configuration["choices"],
+        values=configuration["classification"]["choices"],
         state=["readonly"],
-        height=min(configuration["height"], len(configuration["choices"])),
+        height=min(configuration["classification"]["height"], len(configuration["classification"]["choices"])),
     )
     # avoid selected item to be blue highlighted
     combobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
@@ -264,7 +262,7 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: di
             combobox["values"] = newChoices
             combobox.set(value)
             # the listbox height resize dynamically
-            combobox.config(height=min(configuration["height"], len(combobox["values"])))
+            combobox.config(height=min(configuration["classification"]["height"], len(combobox["values"])))
         entry.set(value="")
     addButton = tk.Button(hiddableFrame, text="Add", command=add)
     addButton.grid(row=1, column=1, sticky=[tk.W, tk.E])
@@ -273,7 +271,7 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: di
     def addToConfig():
         value = entry.get()
         if (value and value not in configuration["choices"]):
-            configuration["choices"].append(value)
+            configuration["classification"]["choices"].append(value)
         add()
         entry.set(value="")
     addConfigButton = tk.Button(hiddableFrame, text="Add to configuration", command=addToConfig)
@@ -283,7 +281,7 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: di
     def removeFromConfig():
         selection = combobox.get()
         if (selection and selection in configuration["choices"]):
-            configuration["choices"].remove(selection)
+            configuration["classification"]["choices"].remove(selection)
         remove()
     removeConfigButton = tk.Button(hiddableFrame, text="Remove from configuration", command=removeFromConfig)
     removeConfigButton.grid(row=2, column=2, sticky=[tk.W, tk.E])
@@ -320,7 +318,7 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, configuration: di
 
 # FIXME: when resized, the second column could disappear below the first one
 # TODO: add a text inside showing if it's a description or comment component
-def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str, configuration: [dict], logging) -> tk.Frame:
+def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str) -> tk.Frame:
     if (_type not in ["comment", "description"]):
         return None
 
@@ -338,7 +336,7 @@ def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str,
 
     languageCombobox = ttk.Combobox(
         frame,
-        values=[value[1] for value in configuration["choices"]],
+        values=[value[1] for value in configuration["language"]["choices"]],
         height=10,
         state=["readonly"]
     )
@@ -352,7 +350,7 @@ def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str,
             return None
 
         language = None
-        for [key, value] in configuration["choices"]:
+        for [key, value] in configuration["language"]["choices"]:
             if (value == languageCombobox.get()):
                 language = key
                 break
@@ -417,7 +415,7 @@ def makeGeoFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
 
     return frame
 
-def makeLocationFrame(root: tk.Frame, valueHolder: dict, configuration: dict, logging) -> tk.Frame:
+def makeLocationFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     frame = tk.Frame(root)
     frame.rowconfigure(0, weight=0)
     frame.rowconfigure(1, weight=0)
@@ -439,7 +437,7 @@ def makeLocationFrame(root: tk.Frame, valueHolder: dict, configuration: dict, lo
 
     languageCombobox = ttk.Combobox(
         frame,
-        values=[value[1] for value in configuration["choices"]],
+        values=[value[1] for value in configuration["language"]["choices"]],
         height=10,
         state=["readonly"]
     )
@@ -467,7 +465,7 @@ def makeLocationFrame(root: tk.Frame, valueHolder: dict, configuration: dict, lo
             language = None
             altrepValue = None
             if (state.get()):
-                for [key, value] in configuration["choices"]:
+                for [key, value] in configuration["language"]["choices"]:
                     if (value == languageCombobox.get()):
                         language = key
                         break
@@ -508,7 +506,7 @@ def makePercentFrame(root):
 
     return frame, valueHolder
 
-def makePriorityFrame(root: tk.Frame, valueHolder: dict, configuration: dict, logging) -> tk.Frame:
+def makePriorityFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     frame = tk.Frame(root)
     frame.rowconfigure(0, weight=0)
     frame.columnconfigure(0, weight=0)
@@ -518,13 +516,13 @@ def makePriorityFrame(root: tk.Frame, valueHolder: dict, configuration: dict, lo
     priority = tk.StringVar(value="")
     spinbox = ttk.Spinbox(
         frame,
-        from_=configuration["min"],
-        to=configuration["max"],
-        increment=configuration["step"],
+        from_=configuration["priority"]["min"],
+        to=configuration["priority"]["max"],
+        increment=configuration["priority"]["step"],
         textvariable=priority,
         wrap=True
     )
-    spinbox.set(configuration["default"])
+    spinbox.set(configuration["priority"]["default"])
     spinbox.grid(row=0, column=1)
 
     def getPriority():
@@ -579,7 +577,7 @@ def makeResourceFrame(root):
 
     return frame, valueHolder
 
-def makeStatusFrame(root: tk.Frame, valueHolder: dict, componentType: str, configuration: dict) -> tk.Frame:
+def makeStatusFrame(root: tk.Frame, valueHolder: dict, componentType: str) -> tk.Frame:
     frame = tk.Frame(root)
     frame.rowconfigure(0, weight=0)
     frame.rowconfigure(1, weight=0)
@@ -600,7 +598,7 @@ def makeStatusFrame(root: tk.Frame, valueHolder: dict, componentType: str, confi
     value = tk.StringVar(value="")
     statusCombobox = ttk.Combobox(
         frame,
-        values=configuration[f"{componentType}"],
+        values=configuration["status"][f"{componentType}"],
         state=["readonly"],
         textvariable=value,
     )
@@ -623,7 +621,7 @@ def makeStatusFrame(root: tk.Frame, valueHolder: dict, componentType: str, confi
 
     return frame
 
-def makeSummaryFrame(root: tk.Frame, valueHolder: dict, configuration: dict, logging) -> tk.Frame:
+def makeSummaryFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     frame = tk.Frame(root)
     frame.rowconfigure(0, weight=0)
     frame.rowconfigure(1, weight=0)
@@ -644,7 +642,7 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict, configuration: dict, log
 
     languageCombobox = ttk.Combobox(
         frame,
-        values=[value[1] for value in configuration["choices"]],
+        values=[value[1] for value in configuration["language"]["choices"]],
         height=10,
         state=["readonly"]
     )
@@ -671,7 +669,7 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict, configuration: dict, log
         language = None
         altrepValue = None
         if (state.get()):
-            for [key, value] in configuration["choices"]:
+            for [key, value] in configuration["language"]["choices"]:
                 if (value == languageCombobox.get()):
                     language = key
                     break
@@ -689,7 +687,7 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict, configuration: dict, log
     return frame
 
 # TODO: put default value for start are now and for end its start + default duration
-def makeDtFrame(root, typename: str, valueHolder: dict, logging) -> tk.Frame:
+def makeDtFrame(root, typename: str, valueHolder: dict) -> tk.Frame:
     frame = tk.Frame(root)
     for i in range(2):
         frame.rowconfigure(i, weight=0)
@@ -817,13 +815,13 @@ def makeDurationFrame(root):
 
     return frame, valueHolder
 
-def makeTranspFrame(root: tk.Frame, valueHolder: dict, configuration: dict, logging) -> tk.Frame:
+def makeTranspFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     frame = tk.Frame(root)
 
     value = tk.StringVar(value=configuration["choices"][0])
     transpCombobox = ttk.Combobox(
         frame,
-        values=configuration["choices"],
+        values=configuration["tranparency"]["choices"],
         state=["readonly"],
         textvariable=value
     )
