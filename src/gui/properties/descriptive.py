@@ -1,19 +1,6 @@
-from tkinter import ttk
+from src.gui.imports import *
 from TkToolTip import ToolTip
-import tkinter as tk
-import tkcalendar as tkc
-from datetime import datetime
-
-from src.utils import findLangIdFromLangValue, configuration, logging
-from src.backend.properties import *
-
-"""
-- grid documentation: https://tkdocs.com/tutorial/grid.html
-
-Some guidelines:
-- the grid management has to be managed in the dedicated function for each property, so the caller just has to grid it
-- each function must put in the valueHolder["getValue"] a lambda function that returns the property object, None if there is an error
-"""
+from src.backend.properties.descriptive import Attachment, Categories, Classification, Comment, Description, Geo, Location, Percent, Priority, Resources, Status, Summary
 
 def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
     """
@@ -65,7 +52,7 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
         try:
             tmp = None
             if (entry.get()):
-                tmp = Attachement(entry.get(), None, None, None)
+                tmp = Attachment(entry.get(), None, None, None)
                 logging.debug(f"{entry.get()} attachment successfully created")
             return tmp
         except:
@@ -318,10 +305,7 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
 
 # FIXME: when resized, the second column could disappear below the first one
 # TODO: add a text inside showing if it's a description or comment component
-def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str) -> tk.Frame:
-    if (_type not in ["comment", "description"]):
-        return None
-
+def makeCommentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     frame = tk.Frame(root)
     frame.rowconfigure(0, weight=1)
     frame.rowconfigure(1, weight=1)
@@ -344,7 +328,7 @@ def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str)
     languageCombobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
     languageCombobox.grid(row=1, column=1)
 
-    def getCommentOrDescription():
+    def getComment():
         text = textWidget.get('1.0', 'end').strip()
         if (not text):
             return None
@@ -356,12 +340,52 @@ def makeCommentOrDescriptionFrame(root: tk.Frame, valueHolder: dict, _type: str)
                 break
         altrep = altrepEntry.get()
         truc = None
-        if (_type == "comment"):
-            truc = Comment(text, altrep, language)
-        else:
-            truc = Description(text, altrep, language)
+        truc = Comment(text, altrep, language)
         return truc
-    valueHolder["getValue"] = getCommentOrDescription
+    valueHolder["getValue"] = getComment
+
+    return frame
+
+# FIXME: when resized, the second column could disappear below the first one
+# TODO: add a text inside showing if it's a description or comment component
+def makeDescriptionFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+    frame = tk.Frame(root)
+    frame.rowconfigure(0, weight=1)
+    frame.rowconfigure(1, weight=1)
+    frame.columnconfigure(0, weight=1)
+    frame.columnconfigure(1, weight=1)
+
+    textWidget = tk.Text(frame)
+    textWidget.grid(row=0, rowspan=2, column=0)
+
+    altrepEntry = ttk.Entry(frame)
+    altrepEntry.grid(row=0, column=1)
+
+    languageCombobox = ttk.Combobox(
+        frame,
+        values=[value[1] for value in configuration["language"]["choices"]],
+        height=10,
+        state=["readonly"]
+    )
+    # avoid selected item to be blue highlighted
+    languageCombobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
+    languageCombobox.grid(row=1, column=1)
+
+    def getDescription():
+        text = textWidget.get('1.0', 'end').strip()
+        if (not text):
+            return None
+
+        language = None
+        for [key, value] in configuration["language"]["choices"]:
+            if (value == languageCombobox.get()):
+                language = key
+                break
+        altrep = altrepEntry.get()
+        truc = None
+        truc = Description(text, altrep, language)
+        return truc
+    valueHolder["getValue"] = getDescription
 
     return frame
 
@@ -685,405 +709,3 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     valueHolder["titleEntry"] = summaryEntry
 
     return frame
-
-# TODO: put default value for start are now and for end its start + default duration
-def makeDtFrame(root, typename: str, valueHolder: dict) -> tk.Frame:
-    frame = tk.Frame(root)
-    for i in range(2):
-        frame.rowconfigure(i, weight=0)
-    for i in range(3):
-        frame.columnconfigure(i, weight=0)
-
-    timestamp = datetime.now()
-
-    labeltext = "From" if typename == "start" else "to"
-    label = tk.Label(frame, text=labeltext)
-    label.grid(row=0, column=0)
-
-    dateEntry = tkc.DateEntry(
-        frame,
-        selectmode="day",
-        date_pattern="y/mm/dd"
-    )
-    dateEntry.grid(row=0, column=1, columnspan=2)
-    # line below is mandatroy: let the calendar be clickable even if there is a widget below it on the z-axis
-    dateEntry._top_cal.lift()
-
-    # check that user inpput for spinboxes are valid
-    def validateSpinboxInputWhenKey(max, text):
-        if (not text):
-            return True
-        if (text and len(text) > 2):
-            return False
-        try:
-            tmp = int(text)
-            return tmp >= 0 and tmp <= max
-        except:
-            return False
-
-    hour = tk.StringVar(value="0")
-    hourSpinbox = ttk.Spinbox(
-        frame,
-        from_=0,
-        to=23,
-        increment=1,
-        width=3,
-        textvariable=hour,
-        wrap=True,
-        validate="key", # this line and the one below ensure that what is typed in the keyboard is a valid value
-        validatecommand=(frame.register(lambda t: validateSpinboxInputWhenKey(23, t)), "%P")
-    )
-    hourSpinbox.grid(row=2, column=0)
-    minute = tk.StringVar(value="0")
-    minuteSpinbox = ttk.Spinbox(
-        frame,
-        from_=0,
-        to=59,
-        increment=1,
-        width=3,
-        textvariable=minute,
-        wrap=True,
-        validate="key",
-        validatecommand=(frame.register(lambda t: validateSpinboxInputWhenKey(59, t)), "%P")
-    )
-    minuteSpinbox.grid(row=2, column=1)
-    second = tk.StringVar(value="0")
-    secondSpinbox = ttk.Spinbox(
-        frame,
-        from_=0,
-        to=59,
-        increment=1,
-        width=3,
-        textvariable=second,
-        wrap=True,
-        validate="key",
-        validatecommand=(frame.register(lambda t: validateSpinboxInputWhenKey(59, t)), "%P")
-    )
-    secondSpinbox.grid(row=2, column=2)
-
-    def getDT():
-        try:
-            tmp = datetime(
-                year = int(dateEntry.get_date().strftime("%Y")),
-                month = int(dateEntry.get_date().strftime("%m")),
-                day = int(dateEntry.get_date().strftime("%d")),
-                hour = int(hour.get()),
-                minute = int(minute.get()),
-                second = int(second.get())
-            )
-            logging.debug(f"Timestamp successfully created ({typename})")
-            return tmp
-        except:
-            logging.error(f"Unable to create the timestamp ({typename})")
-            return None
-    valueHolder["getValue"] = getDT
-
-    return frame
-
-# TODO
-def makeDurationFrame(root):
-    frame = tk.Frame(root)
-
-    week = tk.StringVar(value="0")
-    weekEntry = tk.Spinbox(frame, textvariable=week, width=3, from_=0, wrap=True, justify=tk.RIGHT)
-    weekEntry.pack(side="left")
-    tk.Label(frame, text=configuration["duration"]["week-text"]).pack(side="left")
-    day = tk.StringVar(value="")
-    dayEntry = tk.Spinbox(frame, textvariable=day, width=2, from_=0, to=31, wrap=True, justify=tk.RIGHT)
-    dayEntry.pack(side="left")
-    tk.Label(frame, text=configuration["duration"]["day-text"]).pack(side="left")
-    hour = tk.StringVar(value="")
-    hourEntry = tk.Spinbox(frame, textvariable=hour, width=2, from_=0, to=23, wrap=True, justify=tk.RIGHT)
-    hourEntry.pack(side="left")
-    tk.Label(frame, text=configuration["duration"]["hour-text"]).pack(side="left")
-    minute = tk.StringVar(value="")
-    minuteEntry = tk.Spinbox(frame, textvariable=minute, width=2, from_=0, to=59, wrap=True, justify=tk.RIGHT)
-    minuteEntry.pack(side="left")
-    tk.Label(frame, text=configuration["duration"]["minute-text"]).pack(side="left")
-    second = tk.StringVar(value="")
-    secondEntry = tk.Spinbox(frame, textvariable=second, width=2, from_=0, to=59, wrap=True, justify=tk.RIGHT)
-    secondEntry.pack(side="left")
-    tk.Label(frame, text=configuration["duration"]["second-text"]).pack(side="left")
-
-    valueHolder = {
-        "week": week,
-        "day": day,
-        "hour": hour,
-        "minute": minute,
-        "second": second
-    }
-
-    return frame, valueHolder
-
-def makeTranspFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
-    frame = tk.Frame(root)
-
-    value = tk.StringVar(value=configuration["choices"][0])
-    transpCombobox = ttk.Combobox(
-        frame,
-        values=configuration["tranparency"]["choices"],
-        state=["readonly"],
-        textvariable=value
-    )
-    # avoid the selected item to be blue highlighted
-    combobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
-    transpCombobox.grid()
-
-    ToolTip(transpCombobox, msg="Tells if the event should block overlapping events")
-
-    def getTransp():
-        if (not value.get()):
-            return None
-        
-        try:
-            tmp = Transparency(value.get())
-            logging.debug(f"Transp successfully created")
-            return tmp
-        except:
-            logging.error(f"Unable to create transp")
-            return None
-    valueHolder["getValue"] = getTransp
-
-    return frame
-
-# TODO: work on how to use cal-addresses
-def makeOrganizerFrame(root):
-    frame = ttk.Frame(root)
-
-    label = ttk.Label(frame, text="Organizer: ")
-    label.pack(side="left")
-
-    value = tk.StringVar(value="")
-    combobox = ttk.Combobox(
-        frame,
-        values=[elt["common-name"] for elt in configuration["attendees"]["choices"]],
-        exportselection=False,
-        height=min(configuration["attendees"]["height"], len(configuration["attendees"]["choices"])),
-        textvariable=value,
-        state=["readonly"]
-    )
-    # avoid the selected item to be blue highlighted
-    combobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
-    combobox.pack(side="right")
-
-    return frame, value
-
-# TODO: work on how to use cal-addresses
-def makeAttendeeFrame(root, eventType: str):
-    frame = tk.Frame(root)
-
-    label = tk.Label(frame, text=f"Attendees: ")
-    label.pack(side="left")
-    listbox = tk.Listbox(
-        frame,
-        selectmode="multiple",
-        exportselection=False,
-        height=min(configuration["attendees"]["height"], len(configuration["attendees"]["choices"]))
-    )
-
-    for i in range(len(configuration["attendees"]["choices"])):
-        listbox.insert(i, configuration["attendees"]["choices"][i]["common-name"])
-
-    listbox.pack()
-
-    # parameterFrame = tk.Frame(root)
-    # cutypeFrame, cutypeDict = makeCutypeFrame(parameterFrame)
-    # cutypeFrame.pack()
-    # memberFrame, memberDict = makeMemberFrame(parameterFrame)
-    # memberFrame.pack()
-    # roleFrame, roleDict = makeRoleFrame(parameterFrame)
-    # roleFrame.pack()
-    # partstatFrame, parstatDict = makePartstatFrame(parameterFrame, eventType)
-    # partstatFrame.pack()
-    # rsvpFrame, rsvpDict = makeRsvpFrame(parameterFrame)
-    # rsvpFrame.pack()
-    # deltoFrame, deltoDict = makeDelegatedToFrame(parameterFrame)
-    # deltoFrame.pack()
-    # delfromFrame, delfromDict = makeDelegatedFromFrame(parameterFrame)
-    # delfromFrame.pack()
-    # sentbyFrame, sentbyDict = makeSentByFrame(parameterFrame)
-    # sentbyFrame.pack()
-    # cnFrame, cnDict = makeCommonNameFrame(parameterFrame)
-    # cnFrame.pack()
-    # dirFrame, dirDict = makeDirFrame(parameterFrame)
-    # dirFrame.pack() 
-    # languageFrame, languageDict = makeLanguageFrame(parameterFrame)
-    # languageFrame.pack()
-
-    # state = tk.BooleanVar(value=False)
-    # def toggleParameterFrame(event):
-    #     actual = not state.get()
-    #     if (actual):
-    #         parameterFrame.pack(side="bottom")
-    #     else:
-    #         parameterFrame.pack_forget()
-    #     state.set(actual)
-    # label.bind('<Double-1>', toggleParameterFrame)
-
-    return frame, listbox
-
-def makeURLFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
-    frame = tk.Frame(root)
-    frame.rowconfigure(0, weight=0)
-    frame.columnconfigure(0, weight=0)
-    frame.columnconfigure(1, weight=0)
-
-    tk.Label(frame, text="URL: ").grid(row=0, column=0)
-    value = tk.StringVar(value="")
-    entry = tk.Entry(frame, textvariable=value)
-    entry.grid(row=0, column=1)
-
-    def getURL():
-        if not (entry.get()):
-            return None
-        return Url(entry.get())
-    valueHolder["getValue"] = getURL
-
-    return frame
-
-# TODO
-def makeRruleFrame(root, time_included: bool = True):
-    frame = ttk.Frame(root)
-    rules = {
-        "freq": None,
-        "until": None,
-        "count": None,
-        "interval": None,
-        "bysecond": None,
-        "byminute": None,
-        "byhour": None,
-        "byday": None,
-        "bymonthday": None,
-        "byyyearday": None,
-        "byweekno": None,
-        "bymonth": None,
-        "bysetpos": None,
-        "wkst": None
-    }
-
-
-    mandatoryFrame = ttk.Frame(frame)
-    for row in range (2):
-        mandatoryFrame.rowconfigure(row, weight=1)
-    for col in range (6):
-        mandatoryFrame.columnconfigure(col, weight=1)
-    tk.Label(mandatoryFrame, text="Frequency ").grid(row=0, column=0, sticky=tk.W)
-    freqValue = tk.StringVar(value="")
-    frequencyCombobox = ttk.Combobox(
-        mandatoryFrame,
-        values = ["yearly", "monthly", "weekly", "daily", "hourly", "minutely", "secondly"],
-        state="readonly",
-        textvariable=freqValue
-    )
-    frequencyCombobox.grid(row=0, column=1, sticky=tk.W)
-    intervalValue = tk.IntVar(value=1)
-    intervalSpinbox = ttk.Spinbox(
-        mandatoryFrame,
-        from_=1,
-        to=configuration["rrule"]["interval"]["max"],
-        wrap=True,
-        textvariable=intervalValue,
-        width=4
-    )
-    ttk.Label(mandatoryFrame, text="Interval").grid(row=1, column=0, sticky=tk.W)
-    intervalSpinbox.grid(row=1, column=1, columnspan=5, sticky=tk.W)
-
-    tk.Label(mandatoryFrame, text="Repeat ").grid(row=0, column=2, rowspan=2, columnspan=4, sticky=tk.NW)
-    repeatCombobox = ttk.Combobox(
-        mandatoryFrame,
-        values = ["until", "for", "undetermined"],
-        state="readonly"
-    )
-    repeatCombobox.grid(row=0, column=3, rowspan=2, sticky=tk.NE)
-
-    untilCalendar = tkc.DateEntry(
-        mandatoryFrame,
-        selectmode="day",
-        date_pattern="y/mm/dd"
-    )
-    untilCalendar._top_cal.lift()
-
-    countValue = tk.IntVar(value=0)
-    countLabel = ttk.Label(mandatoryFrame, text=" times")
-    countSpinbox = ttk.Spinbox(mandatoryFrame, from_=0, increment=1, width=3, justify=tk.RIGHT, textvariable=countValue)
-
-    repetitionType = tk.StringVar(value="undetermined")
-    def displayRepetition(event):
-        selected_value = event.widget.get()
-        match selected_value:
-            case "until":
-                countSpinbox.grid_forget()
-                countLabel.grid_forget()
-                untilCalendar.grid(row=0, column=4, columnspan=2, rowspan=2, sticky=tk.N)
-                repetitionType.set("until")
-            case "for":
-                untilCalendar.grid_forget()
-                countSpinbox.grid(row=0, column=4, rowspan=2, sticky=tk.N)
-                countLabel.grid(row=0, column=5, rowspan=2, sticky=tk.N)
-                repetitionType.set("count")
-            case "undetermined":
-                countLabel.grid_forget()
-                countSpinbox.grid_forget()
-                untilCalendar.grid_forget()
-                repetitionType.set("forever")
-            case _:
-                raise Exception(f"This error shouldn't be displayed")
-    repeatCombobox.bind("<<ComboboxSelected>>", displayRepetition)
-    mandatoryFrame.pack(fill="x")
-
-    frames = [{"frame": None, "values": None}] * 7
-    rulesFrameContainer = ttk.Frame(frame)
-    def displayFreqFrame(event):
-        for elt in frames:
-            if elt["frame"]:
-                elt["frame"].pack_forget()
-        
-        selected_value = event.widget.get()
-        print(f"{selected_value=}")
-        match selected_value:
-            case "yearly":
-                if (not frames[0]["frame"]):
-                    print("No frame yet")
-                    frames[0]["frame"] = makeRuleFrame(rulesFrameContainer, selected_value, False)
-                frames[0]["frame"].pack(fill="x")
-            case _:
-                print("No no")
-
-        pass
-    frequencyCombobox.bind("<<ComboboxSelected>>", displayFreqFrame)
-
-    #     match selected_value:
-    #         case "yearly":
-    #             if (not frames[0]["frame"]):
-    #                 frames[0]["frame"] = makeRuleFrame(rulesFrame, selected_value)
-    #             frames[0]["frame"].pack(fill="x")
-    #         case "monthly":
-    #             if (not frames[1]["frame"]):
-    #                 frames[1]["frame"] = makeRuleFrame(rulesFrame, selected_value)
-    #             frames[1]["frame"].pack(fill="x")
-    #         case _:
-    #             raise Exception(f"Unimplemented")
-    #     tmp = makeRuleFrame(frame, selected_value, False)
-    #     tmp.pack(fill="x")
-
-    rulesFrameContainer.pack(fill="x")
-
-    valueHolder = {
-        "freq": freqValue,
-        "repetition": repetitionType,
-        "until": None,
-        "count": countValue,
-        "interval": intervalValue,
-        "bysecond": None,
-        "byminute": None,
-        "byhour": None,
-        "byday": None,
-        "bymonthday": None,
-        "byyearday": None,
-        "byweekno": None,
-        "bymonth":None,
-        "bysetpos": None,
-        "time_included": time_included
-    }
-
-    return frame, valueHolder

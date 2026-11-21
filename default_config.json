@@ -1063,7 +1063,8 @@
         "day-text": "d ",
         "hour-text": "h ",
         "minute-text": "m ",
-        "second-text": "s "
+        "second-text": "s ",
+        "default_hour_duration": 2
     },
     "transparency": {
         "choices": [

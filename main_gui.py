@@ -5,8 +5,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
 
-from src.gui.components import event, calendar, exportConfigToJSONFile
-from src.utils import configuration, logging
+from src.gui.components import event, calendar
+from src.utils import configuration, logging, exportConfigToJSONFile
 
 logging.debug(f"New session activated")
 

@@ -1,27 +1,13 @@
-from tkinter import ttk
-import tkinter as tk
+from src.gui.imports import *
 from datetime import datetime, timedelta
+from src.backend.components.vevent import Vevent
 import uuid
 
-from src.backend.components.vevent import Vevent
-from src.backend.properties import *
-from src.gui.properties import *
-from src.utils import configuration, logging
+from src.gui.properties.descriptive import makeSummaryFrame, makeClassificationFrame, makeLocationFrame, makePriorityFrame, makeCategoriesFrame, makeAttachmentFrame, makeDescriptionFrame
+from src.gui.properties.datetime import makeDtFrame
+from src.gui.properties.recurrence import makeRruleFrame
+from src.gui.properties.relationship import makeAttendeeFrame, makeOrganizerFrame, makeURLFrame
 
-# TODO
-"""
-- organizer
-- contact
-- attach
-- related
-- resources
-- seq
-- recurid
-- rrule
-- exdate
-- rstatus: related to how the software deal with the component (maybe for later)
-- rdate
-"""
 
 def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
     id_ = uuid.uuid4()
@@ -74,7 +60,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict) -> tk.Frame:
 
     # description
     descriptionHolder = {}
-    descriptionFrame = makeCommentOrDescriptionFrame(frame, descriptionHolder, "description")
+    descriptionFrame = makeDescriptionFrame(frame, descriptionHolder)
     descriptionFrame.grid(row=7, column=0, columnspan=2, sticky="nsew")
     # optional
         # rrule

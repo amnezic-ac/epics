@@ -1,4 +1,11 @@
-from src.backend.properties import Uid, Categories, Classification, Comment, Description, Geo, Location, Priority, Resources, Status, Summary, Duration, Transparency, Attachement, Atttendee, Comment, Contact, Url
+# from src.backend.properties.alarm import *
+# from src.backend.properties.change import *
+from src.backend.properties.datetime import Duration, Freebusytime
+from src.backend.properties.descriptive import Attachment, Categories, Classification, Comment, Description, Geo, Location, Percent, Priority, Resources, Status, Summary
+# from src.backend.properties.recurrence import Rrule
+from src.backend.properties.relationship import Atttendee, Contact, Organizer, Url, Uid
+# from src.backend.properties.timezone import *
+
 from src.backend.components.component import Component
 from datetime import datetime, timedelta
 import hashlib
@@ -26,7 +33,7 @@ class Vevent(Component):
         status: Status = None,
         title: Summary = None,
         transp: Transparency = None,
-        attach: [Attachement] = None,
+        attach: [Attachment] = None,
         attendee: [Atttendee] = None,
         categories: Categories = None,
         comment: [Comment] = None,
