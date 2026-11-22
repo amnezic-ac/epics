@@ -67,7 +67,7 @@ class Comment(Property):
         self.value = value
         self.altrep = None
         if (altrep):
-            self.altrep = Altrep(altrep, value)
+            self.altrep = Altrep(altrep)
         self.language = None
         if (language):
             self.language = Language(language)
@@ -88,7 +88,7 @@ class Description(Property):
     
     def __init__(self, value: str, altrep: str = None, language: str = None):
         self.value = value
-        self.altrep = Altrep(altrep, value) if altrep else None
+        self.altrep = Altrep(altrep) if altrep else None
         self.language = Language(language) if language else None
 
     def __str__(self):
@@ -122,7 +122,7 @@ class Location(Property):
 
     def __init__(self, value: str, altrep: str = None, language: str = None):
         self.value = value
-        self.altrep = Altrep(altrep, value) if altrep else None
+        self.altrep = Altrep(altrep) if altrep else None
         self.language = Language(language) if language else None
 
     def __str__(self):
@@ -161,7 +161,7 @@ class Priority(Property):
 class Resources(Property):
     def __init__(self, value: str, altrep: str = None, language: str = None):
         self.value = value
-        self.altrep = Altrep(altrep, value) if altrep else None
+        self.altrep = Altrep(altrep) if altrep else None
         self.language = Language(language) if language else None
 
     def __str__(self):
@@ -187,7 +187,7 @@ class Status(Property):
 class Summary(Property):
     def __init__(self, value: str, altrep: str = None, language: str = None):
         self.value = value
-        self.altrep = Altrep(altrep, value) if altrep else None
+        self.altrep = Altrep(altrep) if altrep else None
         
         try:
             self.language = Language(language) if language else None

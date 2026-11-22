@@ -61,7 +61,7 @@ class Contact(Property):
             raise Exception (f"Contact value can't be None")
 
         self.value = value
-        self.altrep = Altrep(altrep, value) if altrep else None
+        self.altrep = Altrep(altrep) if altrep else None
         self.language = Language(language) if language else None
 
     def __str__(self):
