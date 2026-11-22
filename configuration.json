@@ -1021,6 +1021,7 @@
         ]
     },
     "rsvp": {
+        "height": 2,
         "choices": [
             "TRUE",
             "FALSE"

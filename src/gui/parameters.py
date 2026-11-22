@@ -315,66 +315,50 @@ def makeRoleFrame(masterFrame):
 
     return roleFrame, roleInput
 
-def makeRsvpFrame(masterFrame):
-    rsvpFrame = tk.Frame(masterFrame)
+def makeRsvpFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
+    frame = tk.LabelFrame(root, text="RSVP")
 
-    hiddableFrame = tk.Frame(rsvpFrame)
-    value = tk.StringVar(value="")
-    rsvpInput = ttk.Combobox(
-        hiddableFrame,
-        values=configuration["rsvp"]["choices"],
+    combobox = ttk.Combobox(
+        frame,
         state="readonly",
-        textvariable=value
+        values=configuration["rsvp"]["choices"],
+        height=min(configuration["rsvp"]["height"], len(configuration["rsvp"]["choices"]))
     )
-    rsvpInput.pack()
+    combobox.grid()
 
-    # maybe useful for later development
+    # NOTE: maybe useful for later but for now, user won't be able to add RSVP choices
+    # entry = ttk.Entry(frame, width=configuration["rsvp"]["width"])
+    # entry.grid(row=0, column=1, sticky=(tk.W, tk.E))
     # def add():
-    #     value = rsvpInput.get()
-    #     values = list(rsvpInput["values"])
-    #     if value and value not in values:
-    #         values.append(value)
-    #         rsvpInput["values"] = values
-
-    # def addToConfiguration():
-    #     value = rsvpInput.get()
-    #     if value and value not in configuration["rsvp"]["choices"]:
-    #         configuration["rsvp"]["choices"].append(value)
+    #     value = entry.get()
+    #     if (value and value.strip()):
+    #         value = value.strip()
+    #         tmp = list(combobox["values"])
+    #         tmp.append(value)
+    #         combobox["values"] = tmp
+    #         combobox.set(value)
+    # addButton = ttk.Button(frame, text="Add entry", command=add)
+    # addButton.grid(row=1, column=1, sticky=(tk.W, tk.E))
 
     # def remove():
-    #     value = rsvpInput.get()
-    #     values = list(rsvpInput["values"])
-    #     if value in values:
-    #         values.remove(value)
-    #         rsvpInput["values"] = values
+    #     value = combobox.get()
+    #     if (value and value.strip()):
+    #         value = value.strip()
+    #         tmp = list(combobox["values"])
+    #         tmp.remove(value)
+    #         combobox["values"] = tmp
+    #         combobox.set(combobox["values"][0])
+    # removeButton = ttk.Button(frame, text="Remove selection", command=remove)
+    # removeButton.grid(row=1, column=0, sticky=(tk.W, tk.E))
 
-    # def removeFromConfiguration():
-    #     value = rsvpInput.get()
-    #     if value in configuration["rsvp"]["choices"]:
-    #         configuration["rsvp"]["choices"].remove(value)
+    def getRSVP():
+        value = combobox.get()
+        if (not value or not value.strip()):
+            return None
+        return value.strip()
+    valueHolder["getValue"] = getRSVP
 
-    # tk.Button(rsvpFrame, text="Add", command=add).pack()
-    # tk.Button(rsvpFrame, text="Add to configuration", command=addToConfiguration).pack()
-    # tk.Button(rsvpFrame, text="Remove", command=remove).pack()
-    # tk.Button(rsvpFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
-    
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            hiddableFrame.pack(side="right")
-            checkbutton.config(text="RSVP status : ")
-        else:
-            hiddableFrame.pack_forget()
-            checkbutton.config(text="RSVP status ? ")
-    checkbutton = tk.Checkbutton(rsvpFrame, text="RSVP status ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
-
-    rsvpDict = {
-        "state": buttonState,
-        "value": value
-    }
-
-    return rsvpFrame, rsvpDict
+    return frame    
 
 def makeSentByFrame(masterFrame):
     sentByFrame = tk.Frame(masterFrame)
