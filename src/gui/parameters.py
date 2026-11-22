@@ -197,6 +197,57 @@ def makePartstatFrame(root: tk.Frame, componentType: str, valueHolder: dict) -> 
 
     return frame
 
+def makeRelationshipFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
+    """
+        This parameter can be specified on a property that
+        references another related calendar.  The parameter specifies the
+        hierarchical relationship type of the calendar component
+        referenced by the property.
+    """
+    frame = ttk.LabelFrame(root, text="Relationship")
+
+    combobox = ttk.Combobox(
+        frame,
+        state="readonly",
+        values=configuration["relationship"]["choices"],
+        height=min(configuration["relationship"]["height"], len(configuration["relationship"]["choices"]))
+    )
+    combobox.grid(column=0, row=0)
+
+    entry = ttk.Entry(frame, width=configuration["relationship"]["width"])
+    entry.grid(row=0, column=1, sticky=(tk.W, tk.E))
+
+    def add():
+        value = entry.get()
+        if (value and value.strip()):
+            value = value.strip()
+            tmp = list(combobox["values"])
+            tmp.append(value)
+            combobox["values"] = tmp
+            combobox.set(value)
+    addButton = ttk.Button(frame, text="Add entry", command=add)
+    addButton.grid(row=1, column=1, sticky=(tk.W, tk.E))
+
+    def remove():
+        value = combobox.get()
+        if (value and value.strip()):
+            value = value.strip()
+            tmp = list(combobox["values"])
+            tmp.remove(value)
+            combobox["values"] = tmp
+            combobox.set(combobox["values"][0])
+    removeButton = ttk.Button(frame, text="Remove selection", command=remove)
+    removeButton.grid(row=1, column=0, sticky=(tk.W, tk.E))
+
+    def getRelationship():
+        value = combobox.get()
+        if (not value or not value.strip()):
+            return None
+        return value.strip()
+    valueHolder["getValue"] = getRelationship
+
+    return frame
+
 def makeRoleFrame(masterFrame):
     roleFrame = tk.Frame(masterFrame)
 
@@ -263,72 +314,6 @@ def makeRoleFrame(masterFrame):
     # buttonsFrame.pack(side="right")
 
     return roleFrame, roleInput
-
-def makeRelationshipFrame(masterFrame):
-    relationshipFrame = tk.Frame(masterFrame)
-
-    hiddableFrame = tk.Frame(relationshipFrame)
-    userFrame = tk.Frame(hiddableFrame)
-    relationshipInput = ttk.Combobox(
-        userFrame,
-        values=configuration["relationship"]["choices"],
-        state="readonly"
-    )
-    relationshipInput.pack()
-    userEntry = tk.Entry(userFrame)
-    userEntry.pack()
-    userFrame.pack(side="left")
-
-    def add():
-        value = userEntry.get()
-        values = list(roleInput["values"])
-        if value and value not in values:
-            values.append(value)
-            relationshipInput["values"] = values
-            relationshipInput.set(relationshipInput["values"][-1])
-
-    def addToConfiguration():
-        value = userEntry.get()
-        if value and value not in configuration["relationship"]["choices"]:
-            add()
-            configuration["relationship"]["choices"].append(value)
-
-    def remove():
-        value = relationshipInput.get()
-        values = list(relationshipInput["values"])
-        if value in values:
-            values.remove(value)
-            relationshipInput["values"] = values
-            if (len(values) != 0):
-                relationshipInput.set(relationshipInput["values"][0])
-            else:
-                relationshipInput.set("")
-
-    def removeFromConfiguration():
-        value = relationshipInput.get()
-        if value in configuration["relationship"]["choices"]:
-            remove()
-            configuration["relationship"]["choices"].remove(value)
-
-    buttonsFrame = tk.Frame(relationshipFrame)
-    tk.Button(buttonsFrame, text="Add", command=add).pack()
-    tk.Button(buttonsFrame, text="Add to configuration", command=addToConfiguration).pack()
-    tk.Button(buttonsFrame, text="Remove", command=remove).pack()
-    tk.Button(buttonsFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
-    buttonsFrame.pack(side="right")
-
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            hiddableFrame.pack(side="right")
-            checkbutton.config(text="Relationship : ")
-        else:
-            hiddableFrame.pack_forget()
-            checkbutton.config(text="Relationship : ")
-    checkbutton = tk.Checkbutton(relationshipFrame, text="Relationship ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
-
-    return relationshipFrame, relationshipInput
 
 def makeRsvpFrame(masterFrame):
     rsvpFrame = tk.Frame(masterFrame)

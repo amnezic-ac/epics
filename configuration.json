@@ -1037,9 +1037,12 @@
         ]
     },
     "relationship": {
+        "height": 5,
+        "width": 20,
         "choices": [
-            "BOSS",
-            "EMPLOYEE"
+            "PARENT",
+            "CHILD",
+            "SIBLING"
         ]
     },
     "resources": {
