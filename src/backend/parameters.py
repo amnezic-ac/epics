@@ -32,11 +32,14 @@ class Cn(Parameter, Caladress):
         return f"CN=\"{self.value}\""
 
 class Cutype(Parameter, Caladress):
-    def __init__(self, value: str = "INDIVUDUAL"):
-        self.value = value.upper()
+    def __init__(self, value: str = "INDIVIDUAL"):
+        if (not value):
+            value = "INDIVIDUAL"
+            logging.warn(f"User attempted to create a cutype parameter with a value set to None. Automatically set to the default value \"INDIVIDUAL\"")
+        self.value = value.upper().strip()
 
     def __str__(self):
-        return f"CUTYPE=\"{self.value}\""
+        return f"CUTYPE={self.value}"
 
 class Delfrom(Parameter, Caladress):
     def __init__(self, addresses: [Caladress]):
