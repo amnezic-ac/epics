@@ -15,7 +15,7 @@ class Parameter():
 class Altrep(Parameter):
 
     def __init__(self, value: str):
-        self.value = value
+        self.value = value.strip()
 
     def __str__(self):
         return f"ALTREP=\"{self.value}\""

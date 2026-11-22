@@ -4,29 +4,32 @@ import tkinter as tk
 from src.backend.parameters import *
 from src.utils import configuration, logging
 
-def makeAlternativeRepresentationFrame(masterFrame):
-    altrepFrame = tk.Frame(masterFrame)
+def makeAlternativeRepresentationFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+    frame = ttk.Labelframe(root, text="Alternative representation")
 
-    hiddableFrame = tk.Frame(altrepFrame)
-    altrepInput = tk.Text(hiddableFrame)
-    altrepInput.config(
-        height=configuration["altrep"]["height"],
-        width=configuration["altrep"]["width"]
+    altrepText = tk.Text(
+        frame,
+        width = configuration["altrep"]["width"],
+        height = configuration["altrep"]["height"]
     )
-    altrepInput.pack()
+    altrepText.grid(row=0, column=0)
+    
+    scrollbar = ttk.Scrollbar(
+        frame,
+        orient="vertical",
+        command=altrepText.yview,
+    )
+    scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+    altrepText["yscrollcommand"] = scrollbar.set
 
-    state = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (state.get()):
-            hiddableFrame.pack()
-            button.config(text="Alternative representation")
-        else:
-            hiddableFrame.pack_forget()
-            button.config(text="Alternative configuration ? ")
-    button = tk.Checkbutton(altrepFrame, text="Alternative representation ? ", variable = state, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    button.pack()
+    def getAltrep():
+        value = txt.get('1.0', 'end')
+        if (not text or not text.strip()):
+            return None
+        return Altrep(value.strip())
+    valueHolder["getValue"] = getAltrep
 
-    return  altrepFrame, altrepInput
+    return frame
 
 def makeCommonNameFrame(masterFrame):
     commonNameFrame = tk.Frame(masterFrame)
