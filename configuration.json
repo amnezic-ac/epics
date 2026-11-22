@@ -1046,7 +1046,8 @@
         "height": 3,
         "width": 40
     },
-    "status": {
+    "partstat": {
+        "height": 4,
         "event": [
             "TENTATIVE",
             "CONFIRMED",

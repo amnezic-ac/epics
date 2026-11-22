@@ -174,148 +174,28 @@ def makeLanguageFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
 
     return frame
 
-def makeMemberFrame(masterFrame):
-    memberFrame = tk.Frame(masterFrame)
+def makePartstatFrame(root: tk.Frame, componentType: str, valueHolder: dict) -> tk.Frame :
+    if (not componentType in ["event", "todo", "journal"]):
+        raise Exception(f"{componentType} is invalid component type, should be \"event\", \"todo\" or \"journal\"")
 
-    hiddableFrame = tk.Frame(memberFrame)
-    inputFrame = tk.Frame(hiddableFrame)
-    value = tk.StringVar(value="")
-    memberInput = ttk.Combobox(
-        inputFrame,
-        values=configuration["member"]["choices"],
+    frame = ttk.LabelFrame(root, text="Participation status")
+
+    combobox = ttk.Combobox(
+        frame,
         state="readonly",
-        textvariable=value
+        values=configuration["partstat"][f"{componentType}"],
+        height=min(configuration["partstat"]["height"], len(configuration["partstat"][f"{componentType}"]))
     )
-    memberInput.pack()
-    userEntry = tk.Entry(inputFrame)
-    userEntry.pack()
-    inputFrame.pack(side="left")
+    combobox.grid()
 
-    def add():
-        value = userEntry.get()
-        values = list(memberInput["values"])
-        if value and value not in values:
-            values.append(value)
-            memberInput["values"] = values
-            memberInput.set(memberInput["values"][-1])
-            userEntry.delete(0, tk.END)
+    def getValue():
+        value = combobox.get()
+        if (not value or not value.strip()):
+            return None
+        return value.strip()
+    valueHolder["getValue"] = getValue
 
-    def addToConfiguration():
-        value = userEntry.get()
-        if value and value not in configuration["member"]["choices"]:
-            add()
-            configuration["member"]["choices"].append(value)
-
-    def remove():
-        value = memberInput.get()
-        values = list(memberInput["values"])
-        if value in values:
-            values.remove(value)
-            memberInput["values"] = values
-            if (len(memberInput["values"]) > 0):
-                memberInput.set(memberInput["values"][0])
-            else:
-                memberInput.set("")
-
-    def removeFromConfiguration():
-        value = memberInput.get()
-        if value in configuration["member"]["choices"]:
-            remove()
-            configuration["member"]["choices"].remove(value)
-
-    buttonsFrame = tk.Frame(memberFrame)
-    tk.Button(buttonsFrame, text="Add", command=add).pack()
-    tk.Button(buttonsFrame, text="Add to configuration", command=addToConfiguration).pack()
-    tk.Button(buttonsFrame, text="Remove", command=remove).pack()
-    tk.Button(buttonsFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
-    buttonsFrame.pack(side="right")
-
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            hiddableFrame.pack(side="right")
-            checkbutton.config(text="Member role : ")
-        else:
-            hiddableFrame.pack_forget()
-            checkbutton.config(text="Member role ? ")
-    checkbutton = tk.Checkbutton(memberFrame, text="Member role ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
-
-    memberDict = {
-        "state": buttonState,
-        "value": value
-    }
-
-    return memberFrame, memberDict
-
-def makePartstatFrame(masterFrame, eventType: str):
-    if (eventType not in ["event", "todo", "journal"]):
-        raise Exception(f"Partstat parameter could only be used on an event, a todo or a journal, not a {eventType}")
-
-    partstatFrame = tk.Frame(masterFrame)
-
-    hiddableFrame = tk.Frame(partstatFrame)
-    userFrame = tk.Frame(hiddableFrame)
-    parstatChoices = configuration["parstat"][f"{eventType}-choices"]
-    value = tk.StringVar(value="")
-    partstatInput = ttk.Combobox(
-        userFrame,
-        values=parstatChoices,
-        state="readonly",
-        textvariable=value
-    )
-    partstatInput.pack()
-    userFrame.pack()
-
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            hiddableFrame.pack(side="right")
-            checkbutton.config(text="Participation status : ")
-        else:
-            hiddableFrame.pack_forget()
-            checkbutton.config(text="Participation status ? ")
-    checkbutton = tk.Checkbutton(partstatFrame, text="Participation status ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
-
-    # maybe useful for later development
-    # def add():
-    #     value = partstatInput.get()
-    #     values = list(partstatInput["values"])
-    #     if value and value not in values:
-    #         values.append(value)
-    #         partstatInput["values"] = values
-
-    # def addToConfiguration():
-    #     value = partstatInput.get()
-    #     if value and value not in configuration["partstat"][f"{eventType}-choices"]:
-    #         configuration["partstat"][f"{eventType}-choices"].append(value)
-
-    # def remove():
-    #     value = partstatInput.get()
-    #     values = list(partstatInput["values"])
-    #     if value in values:
-    #         values.remove(value)
-    #         partstatInput["values"] = values
-
-    # def removeFromConfiguration():
-    #     value = partstatInput.get()
-    #     if value in configuration["partstat"][f"{eventType}-choices"]:
-    #         configuration["partstat"][f"{eventType}-choices"].remove(value)
-
-    # buttonsFrame = tk.Frame(partstatFrame)
-    # tk.Button(partstatFrame, text="Add", command=add).pack()
-    # tk.Button(partstatFrame, text="Add to configuration", command=addToConfiguration).pack()
-    # tk.Button(partstatFrame, text="Remove", command=remove).pack()
-    # tk.Button(partstatFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
-    # buttonsFrame.pack(side="right")
-
-    partstatDict = {
-        "state": buttonState,
-        "value": value
-    }
-
-    return partstatFrame, partstatDict
+    return frame
 
 def makeRoleFrame(masterFrame):
     roleFrame = tk.Frame(masterFrame)
@@ -536,3 +416,77 @@ def makeSentByFrame(masterFrame):
     }
 
     return sentByFrame, sentbyDict
+
+# def makeMemberFrame(masterFrame):
+#     memberFrame = tk.Frame(masterFrame)
+# 
+#     hiddableFrame = tk.Frame(memberFrame)
+#     inputFrame = tk.Frame(hiddableFrame)
+#     value = tk.StringVar(value="")
+#     memberInput = ttk.Combobox(
+#         inputFrame,
+#         values=configuration["member"]["choices"],
+#         state="readonly",
+#         textvariable=value
+#     )
+#     memberInput.pack()
+#     userEntry = tk.Entry(inputFrame)
+#     userEntry.pack()
+#     inputFrame.pack(side="left")
+# 
+#     def add():
+#         value = userEntry.get()
+#         values = list(memberInput["values"])
+#         if value and value not in values:
+#             values.append(value)
+#             memberInput["values"] = values
+#             memberInput.set(memberInput["values"][-1])
+#             userEntry.delete(0, tk.END)
+# 
+#     def addToConfiguration():
+#         value = userEntry.get()
+#         if value and value not in configuration["member"]["choices"]:
+#             add()
+#             configuration["member"]["choices"].append(value)
+# 
+#     def remove():
+#         value = memberInput.get()
+#         values = list(memberInput["values"])
+#         if value in values:
+#             values.remove(value)
+#             memberInput["values"] = values
+#             if (len(memberInput["values"]) > 0):
+#                 memberInput.set(memberInput["values"][0])
+#             else:
+#                 memberInput.set("")
+# 
+#     def removeFromConfiguration():
+#         value = memberInput.get()
+#         if value in configuration["member"]["choices"]:
+#             remove()
+#             configuration["member"]["choices"].remove(value)
+# 
+#     buttonsFrame = tk.Frame(memberFrame)
+#     tk.Button(buttonsFrame, text="Add", command=add).pack()
+#     tk.Button(buttonsFrame, text="Add to configuration", command=addToConfiguration).pack()
+#     tk.Button(buttonsFrame, text="Remove", command=remove).pack()
+#     tk.Button(buttonsFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
+#     buttonsFrame.pack(side="right")
+# 
+#     buttonState = tk.BooleanVar(value=False)
+#     def toggleHiddableFrame():
+#         if (buttonState.get()):
+#             hiddableFrame.pack(side="right")
+#             checkbutton.config(text="Member role : ")
+#         else:
+#             hiddableFrame.pack_forget()
+#             checkbutton.config(text="Member role ? ")
+#     checkbutton = tk.Checkbutton(memberFrame, text="Member role ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
+#     checkbutton.pack(side="left")
+# 
+#     memberDict = {
+#         "state": buttonState,
+#         "value": value
+#     }
+# 
+#     return memberFrame, memberDict
