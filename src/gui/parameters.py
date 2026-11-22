@@ -29,7 +29,7 @@ def makeAlternativeRepresentationFrame(root: tk.Frame, valueHolder: dict) -> tk.
         value = txt.get('1.0', 'end')
         if (not text or not text.strip()):
             return None
-        return Altrep(value.strip())
+        return value.strip()
     valueHolder["getValue"] = getAltrep
 
     return frame
@@ -91,7 +91,11 @@ def makeCutypeFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     removeButton.grid(row=1, column=0,  sticky=(tk.W, tk.E))
 
     def getCutype():
-        return Cutype(cutype.get())
+        value = cutype.get()
+        if (not value or not value.strip()):
+            return None
+        return value.strip()
+    valueHolder["getValue"] = getCutype
 
     return frame
 
@@ -137,65 +141,38 @@ def makeFreeBusyTimeFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     removeButton = ttk.Button(frame, text="Remove selection", command=remove)
     removeButton.grid(row=1, column=0, sticky=(tk.W, tk.E))
 
-    valueHolder["getValue"] = combobox.get
+    def getFBT():
+        value = combobox.get()
+        if (not value or not value.strip()):
+            return None
+    valueHolder["getValue"] = getFBT
 
     return frame
 
-def makeLanguageFrame(masterFrame):
-    languageFrame = tk.Frame(masterFrame)
+def makeLanguageFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+    frame = ttk.LabelFrame(root, text="Language")
 
-    result = [f"{value}" for item in configuration["language"]["choices"] for _, value in item.items()]
-    result.sort()
-
-    hiddableFrame = tk.Frame(languageFrame)
-    languageInput = ttk.Combobox(
-        hiddableFrame,
-        values=result,
-        state="readonly"
+    combobox = ttk.Combobox(
+        frame,
+        state="readonly",
+        values=[elt[1] for elt in configuration["language"]["choices"]],
+        height=min(configuration["language"]["height"], len(configuration["language"]["choices"]))
     )
-    languageInput.pack()
+    combobox.grid()
 
+    def getLanguageKey():
+        value = combobox.get()
+        if (not value or not value.strip()):
+            return None
+        value = value.strip()
+        for pair in configuration["language"]["choices"]:
+            if (pair[1] == value):
+                return pair[0]
+        logging.debug(f"User choose a language value from GUI but value ({value}) does not have key")
+        return None
+    valueHolder["getValue"] = getLanguageKey
 
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            hiddableFrame.pack(side="right")
-        else:
-            hiddableFrame.pack_forget()
-    checkbutton = tk.Checkbutton(languageFrame, text="Language ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
-
-    # could be useful for later
-    # def add():
-    #     value = languageInput.get()
-    #     values = list(languageInput["values"])
-    #     if value and value not in values:
-    #         values.append(value)
-    #         languageInput["values"] = values
-
-    # def addToConfiguration():
-    #     value = languageInput.get()
-    #     if value and value not in configuration["languages"]["choices"]:
-    #         configuration["languages"]["choices"].append(value)
-
-    # def remove():
-    #     value = languageInput.get()
-    #     values = list(languageInput["values"])
-    #     if value in values:
-    #         values.remove(value)
-    #         languageInput["values"] = values
-
-    # def removeFromConfiguration():
-    #     value = languageInput.get()
-    #     if value in configuration["languages"]["choices"]:
-    #         configuration["languages"]["choices"].remove(value)
-
-    # tk.Button(languageFrame, text="Add", command=add).pack()
-    # tk.Button(languageFrame, text="Add to configuration", command=addToConfiguration).pack()
-    # tk.Button(languageFrame, text="Remove", command=remove).pack()
-    # tk.Button(languageFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
-
-    return languageFrame, languageInput
+    return frame
 
 def makeMemberFrame(masterFrame):
     memberFrame = tk.Frame(masterFrame)
