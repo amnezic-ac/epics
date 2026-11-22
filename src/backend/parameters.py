@@ -1,4 +1,4 @@
-from src.backend.datatypes import Caladress, Uri
+from src.backend.datatypes import Caladdress, Uri
 from src.utils import configuration
 
 class Parameter():
@@ -22,7 +22,7 @@ class Altrep(Parameter):
 
 # Does it needs quote ?
 # # https://datatracker.ietf.org/doc/html/rfc5545#autoid-13
-class Cn(Parameter, Caladress):
+class Cn(Parameter, Caladdress):
     def __init__(self, value: str):
         if (not value or not value.strip()):
             raise Exception(f"Can't create an empty common name parameter")
@@ -31,7 +31,7 @@ class Cn(Parameter, Caladress):
     def __str__(self):
         return f"CN=\"{self.value}\""
 
-class Cutype(Parameter, Caladress):
+class Cutype(Parameter, Caladdress):
     def __init__(self, value: str = "INDIVIDUAL"):
         if (not value):
             value = "INDIVIDUAL"
@@ -41,8 +41,8 @@ class Cutype(Parameter, Caladress):
     def __str__(self):
         return f"CUTYPE={self.value}"
 
-class Delfrom(Parameter, Caladress):
-    def __init__(self, addresses: [Caladress]):
+class Delfrom(Parameter, Caladdress):
+    def __init__(self, addresses: [Caladdress]):
         self.addresses = set(addresses)
 
     def __str__(self):
@@ -61,8 +61,8 @@ class Delfrom(Parameter, Caladress):
     def remove(self, person: str):
         self.addresses.remove(person)
 
-class Delto(Parameter, Caladress):
-    def __init__(self, addresses: [Caladress]):
+class Delto(Parameter, Caladdress):
+    def __init__(self, addresses: [Caladdress]):
         self.addresses = set(addresses)
 
     def __str__(self):
@@ -81,7 +81,7 @@ class Delto(Parameter, Caladress):
     def remove(self, person: str):
         self.addresses.remove(person)
 
-class Dir(Parameter, Caladress):
+class Dir(Parameter, Caladdress):
     def __init__(self, uri: str):
         self.uri = Uri(uri)
 
@@ -121,7 +121,7 @@ class Language(Parameter):
     def __str__(self):
         return f"LANGUAGE={self.key}"
 
-class Member(Parameter, Caladress):
+class Member(Parameter, Caladdress):
     def __init__(self, members: [str]):
         self.members = set(members)
 
@@ -141,7 +141,7 @@ class Member(Parameter, Caladress):
     def remove(self, person: str):
         self.members.remove(person)
 
-class Partstat(Parameter, Caladress):
+class Partstat(Parameter, Caladdress):
     def __init__(self, value: str):
         self.value = value
 
@@ -162,22 +162,22 @@ class Reltype(Parameter):
     def __init__(self, value: str):
         self.value = value
 
-class Role(Parameter, Caladress):
+class Role(Parameter, Caladdress):
     def __init__(self, value: str = "REQ-PARTICIPANT"):
         self.value = value
 
     def __str__(self):
         return f"ROLE:{self.value}"
 
-class Rsvp(Parameter, Caladress):
+class Rsvp(Parameter, Caladdress):
     def __init__(self, value: bool = False):
         self.value = value
 
     def __str__(self):
         return f"RSVP={str(self.value).upper()}"
 
-class Sentby(Parameter, Caladress):
-    def __init__(self, value: Caladress):
+class Sentby(Parameter, Caladdress):
+    def __init__(self, value: Caladdress):
         self.value = value
 
 class Tzid():

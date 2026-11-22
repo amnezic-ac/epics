@@ -2,15 +2,19 @@ from datetime import datetime
 from enum import Enum, auto
 import re
 
-class Caladress():
-    def __init__(self):
-        self.value = "ERROR"
+class Caladdress():
+    def __init__(self, value: str):
+        if (not value or not value.strip()):
+            logging.warn(f"User attempted to create an empty caladdress")
+            raise Exception(f"Can't create an empty caladdress")
+        self.value = value.strip()
 
     def __str__():
         return self.value
 
+# TODO: make the value comply with RFC 3986
 class Uri():
-    # refer to RFC 3986
+    # refer to RFC 3986: https://datatracker.ietf.org/doc/html/rfc3986
     def __init__(self, value: str):
         self.value = value
 
@@ -217,21 +221,3 @@ class Rrule():
             result += f";"
 
         return result[:-1]
-
-# test = Rrule(
-#     freq = "MONTHLY",
-#     until = None,
-#     count = 3,
-#     interval = 1,
-#     bysecond= None,
-#     byminute=[30],
-#     byhour=[18],
-#     byday=["-1TU", "FR", "SU"],
-#     bymonth=None,
-#     bymonthday=None,
-#     byyearday=None,
-#     byweekno=None,
-#     bysetpos=None
-# )
-# 
-# print(test)

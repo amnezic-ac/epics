@@ -14,7 +14,7 @@ class Atttendee(Property):
         self.roleparam = Role(roleparam) if roleparam else None
         self.partstatparam = Partstat(parstatparam) if parstatparam else None
         self.rsvpparam = Rsvp(rsvpparam) if rsvpparam != None else None
-        # the following attributes have to be Caladress
+        # the following attributes have to be Caladdress
         self.deltoparam = Delto(deltoparam) if deltoparam else None
         self.delfromparam = Delfrom(delfromparam) if delfromparam else None
         self.sentbyparam = Sentby(sentbyparam) if sentbyparam else None
