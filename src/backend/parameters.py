@@ -20,9 +20,13 @@ class Altrep(Parameter):
     def __str__(self):
         return f"ALTREP=\"{self.value}\""
 
+# Does it needs quote ?
+# # https://datatracker.ietf.org/doc/html/rfc5545#autoid-13
 class Cn(Parameter, Caladress):
     def __init__(self, value: str):
-        self.value = value
+        if (not value or not value.strip()):
+            raise Exception(f"Can't create an empty common name parameter")
+        self.value = value.strip()
 
     def __str__(self):
         return f"CN=\"{self.value}\""

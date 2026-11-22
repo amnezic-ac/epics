@@ -37,7 +37,9 @@
         "height": 3,
         "width": 40
     },
-    "common-name": {},
+    "common-name": {
+        "width": 20
+    },
     "cutype": {
         "choices": [
             "INDIVIDUAL",

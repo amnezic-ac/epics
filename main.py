@@ -4,7 +4,7 @@ from src.gui.components import calendar
 from src.utils import exportConfigToJSONFile
 
 # for testing only
-from src.gui.parameters import makeAlternativeRepresentationFrame
+from src.gui.parameters import makeCommonNameFrame
 ##################
 
 def main():
@@ -16,7 +16,7 @@ def main():
 
 
     dico = {}
-    frame = makeAlternativeRepresentationFrame(root, dico)
+    frame = makeCommonNameFrame(root, dico)
     # frame = calendar.foo(root, dico)
     frame.grid(row=0, column=0, sticky="nsew")
     root.mainloop()

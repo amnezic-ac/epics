@@ -31,25 +31,24 @@ def makeAlternativeRepresentationFrame(root: tk.Frame, valueHolder: dict) -> tk.
 
     return frame
 
-def makeCommonNameFrame(masterFrame):
-    commonNameFrame = tk.Frame(masterFrame)
+# NOTE: This parameter can be specified on properties with a CAL-ADDRESS value type
+def makeCommonNameFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+    frame = ttk.Labelframe(root, text="Common name")
 
-    hiddableFrame = tk.Frame(commonNameFrame)
-    commonNameInput = tk.Entry(hiddableFrame)
-    commonNameInput.pack()
+    entry = ttk.Entry(
+        frame,
+        width=configuration["common-name"]["width"]
+    )
+    entry.grid()
 
-    state = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (state.get()):
-            hiddableFrame.pack(side="right")
-            button.config(text="Common name : ")
-        else:
-            hiddableFrame.pack_forget()
-            button.config(text="Common name ? ")
-    button = tk.Checkbutton(commonNameFrame, text="Common name ? ", variable = state, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    button.pack(side="left")
+    def getCN():
+        value = entry.get()
+        if (not value.strip()):
+            return None
+        return Cn(value)
+    valueHolder["getValue"] = getCN
 
-    return  commonNameFrame, commonNameInput
+    return frame
 
 def makeCutypeFrame(masterFrame):
     cutypeFrame = tk.Frame(masterFrame)
