@@ -1,4 +1,5 @@
 from src.backend.datatypes import Caladress, Uri
+from src.utils import configuration
 
 class Parameter():
     def __str__(classe: str, value: str, quoted: bool = True):
@@ -106,12 +107,14 @@ class Fbtype(Parameter):
         return f"FBTYPE:{self.value}"
 
 class Language(Parameter):
-    def __init__(self, value: str):
+    def __init__(self, key: str):
         # please refer to FC 5646 for compliance
-        self.value = value
+        if (not key in [pair[0] for pair in configuration["language"]["choices"]]):
+            raise Exception(f"{key} is not a valid lnaguage key. Please refer to configuration file.")
+        self.key = key
 
     def __str__(self):
-        return f"LANGUAGE={self.value}"
+        return f"LANGUAGE={self.key}"
 
 class Member(Parameter, Caladress):
     def __init__(self, members: [str]):
