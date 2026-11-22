@@ -188,7 +188,11 @@ class Summary(Property):
     def __init__(self, value: str, altrep: str = None, language: str = None):
         self.value = value
         self.altrep = Altrep(altrep, value) if altrep else None
-        self.language = Language(language) if language else None
+        
+        try:
+            self.language = Language(language) if language else None
+        except Exception as e:
+            raise Exception(f"{self.value} title language: {e}")
 
     def __str__(self):
         result = "SUMMARY"
