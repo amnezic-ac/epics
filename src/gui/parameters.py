@@ -50,84 +50,47 @@ def makeCommonNameFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
 
     return frame
 
-def makeCutypeFrame(masterFrame):
-    cutypeFrame = tk.Frame(masterFrame)
+def makeCutypeFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+    frame = ttk.Labelframe(root, text="Who is the calendar user ?")
 
-    hiddableFrame = tk.Frame(cutypeFrame)
-    userFrame = tk.Frame(hiddableFrame)
-    value = tk.StringVar(value="")
-    cutypeInput = ttk.Combobox(
-        hiddableFrame,
+    cutype = tk.StringVar()
+    combobox = ttk.Combobox(
+        frame,
+        textvariable=cutype,
         values=configuration["cutype"]["choices"],
         state="readonly",
-        textvariable=value
-    )
-    cutypeInput.config(
         height=min(configuration["cutype"]["height"], len(configuration["cutype"]["choices"]))
     )
-    cutypeInput.pack()
+    combobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
+    combobox.grid(row=0, column=0, sticky=tk.N)
 
-    userInput = tk.Entry(hiddableFrame)
-    userInput.pack()
-    userFrame.pack(side="left")
+    entry = ttk.Entry(
+        frame,
+        width=configuration["cutype"]["width"],
+    )
+    entry.grid(row=0, column=1)
 
     def add():
-        value = userInput.get()
-        values = list(cutypeInput["values"])
-        if value and value not in values:
-            values.append(value)
-            cutypeInput["values"] = values
-            userInput.delete(0, tk.END)
-            cutypeInput.set(cutypeInput["values"][-1])
-
-    def addToConfiguration():
-        value = userInput.get()
-        if value and value not in configuration["cutype"]["choices"]:
-            add()
-            configuration["cutype"]["choices"].append(value)
+        value = entry.get()
+        if (value):
+            combobox["values"].append(value.strip().upper())
+        else:
+            logging.warn(f"User tried to add an empty calendar user type")
+    addButton = ttk.Button(frame, text="Add entry", command=add)
+    addButton.grid(row=1, column=1, sticky=(tk.W, tk.E))
 
     def remove():
-        value = cutypeInput.get()
-        values = list(cutypeInput["values"])
-        if value in values:
-            values.remove(value)
-            cutypeInput["values"] = values
-            userInput.delete(0, tk.END)
-            if (len(cutypeInput["values"]) != 0):
-                cutypeInput.set(values[0])
-            else:
-                cutypeInput.set("")
+        tmp = list(combobox["values"])
+        tmp.remove(combobox.get())
+        combobox["values"] = tmp
+        combobox.set(combobox["values"][0])
+    removeButton = ttk.Button(frame, text="Remove selection", command=remove)
+    removeButton.grid(row=1, column=0,  sticky=(tk.W, tk.E))
 
-    def removeFromConfiguration():
-        value = cutypeInput.get()
-        if value in configuration["cutype"]["choices"]:
-            remove()
-            configuration["cutype"]["choices"].remove(value)
+    def getCutype():
+        return Cutype(cutype.get())
 
-    buttonsFrame = tk.Frame(hiddableFrame)
-    tk.Button(buttonsFrame, text="Add", command=add).pack()
-    tk.Button(buttonsFrame, text="Add to configuration", command=addToConfiguration).pack()
-    tk.Button(buttonsFrame, text="Remove", command=remove).pack()
-    tk.Button(buttonsFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
-    buttonsFrame.pack(side="right")
-
-    state = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (state.get()):
-            hiddableFrame.pack(side="right")
-            button.config(text="Calendar user type : ")
-        else:
-            hiddableFrame.pack_forget()
-            button.config(text="Calendar user type ? ")
-    button = tk.Checkbutton(cutypeFrame, text="Calendar user type ? ", variable = state, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    button.pack(side="left")
-
-    cutypeDict = {
-        "state": state,
-        "value": value
-    }
-
-    return cutypeFrame, cutypeDict
+    return frame
 
 def makeDelegatedFromFrame(masterFrame):
     delegatedFromFrame = tk.Frame(masterFrame)
