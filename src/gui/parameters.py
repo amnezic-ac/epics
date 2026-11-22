@@ -4,7 +4,19 @@ import tkinter as tk
 from src.backend.parameters import *
 from src.utils import configuration, logging
 
-# TODO: implement add/remove calendar address (delegated from and to), dir
+"""
+TODO
+- understand how to use cal-addresses
+- implement the following parameters:
+    * delegators
+    * delegatees
+    * directory entry reference
+    * format type
+    * group or list member ship
+    * alarm trigger relationship
+"""
+
+# TODO: implement add/remove calendar address (delegated from and to), dir, sent-by
 # TODO: understand ATTACH property and its parameters
 
 def makeAlternativeRepresentationFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
@@ -248,72 +260,50 @@ def makeRelationshipFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
 
     return frame
 
-def makeRoleFrame(masterFrame):
-    roleFrame = tk.Frame(masterFrame)
+def makeRoleFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+    frame = ttk.LabelFrame(root, text="Role")
 
-    hiddableFrame = tk.Frame(roleFrame)
-    userFrame = tk.Frame(hiddableFrame)
-    roleInput = ttk.Combobox(
-        userFrame,
+    combobox = ttk.Combobox(
+        frame,
+        state="readonly",
         values=configuration["role"]["choices"],
-        state="readonly"
+        height=min(configuration["role"]["height"], len(configuration["role"]["choices"]))
     )
-    roleInput.pack()
-    userEntry = tk.Entry(userFrame)
-    userEntry.pack()
-    userFrame.pack(side="left")
+    combobox.grid(column=0, row=0)
 
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            hiddableFrame.pack(side="right")
-            checkbutton.config(text="Role : ")
-        else:
-            hiddableFrame.pack_forget()
-            checkbutton.config(text="Role ? ")
-    checkbutton = tk.Checkbutton(roleFrame, text="Role ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
+    entry = ttk.Entry(frame, width=configuration["role"]["width"])
+    entry.grid(row=0, column=1, sticky=(tk.W, tk.E))
 
-    # maybe useful for later development
-    # def add():
-    #     value = userEntry.get()
-    #     values = list(roleInput["values"])
-    #     if value and value not in values:
-    #         values.append(value)
-    #         roleInput["values"] = values
-    #         roleInput.set(roleInput["values"][-1])
+    def add():
+        value = entry.get()
+        if (value and value.strip()):
+            value = value.strip()
+            tmp = list(combobox["values"])
+            tmp.append(value)
+            combobox["values"] = tmp
+            combobox.set(value)
+    addButton = ttk.Button(frame, text="Add entry", command=add)
+    addButton.grid(row=1, column=1, sticky=(tk.W, tk.E))
 
-    # def addToConfiguration():
-    #     value = userEntry.get()
-    #     if value and value not in configuration["role"]["choices"]:
-    #         add()
-    #         configuration["role"]["choices"].append(value)
+    def remove():
+        value = combobox.get()
+        if (value and value.strip()):
+            value = value.strip()
+            tmp = list(combobox["values"])
+            tmp.remove(value)
+            combobox["values"] = tmp
+            combobox.set(combobox["values"][0])
+    removeButton = ttk.Button(frame, text="Remove selection", command=remove)
+    removeButton.grid(row=1, column=0, sticky=(tk.W, tk.E))
 
-    # def remove():
-    #     value = roleInput.get()
-    #     values = list(roleInput["values"])
-    #     if value in values:
-    #         values.remove(value)
-    #         roleInput["values"] = values
-    #         if (len(values) != 0):
-    #             roleInput.set(roleInput["values"][0])
-    #         else:
-    #             roleInput.set("")
+    def getRole():
+        value = combobox.get()
+        if (not value or not value.strip()):
+            return None
+        return value.strip()
+    valueHolder["getValue"] = getRole
 
-    # def removeFromConfiguration():
-    #     value = roleInput.get()
-    #     if value in configuration["role"]["choices"]:
-    #         remove()
-    #         configuration["role"]["choices"].remove(value)
-
-    # buttonsFrame = tk.Frame(roleFrame)
-    # tk.Button(buttonsFrame, text="Add", command=add).pack()
-    # tk.Button(buttonsFrame, text="Add to configuration", command=addToConfiguration).pack()
-    # tk.Button(buttonsFrame, text="Remove", command=remove).pack()
-    # tk.Button(buttonsFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
-    # buttonsFrame.pack(side="right")
-
-    return roleFrame, roleInput
+    return frame
 
 def makeRsvpFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
     frame = tk.LabelFrame(root, text="RSVP")
@@ -359,103 +349,3 @@ def makeRsvpFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame :
     valueHolder["getValue"] = getRSVP
 
     return frame    
-
-def makeSentByFrame(masterFrame):
-    sentByFrame = tk.Frame(masterFrame)
-
-    hiddableFrame = tk.Frame(sentByFrame)
-    value = tk.StringVar(value="")
-    sentByInput = tk.Entry(hiddableFrame, textvariable=value)
-    sentByInput.pack()
-    
-    buttonState = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (buttonState.get()):
-            hiddableFrame.pack(side="right")
-            checkbutton.config(text="Sent by : ")
-        else:
-            hiddableFrame.pack_forget()
-            checkbutton.config(text="Sent by ? ")
-    checkbutton = tk.Checkbutton(sentByFrame, text="Sent by ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    checkbutton.pack(side="left")
-
-    sentbyDict = {
-        "state": buttonState,
-        "value": value
-    }
-
-    return sentByFrame, sentbyDict
-
-# def makeMemberFrame(masterFrame):
-#     memberFrame = tk.Frame(masterFrame)
-# 
-#     hiddableFrame = tk.Frame(memberFrame)
-#     inputFrame = tk.Frame(hiddableFrame)
-#     value = tk.StringVar(value="")
-#     memberInput = ttk.Combobox(
-#         inputFrame,
-#         values=configuration["member"]["choices"],
-#         state="readonly",
-#         textvariable=value
-#     )
-#     memberInput.pack()
-#     userEntry = tk.Entry(inputFrame)
-#     userEntry.pack()
-#     inputFrame.pack(side="left")
-# 
-#     def add():
-#         value = userEntry.get()
-#         values = list(memberInput["values"])
-#         if value and value not in values:
-#             values.append(value)
-#             memberInput["values"] = values
-#             memberInput.set(memberInput["values"][-1])
-#             userEntry.delete(0, tk.END)
-# 
-#     def addToConfiguration():
-#         value = userEntry.get()
-#         if value and value not in configuration["member"]["choices"]:
-#             add()
-#             configuration["member"]["choices"].append(value)
-# 
-#     def remove():
-#         value = memberInput.get()
-#         values = list(memberInput["values"])
-#         if value in values:
-#             values.remove(value)
-#             memberInput["values"] = values
-#             if (len(memberInput["values"]) > 0):
-#                 memberInput.set(memberInput["values"][0])
-#             else:
-#                 memberInput.set("")
-# 
-#     def removeFromConfiguration():
-#         value = memberInput.get()
-#         if value in configuration["member"]["choices"]:
-#             remove()
-#             configuration["member"]["choices"].remove(value)
-# 
-#     buttonsFrame = tk.Frame(memberFrame)
-#     tk.Button(buttonsFrame, text="Add", command=add).pack()
-#     tk.Button(buttonsFrame, text="Add to configuration", command=addToConfiguration).pack()
-#     tk.Button(buttonsFrame, text="Remove", command=remove).pack()
-#     tk.Button(buttonsFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
-#     buttonsFrame.pack(side="right")
-# 
-#     buttonState = tk.BooleanVar(value=False)
-#     def toggleHiddableFrame():
-#         if (buttonState.get()):
-#             hiddableFrame.pack(side="right")
-#             checkbutton.config(text="Member role : ")
-#         else:
-#             hiddableFrame.pack_forget()
-#             checkbutton.config(text="Member role ? ")
-#     checkbutton = tk.Checkbutton(memberFrame, text="Member role ? ", variable=buttonState, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-#     checkbutton.pack(side="left")
-# 
-#     memberDict = {
-#         "state": buttonState,
-#         "value": value
-#     }
-# 
-#     return memberFrame, memberDict

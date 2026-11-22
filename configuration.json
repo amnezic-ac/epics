@@ -1013,6 +1013,8 @@
         ]
     },
     "role": {
+        "height": 4,
+        "width": 20,
         "choices": [
             "CHAIR",
             "REQ-PARTICIPANT",
