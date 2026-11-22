@@ -9,6 +9,7 @@ from src.backend.properties.relationship import Atttendee, Contact, Organizer, U
 from src.backend.components.component import Component
 from datetime import datetime, timedelta
 import hashlib
+from src.utils import tz
 
 class Vevent(Component):
     def __init__(self,
@@ -39,11 +40,11 @@ class Vevent(Component):
         self.dtstamp = dtstamp
         text = self.dtstamp.strftime("%Y%m%dT%zZ%H%M%S")
         self.uid = Uid(hashlib.sha1(text.encode('utf-8')).hexdigest())
-        self.dtstart = dtstart
+        self.dtstart = dtstart.astimezone(tz)
 
         self.dtend = None
         if (type(end) is datetime):
-            self.dtend = end
+            self.dtend = end.astimezone(tz)
         if (type(end) is Duration):
             self.dtend = self.dtstart + timedelta(weeks=end.value.week, days=end.value.day, hours=end.value.hour, minutes=end.value.minute, seconds=end.value.second)
 

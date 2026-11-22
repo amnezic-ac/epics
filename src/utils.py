@@ -1,6 +1,7 @@
 import json
 import logging
 import datetime
+from zoneinfo import ZoneInfo, available_timezones
 
 def importConfigFromJSONFile(filepath: str) -> dict:
     data = None
@@ -32,3 +33,5 @@ def exportConfigToJSONFile(filepath: str, configuration) -> bool:
     with open(filepath, "w", encoding='utf-8') as file:
         json.dump(configuration, file, indent=4)
         logging.debug(f"Configuration successfully saved")
+
+tz = ZoneInfo(configuration["timezone"]["default"])

@@ -4,6 +4,7 @@ class Calendar():
 
     def __init__(self, uid: str = "uid"):
         self.components = []
+        self.uid = uid
 
     def __str__(self):
         result = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:epics\n"
