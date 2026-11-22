@@ -106,7 +106,10 @@ class Fmttype(Parameter):
 
 class Fbtype(Parameter):
     def __init__(self, value: str = "BUSY"):
-        self.value = value
+        if (not value or not value.strip()):
+            value = "BUSY"
+            logging.warn(f"user tried to create an empty freebusy time type")
+        self.value = value.strip().upper()
 
     def __str__(self):
         return f"FBTYPE:{self.value}"

@@ -1025,7 +1025,9 @@
             "FALSE"
         ]
     },
-    "freebusytime": {
+    "fbttype": {
+        "height": 4,
+        "width": 20,
         "choices": [
             "FREE",
             "BUSY",

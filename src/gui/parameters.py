@@ -95,58 +95,51 @@ def makeCutypeFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
 
     return frame
 
-def makeFreeBusyTimeFrame(masterFrame):
-    freeBusyTimeFrame = tk.Frame(masterFrame)
+def makeFreeBusyTimeFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+    frame = ttk.LabelFrame(root, text="Free or busy ?")
 
-    hiddableFrame = tk.Frame(freeBusyTimeFrame)
-
-    freeBusyTimeInput = ttk.Combobox(
-        hiddableFrame,
-        values=configuration["freebusytime"]["choices"],
-        state="readonly"
+    combobox = ttk.Combobox(
+        frame,
+        values=configuration["fbttype"]["choices"],
+        state="readonly",
+        height=min(configuration["fbttype"]["height"], len(configuration["fbttype"]["choices"]))
     )
-    freeBusyTimeInput.pack()
+    combobox.grid(row=0, column=0)
 
-    state = tk.BooleanVar(value=False)
-    def toggleHiddableFrame():
-        if (state.get()):
-            hiddableFrame.pack(side="right")
+    entry = ttk.Entry(
+        frame,
+        width = configuration["fbttype"]["width"]
+    )
+    entry.grid(row=0, column=1)
+
+    def add():
+        value = entry.get()
+        if (not value or not value.strip()):
+            logging.warn(f"User tried to add an empty freebusy time type")
         else:
-            hiddableFrame.pack_forget()
-    button = tk.Checkbutton(freeBusyTimeFrame, text="Free or busy ? ", variable = state, offvalue=False, onvalue=True, command=toggleHiddableFrame)
-    button.pack(side="left")
+            tmp = list(combobox["values"])
+            tmp.append(value.strip().upper())
+            combobox["values"] = tmp
+            combobox.set(combobox["values"][-1])
+            entry.delete(0, "end")
+    addButton = ttk.Button(frame, text="Add entry", command=add)
+    addButton.grid(row=1, column=1, sticky=(tk.W, tk.E))
 
-    # maybe useful for later development
-    # def add():
-    #     value = freeBusyTimeInput.get()
-    #     values = list(freeBusyTimeInput["values"])
-    #     if value and value not in values:
-    #         values.append(value)
-    #         freeBusyTimeInput["values"] = values
+    def remove():
+        value = combobox.get()
+        if (not value):
+            logging.warn(f"User tried to remove freebusy time selection but no selection yet")
+            return None
+        tmp = list(combobox["values"])
+        tmp.remove(value)
+        combobox["values"] = tmp
+        combobox.set(combobox["values"][0])
+    removeButton = ttk.Button(frame, text="Remove selection", command=remove)
+    removeButton.grid(row=1, column=0, sticky=(tk.W, tk.E))
 
-    # def addToConfiguration():
-    #     value = freeBusyTimeInput.get()
-    #     if value and value not in configuration["freebusytime"]["choices"]:
-    #         configuration["freebusytime"]["choices"].append(value)
+    valueHolder["getValue"] = combobox.get
 
-    # def remove():
-    #     value = freeBusyTimeInput.get()
-    #     values = list(freeBusyTimeInput["values"])
-    #     if value in values:
-    #         values.remove(value)
-    #         freeBusyTimeInput["values"] = values
-
-    # def removeFromConfiguration():
-    #     value = freeBusyTimeInput.get()
-    #     if value in configuration["freebusytime"]["choices"]:
-    #         configuration["freebusytime"]["choices"].remove(value)
-
-    # tk.Button(freeBusyTimeFrame, text="Add", command=add).pack()
-    # tk.Button(freeBusyTimeFrame, text="Add to configuration", command=addToConfiguration).pack()
-    # tk.Button(freeBusyTimeFrame, text="Remove", command=remove).pack()
-    # tk.Button(freeBusyTimeFrame, text="Remove from configuration", command=removeFromConfiguration).pack()
-
-    return freeBusyTimeFrame, freeBusyTimeInput
+    return frame
 
 def makeLanguageFrame(masterFrame):
     languageFrame = tk.Frame(masterFrame)
