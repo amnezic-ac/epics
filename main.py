@@ -4,7 +4,6 @@ from src.gui.components import calendar
 from src.utils import exportConfigToJSONFile
 
 # for testing only
-from src.gui.parameters import makeCommonNameFrame
 ##################
 
 def main():
@@ -16,12 +15,11 @@ def main():
 
 
     dico = {}
-    frame = makeCommonNameFrame(root, dico)
-    # frame = calendar.foo(root, dico)
+    frame = calendar.makeCalendarFrame(root, dico)
     frame.grid(row=0, column=0, sticky="nsew")
     root.mainloop()
 
-    exportConfigToJSONFile("default_config.json", configuration)
+    exportConfigToJSONFile("configuration.json", configuration)
     logging.debug(f"Session ended")
 
 main()
