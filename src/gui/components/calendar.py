@@ -20,6 +20,7 @@ def export(calendar: Calendar, notebook):
     # save the calendar only if a file has been selected
     if file_path:
         with open(file_path, 'w') as f:
+            # calendar does not have any categories
             f.write(str(calendar))
             logging.info(f"[Calendar {calendar.uid}] Calendar successfully saved with {len(calendar.components)} component(s)")
     else:
@@ -89,6 +90,7 @@ def makeCalendarFrame(root: tk.frame, holder: dict) -> tk.Frame:
         calendar = Calendar(id_)
         for holder in components:
             component = holder["getValue"]()
+            # the component does not have any categories
             calendar.add_component(component)
         export(calendar, notebook)
     exportButton = ttk.Button(main, text="Create calendar", command=exportCalendar)

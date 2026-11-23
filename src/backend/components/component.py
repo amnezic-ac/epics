@@ -25,12 +25,10 @@ class Component():
                 continue
             elif (type(value) is datetime):
                 result += f"{attr.upper()}:{value.strftime("%Y%m%dT%H%M%SZ%z")}\n"
-            elif (type(value) is list and attr.upper() in ["ATTENDEE", "ATTACH"]):
-                for elt in value:
-                    result += f"{str(elt)}\n"
             else:
                 result += f"{str(value)}\n"
 
         result += f"END:{name}"
+
         return result
     

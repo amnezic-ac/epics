@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from src.backend.components.vevent import Vevent
 import uuid
 
-from src.gui.properties.descriptive import makeSummaryFrame, makeClassificationFrame, makeLocationFrame, makePriorityFrame, makeCategoriesFrame, makeAttachmentFrame, makeDescriptionFrame
+from src.gui.properties.descriptive import makeSummaryFrame, makeClassificationFrame, makeLocationFrame, makePriorityFrame, makeCategoriesFrame, makeAttachmentFrame, makeDescriptionFrame, makeResourceFrame
 from src.gui.properties.datetime import makeDtFrame
 from src.gui.properties.recurrence import makeRruleFrame
 from src.gui.properties.relationship import makeAttendeeFrame, makeOrganizerFrame, makeURLFrame
@@ -69,6 +69,9 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
         # status
         # url
         # comment
+    resourcesHolder = {}
+    resourcesFrame = makeResourceFrame(frame, resourcesHolder, id_)
+    resourcesFrame.grid(row=8, column=0)
     # cancel and confirm
     cancelButton = tk.Button(frame, text="Cancel")
     cancelButton.grid(row=9, column=0)
@@ -76,6 +79,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
         logging.debug(f"[Event {id_}] User clicked on confirm or modify button")
         now = datetime.now()
         try:
+            tmpCategories = categoriesHolder["getValue"]()
             event = Vevent(
                 now,
                 dtstart=MyDateTime(dtStartHolder["getValue"]()),
@@ -106,7 +110,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
             logging.error(f"[Event {id_}] Unable to create {id_} event")
             return None
     eventHolder["getValue"] = createEvent
-    confirmButton = tk.Button(frame, text="Confirm", command=createEvent)
+    confirmButton = tk.Button(frame, text="Check the event")
     confirmButton.grid(row=9, column=1)
 
     return frame

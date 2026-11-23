@@ -1049,8 +1049,15 @@
         ]
     },
     "resources": {
-        "height": 3,
-        "width": 40
+        "height": 10,
+        "width": 40,
+        "choices": [
+            "room 401",
+            "room 402",
+            "room 403",
+            "room 404",
+            "room 405"
+        ]
     },
     "partstat": {
         "height": 4,

@@ -82,30 +82,22 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) ->
     """
     # main frame
     frame = tk.Frame(root)
-    frame.grid(sticky=[tk.W])
-    frame.grid_remove()
-    for i in range(3):
-        frame.rowconfigure(i, weight=0)
-    for i in range(4):
-        frame.columnconfigure(i, weight=0)
-
-    hiddableFrame = ttk.Frame(frame)
-    for i in range(3):
-        hiddableFrame.rowconfigure(i, weight=0)
-    for i in range(3):
-        hiddableFrame.columnconfigure(i, weight=0)
-    hiddableFrame.grid(row=0, rowspan=3, column=1, columnspan=2)
-    hiddableFrame.grid_remove()
 
     # display all the categories
     listbox = tk.Listbox(
-        hiddableFrame,
+        frame,
         selectmode="multiple",
+        exportselection=False,
         height=min(configuration["categories"]["height"], len(configuration["categories"]["choices"]))
     )
     for i in range(len(configuration["categories"]["choices"])):
         listbox.insert(i, configuration["categories"]["choices"][i])
     listbox.grid(row=0, rowspan=3, column=0, sticky=[tk.N])
+
+    def _trace(name=None):
+        print(f"sel={listbox.curselection()} size={listbox.size()}")
+    listbox.bind("<<ListboxSelect>>", lambda e: _trace())
+
     def getCategories():
         tmpList = [listbox.get(index) for index in listbox.curselection()]
         if (tmpList == []):
@@ -118,64 +110,6 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) ->
             logging.warn(f"[Component {componentId}] Unable to create categories")
             return None
     valueHolder["getValue"] = getCategories
-
-    entry = tk.StringVar()
-    entryWidget = ttk.Entry(hiddableFrame, textvariable=entry)
-    entryWidget.grid(row=0, column=1, columnspan=2, sticky=[tk.W, tk.E])
-    # let the user add a new category for this particular component
-    def add():
-        value = entry.get()
-        if (value and value not in listbox.get(0, tk.END)):
-            listbox.insert(listbox.size(), value)
-        # the listbox height resize dynamically
-        listbox.config(height=min(configuration["categories"]["height"], listbox.size()))
-        entry.set(value="")
-    addButton = tk.Button(hiddableFrame, text="Add", command=add)
-    addButton.grid(row=1, column=1, sticky=[tk.W, tk.E])
-
-    # let the user add a new category in the configuration
-    def addToConfig():
-        value = entry.get()
-        if (value and value not in configuration["categories"]["choices"]):
-            configuration["choices"].append(value)
-        add()
-        entry.set(value="")
-    addConfigButton = tk.Button(hiddableFrame, text="Add to configuration", command=addToConfig)
-    addConfigButton.grid(row=1, column=2, sticky=[tk.W, tk.E])
-
-    # let the user remove a category from the configuration
-    def removeFromConfig():
-        selection = listbox.curselection()
-        for index in reversed(selection):
-            configuration["categories"]["choices"].pop(index)
-        remove()
-    removeConfigButton = tk.Button(hiddableFrame, text="Remove from configuration", command=removeFromConfig)
-    removeConfigButton.grid(row=2, column=2, sticky=[tk.W, tk.E])
-
-    # let the user remove a category for this particular component
-    def remove():
-        selection = listbox.curselection()
-        for index in reversed(selection):
-            listbox.delete(index)
-        # the listbox height resize dynamically
-        listbox.config(height=min(configuration["categories"]["height"], listbox.size()))
-    removeButton = tk.Button(hiddableFrame, text="Remove", command=remove)
-    removeButton.grid(row=2, column=1, sticky=[tk.W, tk.E])
-
-    # check button logic
-    state = tk.BooleanVar(value=False)
-    valueHolder["state"] = state
-    def displayChoicesFrame():
-        if (state.get()):
-            hiddableFrame.grid()
-            checkbutton.config(text="Categories: ")
-            pass
-        else:
-            hiddableFrame.grid_remove()
-            checkbutton.config(text="Categories ?")
-            pass
-    checkbutton = ttk.Checkbutton(frame, text="Categories ? ", variable=state, offvalue=False, onvalue=True, command=displayChoicesFrame)
-    checkbutton.grid(row=0, column=0, sticky=[tk.N])
 
     return frame
 
@@ -564,43 +498,41 @@ def makePriorityFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> t
 
     return frame
 
-# TODO: flemme la tout de suite
-def makeResourceFrame(root):
-    frame = tk.Frame(root)
+def makeResourceFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
+    frame = ttk.LabelFrame(root, text="Required resources")
+    frame.columnconfigure(0, weight=1)
+    frame.columnconfigure(1, weight=0)
 
-    parameterFrame = tk.Frame(frame)
-    resourceText = tk.Text(parameterFrame)
-    resourceText.config(
-        height=configuration["resources"]["height"],
-        width=configuration["resources"]["width"]
+    listbox = tk.Listbox(
+        frame,
+        selectmode="multiple",
+        height=min(configuration["resources"]["height"], len(configuration["resources"]["choices"])),
+        width=max([len(item) for item in configuration["resources"]["choices"]])
     )
-    resourceText.pack()
+    for i in range(len(configuration["resources"]["choices"])):
+        listbox.insert(i, configuration["resources"]["choices"][i])
+    listbox.grid(row=0, column=0, sticky=(tk.N, tk.S))
 
-    altrepFrame, altrepInput = makeAlternativeRepresentationFrame(parameterFrame)
-    altrepFrame.pack()
+    scrollbar = ttk.Scrollbar(
+        frame,
+        orient=tk.VERTICAL,
+        command=listbox.yview  # Link scrollbar to listbox
+    )
+    scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+    listbox["yscrollcommand"] = scrollbar.set
 
-    languageFrame, languageInput = makeLanguageFrame(parameterFrame)
-    languageFrame.pack()
+    def getResources():
+        tmpList = [listbox.get(index) for index in listbox.curselection()]
+        if (tmpList == []):
+            return None
+        try:
+            resources = Resources(tmpList, None, None)
+            return resources
+        except:
+            raise Exception(f"[Component {componentId}] Unable to make the resources property")
+    valueHolder["getValue"] = getResources
 
-    state = tk.BooleanVar(value=False)
-    def toggleParameterFrame():
-        if (state.get()):
-            button.config(text="Resource : ")
-            parameterFrame.pack()
-        else:
-            button.config(text="Resource ? ")
-            parameterFrame.pack_forget()
-    button = tk.Checkbutton(frame, text="Resource ? ", variable=state, offvalue=False, onvalue=True, command=toggleParameterFrame)
-    button.pack()
-
-    valueHolder = {
-        "state": state,
-        "value": resourceText,
-        "altrep": altrepInput,
-        "language": languageInput
-    }
-
-    return frame, valueHolder
+    return frame
 
 def makeStatusFrame(root: tk.Frame, valueHolder: dict, componentType: str) -> tk.Frame:
     frame = tk.Frame(root)
