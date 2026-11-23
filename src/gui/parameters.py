@@ -8,10 +8,7 @@ from src.utils import configuration, logging
 TODO
 - understand how to use cal-addresses
 - fix the timezone management:
-    * check for the good timezone for Paris
-    * add the offset to datetime of the components
-    * let the user change on the GUI the offset
-        * think about the situation where the user modify the offset after having confirmed some components
+    * think about the situation where the user modify the offset after having confirmed some components
 - implement the following parameters (by decreasing order of importance):
     * group or list member ship
     * delegators

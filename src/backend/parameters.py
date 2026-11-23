@@ -1,5 +1,6 @@
 from src.backend.datatypes import Caladdress, Uri
-from src.utils import configuration
+from src.utils import configuration, tz
+import zoneinfo
 
 class Parameter():
     def __str__(classe: str, value: str, quoted: bool = True):
@@ -183,5 +184,15 @@ class Sentby(Parameter, Caladdress):
     def __init__(self, value: Caladdress):
         self.value = value
 
-class Tzid():
-    pass
+class Tzid(zoneinfo.ZoneInfo):
+    def __init__(self, value: str):
+        if (value not in zoneinfo.available_timezones()):
+            raise Exception(f"{value} is an invalid timezone")
+        
+        if (not value):
+            self.value = tz
+        else:
+            self.value = zoneinfo.ZoneInfo(value)
+
+    def __str__(self):
+        return f"TZID={self.value}"

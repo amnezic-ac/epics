@@ -1,6 +1,7 @@
 from datetime import datetime
 from enum import Enum, auto
 import re
+from src.utils import zoneinfo, tz
 
 class Caladdress():
     def __init__(self, value: str):
@@ -49,6 +50,28 @@ class DurationType():
             if (self.second > 0):
                 result += f"{self.second}S"
         
+        return result
+
+class MyDateTime():
+    def __init__(self, value: datetime = None, zoneinfo: zoneinfo.ZoneInfo = None, dttype: str = "start"):
+        if (dttype not in ["start", "end"]):
+            raise Exception(f"Datetime values have to be start or end (current value: {dttype})")
+        self.dttype = dttype
+        self.tz = zoneinfo
+        if (not zoneinfo):
+            self.tz = tz
+        self.value = value
+        if (not value):
+            self.value = datetime.now(tz=self.tz)
+
+    def __str__(self):
+        result = ""
+        if (self.dttype == "start"):
+            result += "DTSTART"
+        else:
+            result += "DTEND"
+        result += f";TZID={self.tz}"
+        result += f":{self.value.strftime("%Y%m%dT%H%M%S")}"
         return result
 
 class Rrule():

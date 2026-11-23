@@ -5,17 +5,17 @@ from src.backend.properties.descriptive import Attachment, Categories, Classific
 # from src.backend.properties.recurrence import Rrule
 from src.backend.properties.relationship import Atttendee, Contact, Organizer, Url, Uid
 # from src.backend.properties.timezone import *
+from src.backend.datatypes import MyDateTime
 
 from src.backend.components.component import Component
 from datetime import datetime, timedelta
 import hashlib
-from src.utils import tz
 
 class Vevent(Component):
     def __init__(self,
         dtstamp: datetime,
-        dtstart: datetime,
-        end: datetime|Duration,
+        dtstart: MyDateTime,
+        end: MyDateTime|Duration,
         classification: Classification = None,
         created: datetime = None,
         description: Description = None,
@@ -40,11 +40,11 @@ class Vevent(Component):
         self.dtstamp = dtstamp
         text = self.dtstamp.strftime("%Y%m%dT%zZ%H%M%S")
         self.uid = Uid(hashlib.sha1(text.encode('utf-8')).hexdigest())
-        self.dtstart = dtstart.astimezone(tz)
+        self.dtstart = dtstart
 
         self.dtend = None
-        if (type(end) is datetime):
-            self.dtend = end.astimezone(tz)
+        if (type(end) is MyDateTime):
+            self.dtend = end
         if (type(end) is Duration):
             self.dtend = self.dtstart + timedelta(weeks=end.value.week, days=end.value.day, hours=end.value.hour, minutes=end.value.minute, seconds=end.value.second)
 

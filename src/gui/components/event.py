@@ -7,6 +7,7 @@ from src.gui.properties.descriptive import makeSummaryFrame, makeClassificationF
 from src.gui.properties.datetime import makeDtFrame
 from src.gui.properties.recurrence import makeRruleFrame
 from src.gui.properties.relationship import makeAttendeeFrame, makeOrganizerFrame, makeURLFrame
+from src.backend.datatypes import MyDateTime
 
 
 def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
@@ -77,8 +78,8 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
         try:
             event = Vevent(
                 now,
-                dtstart=dtStartHolder["getValue"](),
-                end=dtEndHolder["getValue"](),
+                dtstart=MyDateTime(dtStartHolder["getValue"]()),
+                end=MyDateTime(dtEndHolder["getValue"](), None, "end"),
                 classification=classificationHolder["getValue"](),
                 created=None,
                 description=descriptionHolder["getValue"](),
