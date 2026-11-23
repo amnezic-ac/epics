@@ -4,14 +4,22 @@ import re
 from src.utils import zoneinfo, tz
 
 class Caladdress():
-    def __init__(self, value: str):
-        if (not value or not value.strip()):
-            logging.warn(f"User attempted to create an empty caladdress")
-            raise Exception(f"Can't create an empty caladdress")
-        self.value = value.strip()
+    def __init__(self, value: str
+    #, cn: str, dir_: str, cutype: str, sentby: str, role: str, parstat: str, rsvp: str, delfrom: str, delto: str
+    ):
+        self.value = value
+        # self.cn = cn
+        # self.dir = dir_,
+        # self.cutype = cutype
+        # self.cutype = cutype
+        # self.sentby = sentby
+        # self.role = role
+        # self.parstat = parstat
+        # self.delfrom = delfrom
+        # self.delto = delto
 
     def __str__():
-        return self.value
+        return f"\"{self.value}\""
 
 # TODO: make the value comply with RFC 3986
 class Uri():
