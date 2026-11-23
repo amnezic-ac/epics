@@ -2,29 +2,38 @@ from src.gui.imports import *
 from TkToolTip import ToolTip
 from src.backend.properties.descriptive import Attachment, Categories, Classification, Comment, Description, Geo, Location, Percent, Priority, Resources, Status, Summary
 
+"""
+NOTE: for every function
+- frame is the main frame of the property, that's on the caller to grid it
+- get<PropertyName>() let the dev call this function later, on component creation. Please ease this call by
+    return the object only if everything is fine. Put the object instanciation in try catch scope to be able
+    to log the error message if any (still need to be done)
+- please put [Component {componentId}] at the beginning of every logs for simpler debugging
+"""
+
+# TODO: use parameter frame functions in property frame functions
+# TODO: put every property object creation in a try catch scope
+
 def makeAttachmentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame :
     """
-    create a frame for attachment property
+    create a frame for attachment property and a lambda function to get the attachment object
 
     Params:
     ------
     - root: tk.Frame
         frame in which the newly created frame will be contained
     - valueHolder: dict
-        dictionnary that will hold the attachment infos
+        dictionnary that will hold a lambda function which returns the attachment object from the user input, None if any error occured
+    - componentId: uuid
+        ID of the parent component
 
     Returns:
     -------
-    - tk.Frame: the newly created attachment frame
+    - tk.Frame: the newly created attachment frame (still needs to be grided)
     """
     frame = tk.Frame(root)
-    frame.rowconfigure(0, weight=0)
-    # label place
-    frame.columnconfigure(0, weight=0)
-    # value place
+    # only entry widget needs to be resized on window resize
     frame.columnconfigure(1, weight=1)
-    # tooltip place
-    frame.columnconfigure(2, weight=0)
 
     entry = tk.Entry(frame)
     entry.grid(row=0, column=1)
@@ -32,7 +41,6 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) ->
 
     tooltipLabel = ttk.Label(frame, text=" ? ")
     tooltipLabel.grid(row=0, column=2)
-
     ToolTip(tooltipLabel, msg="Please enter a link to access the document", follow=True)
 
     state = tk.BooleanVar(value=False)
@@ -53,7 +61,6 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) ->
             tmp = None
             if (entry.get()):
                 tmp = Attachment(entry.get(), None, None, None)
-                # logging.debug(f"{entry.get()} attachment successfully created")
             return tmp
         except:
             logging.warn(f"[Component {id_}] Failed to create attachement")
@@ -62,50 +69,43 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) ->
 
     return frame
 
-# TODO: make it work
 def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame :
     """
-    create a frame for categories property
+    create a frame for categories property and a lambda function to get the Categories object
 
     Params:
-    -------
+    ------
     - root: tk.Frame
-        parent frame
+        frame in which the newly created frame will be contained
     - valueHolder: dict
-        dictionary that will contain infos about categories values
-    - configuration: dict
-        dictionary containing default values for user choices
+        dictionnary that will hold a lambda function which returns the Categories object from the user input, None if any error occured
+    - componentId: uuid
+        ID of the parent component
 
     Returns:
-    --------
-    - tk.Frame: newly created frame (still need to be grid)
+    -------
+    - tk.Frame: the newly created categories frame (still needs to be grided)
     """
-    # main frame
+
     frame = tk.Frame(root)
 
-    # display all the categories
     listbox = tk.Listbox(
         frame,
         selectmode="multiple",
-        exportselection=False,
+        exportselection=False, # NOTE: don't remove: avoid listbox selection being vanished when focus on another widget
         height=min(configuration["categories"]["height"], len(configuration["categories"]["choices"]))
     )
     for i in range(len(configuration["categories"]["choices"])):
         listbox.insert(i, configuration["categories"]["choices"][i])
     listbox.grid(row=0, rowspan=3, column=0, sticky=[tk.N])
 
-    def _trace(name=None):
-        print(f"sel={listbox.curselection()} size={listbox.size()}")
-    listbox.bind("<<ListboxSelect>>", lambda e: _trace())
-
     def getCategories():
-        tmpList = [listbox.get(index) for index in listbox.curselection()]
-        if (tmpList == []):
+        selectedCategories = [listbox.get(index) for index in listbox.curselection()]
+        if (selectedCategories == []):
             return None
         try:
-            tmp = Categories(tmpList)
-            # logging.debug("Categories successfully created")
-            return tmp
+            categories = Categories(selectedCategories)
+            return categories
         except:
             logging.warn(f"[Component {componentId}] Unable to create categories")
             return None
@@ -113,37 +113,30 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) ->
 
     return frame
 
-def makeClassificationFrame(root: tk.Frame, valueHolder: dict, componentId) -> tk.Frame:
+def makeClassificationFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
     """
-    create a frame for classification property
+    create a frame for classification property and a lambda function to get the Classification object
 
     Params:
-    -------
+    ------
     - root: tk.Frame
-        parent frame
+        frame in which the newly created frame will be contained
     - valueHolder: dict
-        dictionary that will contain infos about classification values
-    - configuration: dict
-        dictionary containing default values for user choice
+        dictionnary that will hold a lambda function which returns the Classification object from the user input, None if any error occured
+    - componentId: uuid
+        ID of the parent component
 
     Returns:
-    --------
-    - tk.Frame: newly created frame (still need to be grid)
+    -------
+    - tk.Frame: the newly created classification frame (still needs to be grided)
     """
+
     # main frame
     frame = tk.Frame(root)
     frame.grid(sticky=[tk.W])
     frame.grid_remove()
-    for i in range(3):
-        frame.rowconfigure(i, weight=0)
-    for i in range(4):
-        frame.columnconfigure(i, weight=0)
 
     hiddableFrame = ttk.Frame(frame)
-    for i in range(3):
-        hiddableFrame.rowconfigure(i, weight=0)
-    for i in range(3):
-        hiddableFrame.columnconfigure(i, weight=0)
     hiddableFrame.grid(row=0, rowspan=3, column=1, columnspan=2)
     hiddableFrame.grid_remove()
 
@@ -237,9 +230,26 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, componentId) -> t
 
     return frame
 
-# FIXME: when resized, the second column could disappear below the first one
-# TODO: add a text inside showing if it's a description or comment component
-def makeCommentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+# TODO: check if it works
+# TODO: add logging
+def makeCommentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
+    """
+    create a frame for comment property and a lambda function to get the Comment object with valueHolder["getValue"]()
+
+    Params:
+    ------
+    - root: tk.Frame
+        frame in which the newly created frame will be contained
+    - valueHolder: dict
+        dictionnary that will hold a lambda function which returns the Comment object from the user input, None if any error occured
+    - componentId: uuid
+        ID of the parent component
+
+    Returns:
+    -------
+    - tk.Frame: the newly created comment frame (still needs to be grided)
+    """
+
     frame = tk.Frame(root)
     frame.rowconfigure(0, weight=1)
     frame.rowconfigure(1, weight=1)
@@ -281,12 +291,27 @@ def makeCommentFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     return frame
 
 # FIXME: when resized, the second column could disappear below the first one
-# TODO: add a text inside showing if it's a description or comment component
 def makeDescriptionFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
+    """
+    create a frame for description property and a lambda function to get the Description object with valueHolder["getValue"]()
+
+    Params:
+    ------
+    - root: tk.Frame
+        frame in which the newly created frame will be contained
+    - valueHolder: dict
+        dictionnary that will hold a lambda function which returns the Description object from the user input, None if any error occured
+    - componentId: uuid
+        ID of the parent component
+
+    Returns:
+    -------
+    - tk.Frame: the newly created description frame (still needs to be grided)
+    """
+
     frame = tk.Frame(root)
-    frame.rowconfigure(0, weight=1)
+    # only description textbox needs to be resized on window resizing
     frame.rowconfigure(1, weight=1)
-    frame.columnconfigure(0, weight=1)
     frame.columnconfigure(1, weight=1)
 
     textWidget = tk.Text(frame)
@@ -311,24 +336,38 @@ def makeDescriptionFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -
             return None
 
         language = None
+        text = text.strip()
         for [key, value] in configuration["language"]["choices"]:
             if (value == languageCombobox.get()):
                 language = key
                 break
         altrep = altrepEntry.get()
-        truc = None
-        truc = Description(text, altrep, language)
-        return truc
+        description = None
+        description = Description(text, altrep, language)
+        return description
     valueHolder["getValue"] = getDescription
 
     return frame
 
 def makeGeoFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+    """
+    create a frame for geo property and a lambda function to get the Geo object with valueHolder["getValue"]()
+
+    Params:
+    ------
+    - root: tk.Frame
+        frame in which the newly created frame will be contained
+    - valueHolder: dict
+        dictionnary that will hold a lambda function which returns the Geo object from the user input, None if any error occured
+    - componentId: uuid
+        ID of the parent component
+
+    Returns:
+    -------
+    - tk.Frame: the newly created geo frame (still needs to be grided)
+    """
+
     frame = tk.Frame(root)
-    for i in range(2):
-        frame.rowconfigure(i, weight=0)
-    for i in range(3):
-        frame.columnconfigure(i, weight=0)
 
     latVar = tk.StringVar(value=None)
     latSpinbox = ttk.Spinbox(frame, from_=-90.000000, to=90.000000, wrap=True, increment=0.000001, textvariable=latVar)
@@ -374,12 +413,24 @@ def makeGeoFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     return frame
 
 def makeLocationFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
+    """
+    create a frame for location property and a lambda function to get the Location object with valueHolder["getValue"]()
+
+    Params:
+    ------
+    - root: tk.Frame
+        frame in which the newly created frame will be contained
+    - valueHolder: dict
+        dictionnary that will hold a lambda function which returns the Location object from the user input, None if any error occured
+    - componentId: uuid
+        ID of the parent component
+
+    Returns:
+    -------
+    - tk.Frame: the newly created location frame (still needs to be grided)
+    """
+
     frame = tk.Frame(root)
-    frame.rowconfigure(0, weight=0)
-    frame.rowconfigure(1, weight=0)
-    frame.columnconfigure(0, weight=0)
-    frame.columnconfigure(1, weight=0)
-    frame.columnconfigure(2, weight=0)
 
     state = tk.BooleanVar(value = False)
     label = tk.Label(frame, text="Location")
@@ -438,7 +489,24 @@ def makeLocationFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> t
     return frame
 
 # FIXME: make it comply with the other functions
-def makePercentFrame(root):
+def makePercentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame :
+    """
+    create a frame for percent property and a lambda function to get the Percent object with valueHolder["getValue"]()
+
+    Params:
+    ------
+    - root: tk.Frame
+        frame in which the newly created frame will be contained
+    - valueHolder: dict
+        dictionnary that will hold a lambda function which returns the Percent object from the user input, None if any error occured
+    - componentId: uuid
+        ID of the parent component
+
+    Returns:
+    -------
+    - tk.Frame: the newly created percent frame (still needs to be grided)
+    """
+
     frame = tk.Frame(root)
 
     parameterFrame = tk.Frame(frame)
@@ -463,13 +531,27 @@ def makePercentFrame(root):
         "value": percentVar
     }
 
-    return frame, valueHolder
+    return frame
 
 def makePriorityFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
+    """
+    create a frame for priority property and a lambda function to get the Priority object with valueHolder["getValue"]()
+
+    Params:
+    ------
+    - root: tk.Frame
+        frame in which the newly created frame will be contained
+    - valueHolder: dict
+        dictionnary that will hold a lambda function which returns the Priority object from the user input, None if any error occured
+    - componentId: uuid
+        ID of the parent component
+
+    Returns:
+    -------
+    - tk.Frame: the newly created priority frame (still needs to be grided)
+    """
+
     frame = tk.Frame(root)
-    frame.rowconfigure(0, weight=0)
-    frame.columnconfigure(0, weight=0)
-    frame.columnconfigure(1, weight=0)
 
     tk.Label(frame, text="Priority level: ").grid(row=0, column=0)
     priority = tk.StringVar(value="")
@@ -499,9 +581,25 @@ def makePriorityFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> t
     return frame
 
 def makeResourceFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
+    """
+    create a frame for resources property and a lambda function to get the Resources object with valueHolder["getValue"]()
+
+    Params:
+    ------
+    - root: tk.Frame
+        frame in which the newly created frame will be contained
+    - valueHolder: dict
+        dictionnary that will hold a lambda function which returns the Resources object from the user input, None if any error occured
+    - componentId: uuid
+        ID of the parent component
+
+    Returns:
+    -------
+    - tk.Frame: the newly created resources frame (still needs to be grided)
+    """
+
     frame = ttk.LabelFrame(root, text="Required resources")
     frame.columnconfigure(0, weight=1)
-    frame.columnconfigure(1, weight=0)
 
     listbox = tk.Listbox(
         frame,
@@ -535,10 +633,24 @@ def makeResourceFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> t
     return frame
 
 def makeStatusFrame(root: tk.Frame, valueHolder: dict, componentType: str) -> tk.Frame:
+    """
+    create a frame for status property and a lambda function to get the Status object with valueHolder["getValue"]()
+
+    Params:
+    ------
+    - root: tk.Frame
+        frame in which the newly created frame will be contained
+    - valueHolder: dict
+        dictionnary that will hold a lambda function which returns the Status object from the user input, None if any error occured
+    - componentId: uuid
+        ID of the parent component
+
+    Returns:
+    -------
+    - tk.Frame: the newly created status frame (still needs to be grided)
+    """
+
     frame = tk.Frame(root)
-    frame.rowconfigure(0, weight=0)
-    frame.rowconfigure(1, weight=0)
-    frame.columnconfigure(0, weight=0)
 
     label = ttk.Label(frame, text="Status ?")
     label.grid(row=0, column=0)
@@ -579,11 +691,24 @@ def makeStatusFrame(root: tk.Frame, valueHolder: dict, componentType: str) -> tk
     return frame
 
 def makeSummaryFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
+    """
+    create a frame for summary property and a lambda function to get the Summary object with valueHolder["getValue"]()
+
+    Params:
+    ------
+    - root: tk.Frame
+        frame in which the newly created frame will be contained
+    - valueHolder: dict
+        dictionnary that will hold a lambda function which returns the Summary object from the user input, None if any error occured
+    - componentId: uuid
+        ID of the parent component
+
+    Returns:
+    -------
+    - tk.Frame: the newly created summary frame (still needs to be grided)
+    """
+
     frame = tk.Frame(root)
-    frame.rowconfigure(0, weight=0)
-    frame.rowconfigure(1, weight=0)
-    frame.columnconfigure(0, weight=0)
-    frame.columnconfigure(1, weight=0)
 
     label = ttk.Label(frame, text="Title: ")
     label.grid(row=0, column=0)

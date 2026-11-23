@@ -79,9 +79,6 @@ def makeOrganizerFrame(root):
 
 def makeURLFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     frame = tk.Frame(root)
-    frame.rowconfigure(0, weight=0)
-    frame.columnconfigure(0, weight=0)
-    frame.columnconfigure(1, weight=0)
 
     tk.Label(frame, text="URL: ").grid(row=0, column=0)
     value = tk.StringVar(value="")

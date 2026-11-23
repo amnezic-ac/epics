@@ -41,11 +41,6 @@ def makeDurationFrame(root):
 # TODO: put default value for start are now and for end its start + default duration
 def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame:
     frame = tk.Frame(root)
-    for i in range(2):
-        frame.rowconfigure(i, weight=0)
-    for i in range(3):
-        frame.columnconfigure(i, weight=0)
-
     timestamp = datetime.now()
 
     if (typename not in ["start", "end"]):
