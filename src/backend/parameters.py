@@ -42,44 +42,50 @@ class Cutype(Parameter, Caladdress):
     def __str__(self):
         return f"CUTYPE={self.value}"
 
-class Delfrom(Parameter, Caladdress):
+class Delfrom(Parameter):
     def __init__(self, addresses: [Caladdress]):
         self.addresses = set(addresses)
 
     def __str__(self):
-        tmp = list(self.addresses)
-        result = f"DELEGATED-FROM=\"{tmp[0]}\""
-        tmp.pop(0)
+        tmp = sorted(list(self.addresses))
+        if (tmp == []):
+            return ""
 
-        for address in tmp:
-            result += f",\"{address}\""
+        result = "DELEGATED-FROM="
+        longueur = len(tmp)
+        for i in range(longueur - 1):
+            result += f"\"{tmp[i]}\","
+        result += f"\"{tmp[-1]}\""
 
         return result
 
-    def add(self, person: str):
+    def add(self, person: Caladdress):
         self.addresses.add(person)
 
-    def remove(self, person: str):
+    def remove(self, person: Caladdress):
         self.addresses.remove(person)
 
-class Delto(Parameter, Caladdress):
+class Delto(Parameter):
     def __init__(self, addresses: [Caladdress]):
         self.addresses = set(addresses)
 
     def __str__(self):
-        tmp = list(self.addresses)
-        result = f"DELEGATED-TO=\"{tmp[0]}\""
-        tmp.pop(0)
+        tmp = sorted(list(self.addresses))
+        if (tmp == []):
+            return ""
 
-        for address in tmp:
-            result += f",\"{address}\""
+        result = "DELEGATED-TO="
+        longueur = len(tmp)
+        for i in range(longueur - 1):
+            result += f"\"{tmp[i]}\","
+        result += f"\"{tmp[-1]}\""
 
         return result
 
-    def add(self, person: str):
+    def add(self, person: Caladdress):
         self.addresses.add(person)
 
-    def remove(self, person: str):
+    def remove(self, person: Caladdress):
         self.addresses.remove(person)
 
 class Dir(Parameter, Caladdress):
