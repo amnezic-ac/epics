@@ -4,24 +4,6 @@ import tkinter as tk
 from src.backend.parameters import *
 from src.utils import configuration, logging
 
-"""
-TODO
-- understand how to use cal-addresses
-- fix the timezone management:
-    * think about the situation where the user modify the offset after having confirmed some components
-- implement the following parameters (by decreasing order of importance):
-    * group or list member ship
-    * delegators
-    * delegatees
-    * directory entry reference
-    * format type
-    * alarm trigger relationship
-    * Recurrence Identifier Range (for later because I don't understand anything)
-"""
-
-# TODO: implement add/remove calendar address (delegated from and to), dir, sent-by
-# TODO: understand ATTACH property and its parameters
-
 def makeAlternativeRepresentationFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     frame = ttk.Labelframe(root, text="Alternative representation")
 
@@ -49,7 +31,6 @@ def makeAlternativeRepresentationFrame(root: tk.Frame, valueHolder: dict) -> tk.
 
     return frame
 
-# NOTE: This parameter can be specified on properties with a CAL-ADDRESS value type
 def makeCommonNameFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     frame = ttk.Labelframe(root, text="Common name")
 
