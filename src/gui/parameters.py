@@ -12,7 +12,8 @@ def makeAlternativeRepresentationFrame(root: tk.Frame, valueHolder: dict, proper
         width = configuration["altrep"]["width"],
         height = configuration["altrep"]["height"],
     )
-    altrepText.insert('1.0', f"Put another textual presentation of the {propertyName}")
+    placeholder = f"Put another textual presentation of the {propertyName}"
+    altrepText.insert('1.0', f"{placeholder}")
     altrepText.grid(row=0, column=0, sticky="nsew")
     # put a placeholder to indicate this is alternative representation of the property
 
@@ -28,6 +29,9 @@ def makeAlternativeRepresentationFrame(root: tk.Frame, valueHolder: dict, proper
     def getAltrep():
         value = altrepText.get('1.0', 'end')
         if (not value or not value.strip()):
+            return None
+        value = value.strip()
+        if (value == placeholder):
             return None
         return value.strip()
     valueHolder["getValue"] = getAltrep

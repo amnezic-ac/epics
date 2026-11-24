@@ -383,59 +383,50 @@ def makeLocationFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> t
     """
 
     frame = tk.Frame(root)
+    frame.columnconfigure(1, weight=1)
 
-    state = tk.BooleanVar(value = False)
-    label = tk.Label(frame, text="Location")
-    label.grid(row=0, rowspan=2, column=0)
-    entry = tk.StringVar()
-    entryWidget = tk.Entry(frame, textvariable=entry)
-    entryWidget.grid(row=0, rowspan=2, column=1, sticky=[tk.N, tk.S])
+    label = tk.Label(frame, text="Location: ")
+    label.grid(row=0, column=0)
 
-    altrep = tk.StringVar()
-    altrepEntry = ttk.Entry(frame, textvariable=altrep)
-    altrepEntry.grid(row=0, column=2, sticky=[tk.W, tk.E])
-    altrepEntry.grid_remove()
+    entry = tk.Entry(frame)
+    entry.grid(row=0, column=1, stick="nsew")
 
-    languageCombobox = ttk.Combobox(
-        frame,
-        values=[value[1] for value in configuration["language"]["choices"]],
-        height=10,
-        state=["readonly"]
-    )
-    # avoid the selected item to be blue highlighted
-    languageCombobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
-    languageCombobox.grid(row=1, column=2)
-    languageCombobox.grid_remove()
-    
+    # hold the information if parameters frame exist and are displayed
+    state = tk.BooleanVar(value=False)
+    languageDict = {}
+    languageFrame = None
+    altrepDict = {}
+    altrepFrame = None
 
-    def toggleParameters(event):
-        tmp = state.get()
-        if (tmp):
-            altrepEntry.grid()
-            languageCombobox.grid()
+    def toggleParameterFrame(event):
+        # nonlocal let the two frames be created only if needed
+        nonlocal languageFrame
+        nonlocal altrepFrame
+        # reverse the boolean value if label is clicked
+        actual = not state.get()
+        if (actual):
+            if (not languageFrame):
+                altrepFrame = makeAlternativeRepresentationFrame(frame, altrepDict, "location")
+                altrepFrame.grid(row=1, column=1, sticky="nsew")
+                languageFrame = makeLanguageFrame(frame, languageDict)
+                languageFrame.grid(row=2, column=1, sticky="nsew")
+            altrepFrame.grid()
+            languageFrame.grid()
         else:
-            altrepEntry.grid_remove()
-            languageCombobox.grid_remove()
-        state.set(not tmp)
-    label.bind('<Double-1>', toggleParameters)
+            altrepFrame.grid_remove()
+            languageFrame.grid_remove()
+        state.set(actual)
+    label.bind('<Double-1>', toggleParameterFrame)
 
     def getLocation():
         if (not entry.get()):
             return None
-        try:
-            language = None
-            altrepValue = None
-            if (state.get()):
-                for [key, value] in configuration["language"]["choices"]:
-                    if (value == languageCombobox.get()):
-                        language = key
-                        break
-            tmp = Location(entry.get(), altrepValue, language)
-            # logging.debug(f"{entry.get()} location successfully created")
-            return tmp
-        except:
-            logging.warn(f"[Component {componentId}] Location creation failed ({entry.get()})")
+        if (not entry.get().strip()):
             return None
+        value = entry.get().strip()
+        altrep = altrepDict["getValue"]() if state.get() else None
+        language = languageDict["getValue"]() if state.get() else None
+        return Location(value, altrep, language)
     valueHolder["getValue"] = getLocation
 
     return frame
