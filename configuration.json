@@ -2,7 +2,7 @@
     "general": {
         "width": 90,
         "log-file": "log.txt",
-        "time-status": true
+        "timestate": false
     },
     "categories": {
         "choices": [
