@@ -104,6 +104,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
                 url=None
             )
             logging.debug(f"[Event {id_}] User successfully created {titleHolder["getValue"]()} event")
+            print(event)
             return event
         except:
             logging.error(f"[Event {id_}] Unable to create {id_} event")

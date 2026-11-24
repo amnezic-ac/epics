@@ -136,100 +136,49 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, componentId: uuid
 
     # main frame
     frame = tk.Frame(root)
-    frame.grid(sticky=[tk.W])
-    frame.grid_remove()
-
-    hiddableFrame = ttk.Frame(frame)
-    hiddableFrame.grid(row=0, rowspan=3, column=1, columnspan=2)
-    hiddableFrame.grid_remove()
 
     # display all the categories
-    userChoice = tk.StringVar(value="")
+    placeholder = "Choose a classification"
+    choice = tk.StringVar(value=placeholder)
     combobox = ttk.Combobox(
-        hiddableFrame,
-        textvariable=userChoice,
+        frame,
+        textvariable=choice,
         values=configuration["classification"]["choices"],
         state=["readonly"],
         height=min(configuration["classification"]["height"], len(configuration["classification"]["choices"])),
     )
+    combobox.set(placeholder)
     # avoid selected item to be blue highlighted
     combobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
-    combobox.grid(row=0, rowspan=3, column=0, sticky=[tk.N])
+    frame.columnconfigure(0, weight=1)
+    combobox.grid(row=0, column=0, columnspan=2, sticky="nsew")
+
     def getClassification():
-        try:
-            tmp = None
-            if (userChoice.get()):
-                tmp = Classification(userChoice.get())
-                # logging.debug(f"User choosed {userChoice.get()} classification")
-            return tmp
-        except:
-            logging.warn(f"[Component {componentId}] Error while creating the classification")
+        value = combobox.get()
+        if (not value):
+            return None
+        if (not value.strip() or value == placeholder):
+            return None
+        return Classification(value.strip())
     valueHolder["getValue"] = getClassification
 
-    entry = tk.StringVar()
-    entryWidget = ttk.Entry(hiddableFrame, textvariable=entry)
-    entryWidget.grid(row=0, column=1, columnspan=2, sticky=[tk.W, tk.E])
+    entryValue = tk.StringVar(value="")
+    entry = ttk.Entry(frame, textvariable=entryValue)
+    entry.grid(row=1, column=0, sticky="nsew")
 
     # let the user add a new classification for this particular component
     def add():
-        value = entry.get()
-        if (value and value not in combobox["values"]):
+        value = entryValue.get()
+        if (value and value not in combobox["values"] and value != placeholder):
             newChoices = list(combobox["values"])
             newChoices.append(value)
             combobox["values"] = newChoices
-            combobox.set(value)
             # the listbox height resize dynamically
             combobox.config(height=min(configuration["classification"]["height"], len(combobox["values"])))
-        entry.set(value="")
-    addButton = tk.Button(hiddableFrame, text="Add", command=add)
-    addButton.grid(row=1, column=1, sticky=[tk.W, tk.E])
-
-    # let the user add a new classification in the configuration
-    def addToConfig():
-        value = entry.get()
-        if (value and value not in configuration["choices"]):
-            configuration["classification"]["choices"].append(value)
-        add()
-        entry.set(value="")
-    addConfigButton = tk.Button(hiddableFrame, text="Add to configuration", command=addToConfig)
-    addConfigButton.grid(row=1, column=2, sticky=[tk.W, tk.E])
-
-    # let the user remove a classification from the configuration
-    def removeFromConfig():
-        selection = combobox.get()
-        if (selection and selection in configuration["choices"]):
-            configuration["classification"]["choices"].remove(selection)
-        remove()
-    removeConfigButton = tk.Button(hiddableFrame, text="Remove from configuration", command=removeFromConfig)
-    removeConfigButton.grid(row=2, column=2, sticky=[tk.W, tk.E])
-
-    # let the user remove a classification for this particular component
-    def remove():
-        selection = combobox.get()
-        if (selection and selection in combobox["values"]):
-            newChoices = list(combobox["values"])
-            newChoices.remove(selection)
-            combobox["values"] = newChoices
-            combobox.set(combobox["values"][0])
-            # the listbox height resize dynamically
-            combobox.config(height=min(configuration["height"], len(combobox["values"])))
-    removeButton = tk.Button(hiddableFrame, text="Remove", command=remove)
-    removeButton.grid(row=2, column=1, sticky=[tk.W, tk.E])
-
-    # check button logic
-    state = tk.BooleanVar(value=False)
-    valueHolder["state"] = state
-    def displayChoicesFrame():
-        if (state.get()):
-            hiddableFrame.grid()
-            checkbutton.config(text="Classification: ")
-            pass
-        else:
-            hiddableFrame.grid_remove()
-            checkbutton.config(text="Classification ?")
-            pass
-    checkbutton = ttk.Checkbutton(frame, text="Classification ? ", variable=state, offvalue=False, onvalue=True, command=displayChoicesFrame)
-    checkbutton.grid(row=0, column=0, sticky=[tk.N])
+            choice.set(value=value)
+            entryValue.set("") 
+    addButton = tk.Button(frame, text="+", command=add)
+    addButton.grid(row=1, column=1, sticky="nsew")
 
     return frame
 
@@ -753,8 +702,8 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk
         if (not entry.get().strip()):
             return None
         value = entry.get().strip()
-        altrep = altrepDict["getValue"]()
-        language = languageDict["getValue"]()
+        altrep = altrepDict["getValue"]() if state.get() else None
+        language = languageDict["getValue"]() if state.get() else None
         return Summary(value, altrep, language)
     valueHolder["getValue"] = getSummary
     # to be able to display the title in real time
