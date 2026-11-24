@@ -100,9 +100,9 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
         now = datetime.now()
         try:
             event = Vevent(
-                now,
-                dtstart=MyDateTime(dtStartHolder["getValue"]()),
-                end=MyDateTime(dtEndHolder["getValue"](), None, "end"),
+                datetime.now(),
+                dtstart=dtStartHolder["getValue"](),
+                end=dtEndHolder["getValue"](),
                 classification=classificationHolder["getValue"](),
                 created=None,
                 description=descriptionHolder["getValue"](),

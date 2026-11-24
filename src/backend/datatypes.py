@@ -61,9 +61,7 @@ class DurationType():
         return result
 
 class MyDateTime():
-    def __init__(self, value: datetime = None, zoneinfo: zoneinfo.ZoneInfo = None, dttype: str = "start"):
-        if (dttype not in ["start", "end"]):
-            raise Exception(f"Datetime values have to be start or end (current value: {dttype})")
+    def __init__(self, value: datetime = None, zoneinfo: zoneinfo.ZoneInfo = None, dttype: str = "start", gotTime: bool = True):
         self.dttype = dttype
         self.tz = zoneinfo
         if (not zoneinfo):
@@ -71,15 +69,26 @@ class MyDateTime():
         self.value = value
         if (not value):
             self.value = datetime.now(tz=self.tz)
+        self.gotTime = gotTime
 
     def __str__(self):
         result = ""
-        if (self.dttype == "start"):
-            result += "DTSTART"
-        else:
-            result += "DTEND"
+        match self.dttype:
+            case "start":
+                result += "DTSTART"
+            case "end":
+                result += "DTEND"
+            case _:
+                result += f"{self.dttype.upper()}"
+
         result += f";TZID={self.tz}"
-        result += f":{self.value.strftime("%Y%m%dT%H%M%S")}"
+
+        result += ";VALUE="
+        if (self.gotTime):
+            result += f"DATE-TIME:{self.value.strftime("%Y%m%dT%H%M%S")}"
+        else:
+            result += f"DATE:{self.value.strftime("%Y%m%d")}"
+
         return result
 
 class Rrule():

@@ -53,7 +53,6 @@ class Categories(Property):
         for i in range(longueur - 1):
             result += f"{tmp[i]},"
         result += f"{tmp[-1]}"
-        print(result) 
         return result
 
 class Classification(Property):

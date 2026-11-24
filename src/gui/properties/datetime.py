@@ -2,6 +2,7 @@ from src.gui.imports import *
 from datetime import date, datetime
 import tkcalendar as tkc
 from src.backend.properties.datetime import Transparency, Duration
+from src.backend.datatypes import MyDateTime
 
 # TODO
 def makeDurationFrame(root):
@@ -122,6 +123,7 @@ def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame
         minuteLabel.grid(row=0, column=6)
         secondSpinbox.grid(row=0, column=7)
         secondLabel.grid(row=0, column=8)
+        state.set(value=True)
     valueHolder["addTime"] = addTime
     def removeTime():
         timelabel.grid_remove()
@@ -131,22 +133,22 @@ def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame
         minuteLabel.grid_remove()
         secondSpinbox.grid_remove()
         secondLabel.grid_remove()
+        state.set(value=False)
     valueHolder["removeTime"] = removeTime
 
 
     def getDT():
         try:
-            actual = state.get()
             tmp = datetime(
                 year = int(dateEntry.get_date().strftime("%Y")),
                 month = int(dateEntry.get_date().strftime("%m")),
                 day = int(dateEntry.get_date().strftime("%d")),
-                hour = int(hour.get()) if actual else None,
-                minute = int(minute.get()) if actual else None,
-                second = int(second.get()) if actual else None
+                hour = int(hour.get()),
+                minute = int(minute.get()),
+                second = int(second.get())
             )
-            # logging.debug(f"Timestamp successfully created ({typename})")
-            return tmp
+            dt = MyDateTime(tmp, dttype=typename, gotTime=state.get())
+            return dt
         except:
             logging.error(f"[Component {componentId}] Unable to create the {typename} timestamp")
             return None
