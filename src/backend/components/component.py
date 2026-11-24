@@ -23,8 +23,8 @@ class Component():
         for attr, value in self.__dict__.items():
             if (not value):
                 continue
-            if (attr == "dtstamp"):
-                result += f"DTSTAMP:{value.strftime("%Y%m%dT%H%M%S")}"
+            if (type(value) is datetime):
+                result += f"{attr.upper()}:{value.strftime("%Y%m%dT%H%M%S")}"
             else:
                 result += f"{str(value)}"
             result += "\n"
