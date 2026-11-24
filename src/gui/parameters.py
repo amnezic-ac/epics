@@ -4,27 +4,30 @@ import tkinter as tk
 from src.backend.parameters import *
 from src.utils import configuration, logging
 
-def makeAlternativeRepresentationFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
-    frame = ttk.Labelframe(root, text="Alternative representation")
+def makeAlternativeRepresentationFrame(root: tk.Frame, valueHolder: dict, propertyName) -> tk.Frame:
+    frame = ttk.Frame(root)
 
     altrepText = tk.Text(
         frame,
         width = configuration["altrep"]["width"],
-        height = configuration["altrep"]["height"]
+        height = configuration["altrep"]["height"],
     )
-    altrepText.grid(row=0, column=0)
+    altrepText.insert('1.0', f"Put another textual presentation of the {propertyName}")
+    altrepText.grid(row=0, column=0, sticky="nsew")
+    # put a placeholder to indicate this is alternative representation of the property
+
     
     scrollbar = ttk.Scrollbar(
         frame,
         orient="vertical",
         command=altrepText.yview,
     )
-    scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+    scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S, tk.W, tk.E))
     altrepText["yscrollcommand"] = scrollbar.set
 
     def getAltrep():
-        value = txt.get('1.0', 'end')
-        if (not text or not text.strip()):
+        value = altrepText.get('1.0', 'end')
+        if (not value or not value.strip()):
             return None
         return value.strip()
     valueHolder["getValue"] = getAltrep
@@ -146,7 +149,7 @@ def makeFreeBusyTimeFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     return frame
 
 def makeLanguageFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
-    frame = ttk.LabelFrame(root, text="Language")
+    frame = tk.Frame(root)
 
     combobox = ttk.Combobox(
         frame,
@@ -154,7 +157,8 @@ def makeLanguageFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
         values=[elt[1] for elt in configuration["language"]["choices"]],
         height=min(configuration["language"]["height"], len(configuration["language"]["choices"]))
     )
-    combobox.grid()
+    combobox.set(value="Choose a language")
+    combobox.grid(sticky=(tk.W, tk.E))
 
     def getLanguageKey():
         value = combobox.get()

@@ -24,11 +24,11 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
     titleFrame = makeSummaryFrame(frame, titleHolder, id_)
     # to be able to display the title in real time
     eventHolder["titleEntry"] = titleHolder["titleEntry"]
-    titleFrame.grid(row=0, column=0, sticky=[tk.W])
+    titleFrame.grid(row=0, column=0, sticky=(tk.W, tk.N))
 
     classificationHolder = {}
     classificationFrame = makeClassificationFrame(frame, classificationHolder, id_)
-    classificationFrame.grid(row=0, column=1, sticky=[tk.W])
+    classificationFrame.grid(row=0, column=1, sticky=(tk.W, tk.N))
 
     # start, end and duration
     dtStartHolder = {}
@@ -79,7 +79,6 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
         logging.debug(f"[Event {id_}] User clicked on confirm or modify button")
         now = datetime.now()
         try:
-            tmpCategories = categoriesHolder["getValue"]()
             event = Vevent(
                 now,
                 dtstart=MyDateTime(dtStartHolder["getValue"]()),

@@ -1,6 +1,7 @@
 from src.gui.imports import *
 from TkToolTip import ToolTip
 from src.backend.properties.descriptive import Attachment, Categories, Classification, Comment, Description, Geo, Location, Percent, Priority, Resources, Status, Summary
+from src.gui.parameters import *
 
 """
 NOTE: for every function
@@ -11,8 +12,10 @@ NOTE: for every function
 - please put [Component {componentId}] at the beginning of every logs for simpler debugging
 """
 
+# TODO: remake makePercentFrame
 # TODO: use parameter frame functions in property frame functions
 # TODO: put every property object creation in a try catch scope
+# TODO: check that everything is logged well
 
 def makeAttachmentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame :
     """
@@ -709,61 +712,52 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk
     """
 
     frame = tk.Frame(root)
+    frame.columnconfigure(1, weight=1)
 
     label = ttk.Label(frame, text="Title: ")
     label.grid(row=0, column=0)
 
-    title = tk.StringVar()
-    summaryEntry = ttk.Entry(frame, textvariable=title)
-    summaryEntry.grid(row=0, column=1, sticky="nsew")
+    entry = ttk.Entry(frame)
+    entry.grid(row=0, column=1, sticky="nsew")
 
-    altrep = tk.StringVar()
-    altrepEntry = ttk.Entry(frame, textvariable=altrep)
-    altrepEntry.grid(row=1, column=0, sticky=[tk.W, tk.E])
-    altrepEntry.grid_remove()
-
-    languageCombobox = ttk.Combobox(
-        frame,
-        values=[value[1] for value in configuration["language"]["choices"]],
-        height=10,
-        state=["readonly"]
-    )
-    # avoid the selected item to be blue highlighted
-    languageCombobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
-    languageCombobox.grid(row=1, column=1)
-    languageCombobox.grid_remove()
-
+    # hold the information if parameters frame exist and are displayed
     state = tk.BooleanVar(value=False)
-    def toggleParameters(event):
-        tmp = state.get()
-        if (tmp):
-            altrepEntry.grid()
-            languageCombobox.grid()
+    languageDict = {}
+    languageFrame = None
+    altrepDict = {}
+    altrepFrame = None
+
+    def toggleParameterFrame(event):
+        # nonlocal let the two frames be created only if needed
+        nonlocal languageFrame
+        nonlocal altrepFrame
+        # reverse the boolean value if label is clicked
+        actual = not state.get()
+        if (actual):
+            if (not languageFrame):
+                altrepFrame = makeAlternativeRepresentationFrame(frame, altrepDict, "title")
+                altrepFrame.grid(row=1, column=1, sticky="nsew")
+                languageFrame = makeLanguageFrame(frame, languageDict)
+                languageFrame.grid(row=2, column=1, sticky="nsew")
+            altrepFrame.grid()
+            languageFrame.grid()
         else:
-            altrepEntry.grid_remove()
-            languageCombobox.grid_remove()
-        state.set(not tmp)
-    label.bind('<Double-1>', toggleParameters)
+            altrepFrame.grid_remove()
+            languageFrame.grid_remove()
+        state.set(actual)
+    label.bind('<Double-1>', toggleParameterFrame)
 
     def getSummary():
-        if (not title.get()):
+        if (not entry.get()):
             return None
-        language = None
-        altrepValue = None
-        if (state.get()):
-            for [key, value] in configuration["language"]["choices"]:
-                if (value == languageCombobox.get()):
-                    language = key
-                    break
-        try:
-            tmp = Summary(title.get(), altrepValue, language)
-            # logging.debug(f"[Component {componentId}] Summary successfully created")
-            return tmp
-        except:
-            logging.error(f"[Component {componentId}] Unable to create summary ({title.get()})")
+        if (not entry.get().strip()):
             return None
+        value = entry.get().strip()
+        altrep = altrepDict["getValue"]()
+        language = languageDict["getValue"]()
+        return Summary(value, altrep, language)
     valueHolder["getValue"] = getSummary
     # to be able to display the title in real time
-    valueHolder["titleEntry"] = summaryEntry
+    valueHolder["titleEntry"] = entry
 
     return frame
