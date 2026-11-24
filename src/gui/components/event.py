@@ -14,10 +14,6 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
     id_ = uuid.uuid4()
     logging.debug(f"[Event {id_}] User opened a new event frame from {calId} calendar")
     frame = tk.Frame(root)
-    frame.columnconfigure(0, weight=1)
-    frame.columnconfigure(1, weight=1)
-    for i in range(10):
-        frame.rowconfigure(i, weight=1)
 
     # title and classification
     titleHolder = {}
@@ -39,6 +35,30 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
     dtEndFrame = makeDtFrame(frame, "end", dtEndHolder, id_)
     dtEndFrame.grid(row=1, rowspan=2, column=1, sticky=[tk.W])
 
+    timestate = tk.BooleanVar(value=configuration["general"]["timestate"])
+    timestateText = tk.StringVar(value="Remove time")
+    if (timestate.get()):
+        dtStartHolder["addTime"]()
+        dtEndHolder["addTime"]() 
+    else:
+        dtStartHolder["removeTime"]()
+        dtEndHolder["removeTime"]()
+        timestateText.set("Include time")
+
+    def toggleTime():
+        actual = not timestate.get()
+        if (actual):
+            dtStartHolder["addTime"]()
+            dtEndHolder["addTime"]() 
+            timestateText.set("Remove time")
+        else:
+            dtStartHolder["removeTime"]()
+            dtEndHolder["removeTime"]()
+            timestateText.set("Include time")
+        timestate.set(actual)
+    timeButton = tk.Button(frame, textvariable=timestateText, command=toggleTime)
+    timeButton.grid(row=4, column=0, columnspan=2)
+
     # location and priority
     locationHolder = {}
     locationFrame = makeLocationFrame(frame, locationHolder, id_)
@@ -46,23 +66,23 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
 
     priorityHolder = {}
     priorityFrame = makePriorityFrame(frame, priorityHolder, id_)
-    priorityFrame.grid(row=4, column=1, sticky=[tk.W])
+    priorityFrame.grid(row=5, column=1, sticky=[tk.W])
 
     # categories
     categoriesHolder = {}
     categoriesFrame = makeCategoriesFrame(frame, categoriesHolder, id_)
-    categoriesFrame.grid(row=5, column=0, columnspan=2, sticky=[tk.W])
+    categoriesFrame.grid(row=6, column=0, columnspan=2, sticky=[tk.W])
 
     # organizer and attendees
     # attachment
     attachmentHolder = {}
     attachmentFrame = makeAttachmentFrame(frame, attachmentHolder, id_)
-    attachmentFrame.grid(row=6, column=0, columnspan=2, sticky=[tk.W])
+    attachmentFrame.grid(row=7, column=0, columnspan=2, sticky=[tk.W])
 
     # description
     descriptionHolder = {}
     descriptionFrame = makeDescriptionFrame(frame, descriptionHolder, id_)
-    descriptionFrame.grid(row=7, column=0, columnspan=2, sticky="nsew")
+    descriptionFrame.grid(row=8, column=0, columnspan=2, sticky="nsew")
     # optional
         # rrule
         # transp and geo
@@ -71,10 +91,10 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
         # comment
     resourcesHolder = {}
     resourcesFrame = makeResourceFrame(frame, resourcesHolder, id_)
-    resourcesFrame.grid(row=8, column=0)
+    resourcesFrame.grid(row=9, column=0)
     # cancel and confirm
     cancelButton = tk.Button(frame, text="Cancel")
-    cancelButton.grid(row=9, column=0)
+    cancelButton.grid(row=10, column=0)
     def createEvent():
         logging.debug(f"[Event {id_}] User clicked on confirm or modify button")
         now = datetime.now()

@@ -55,7 +55,7 @@ def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame
         selectmode="day",
         date_pattern="y/mm/dd"
     )
-    dateEntry.grid(row=0, column=1, columnspan=2)
+    dateEntry.grid(row=0, column=1)
     # line below is mandatroy: let the calendar be clickable even if there is a widget below it on the z-axis
     dateEntry._top_cal.lift()
 
@@ -71,6 +71,7 @@ def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame
         except:
             return False
 
+    timelabel = tk.Label(frame, text=" at ")
     hour = tk.StringVar(value="0")
     hourSpinbox = ttk.Spinbox(
         frame,
@@ -83,7 +84,7 @@ def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame
         validate="key", # this line and the one below ensure that what is typed in the keyboard is a valid value
         validatecommand=(frame.register(lambda t: validateSpinboxInputWhenKey(23, t)), "%P")
     )
-    hourSpinbox.grid(row=2, column=0)
+    hourLabel = tk.Label(frame, text="h ")
     minute = tk.StringVar(value="0")
     minuteSpinbox = ttk.Spinbox(
         frame,
@@ -96,7 +97,7 @@ def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame
         validate="key",
         validatecommand=(frame.register(lambda t: validateSpinboxInputWhenKey(59, t)), "%P")
     )
-    minuteSpinbox.grid(row=2, column=1)
+    minuteLabel = tk.Label(frame, text="m ")
     second = tk.StringVar(value="0")
     secondSpinbox = ttk.Spinbox(
         frame,
@@ -109,17 +110,40 @@ def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame
         validate="key",
         validatecommand=(frame.register(lambda t: validateSpinboxInputWhenKey(59, t)), "%P")
     )
-    secondSpinbox.grid(row=2, column=2)
+    secondLabel = tk.Label(frame, text="s")
+
+    # let a datetime got time or not
+    state = tk.BooleanVar(value=configuration["general"]["timestate"])
+    def addTime():
+        timelabel.grid(row=0, column=2)
+        hourSpinbox.grid(row=0, column=3)
+        hourLabel.grid(row=0, column=4)
+        minuteSpinbox.grid(row=0, column=5)
+        minuteLabel.grid(row=0, column=6)
+        secondSpinbox.grid(row=0, column=7)
+        secondLabel.grid(row=0, column=8)
+    valueHolder["addTime"] = addTime
+    def removeTime():
+        timelabel.grid_remove()
+        hourSpinbox.grid_remove()
+        hourLabel.grid_remove()
+        minuteSpinbox.grid_remove()
+        minuteLabel.grid_remove()
+        secondSpinbox.grid_remove()
+        secondLabel.grid_remove()
+    valueHolder["removeTime"] = removeTime
+
 
     def getDT():
         try:
+            actual = state.get()
             tmp = datetime(
                 year = int(dateEntry.get_date().strftime("%Y")),
                 month = int(dateEntry.get_date().strftime("%m")),
                 day = int(dateEntry.get_date().strftime("%d")),
-                hour = int(hour.get()),
-                minute = int(minute.get()),
-                second = int(second.get())
+                hour = int(hour.get()) if actual else None,
+                minute = int(minute.get()) if actual else None,
+                second = int(second.get()) if actual else None
             )
             # logging.debug(f"Timestamp successfully created ({typename})")
             return tmp
