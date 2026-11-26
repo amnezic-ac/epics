@@ -168,7 +168,7 @@ class Resources(Property):
             values = configuration["resources"]["choices"]
             if (len(values) == 0):
                 raise Exception(f"User attempted to create a resource object with no item and no item was found in configuration")
-            self.values = set(values)
+        self.values = set(values)
         self.altrep = Altrep(altrep) if altrep else None
         self.language = Language(language) if language else None
 
@@ -199,15 +199,14 @@ class Resources(Property):
         if (self.language):
             result += f";{self.language}"
 
-        tmp = list(self.value)
+        tmp = list(self.values)
         longueur = len(tmp)
         
         if (longueur == 0):
             raise Exception(f"Can't stringify an empty resource object (this error should not be displayed)")
-
         result += ":"
         for i in range(longueur - 1):
-            result += f"tmp[i],"
+            result += f"{tmp[i]},"
         result += f"{tmp[-1]}"
 
         return result

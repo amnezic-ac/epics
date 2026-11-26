@@ -579,33 +579,66 @@ def makeResourceFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -
     - tk.Frame: the newly created resources frame (still needs to be grided)
     """
 
-    frame = ttk.LabelFrame(root, text="Required resources")
+    frame = tk.Frame(root)
+    label = tk.Label(frame, text="Required resources")
+    label.grid(row=0, column=0, columnspan=2)
     frame.columnconfigure(0, weight=1)
 
     listbox = tk.Listbox(
         frame,
         selectmode="multiple",
+        exportselection=False,
         height=min(configuration["resources"]["height"], len(configuration["resources"]["choices"])),
         width=max([len(item) for item in configuration["resources"]["choices"]])
     )
     for i in range(len(configuration["resources"]["choices"])):
         listbox.insert(i, configuration["resources"]["choices"][i])
-    listbox.grid(row=0, column=0, sticky=(tk.N, tk.S))
+    listbox.grid(row=1, column=0, rowspan=2, sticky=(tk.N, tk.S))
 
     scrollbar = ttk.Scrollbar(
         frame,
         orient=tk.VERTICAL,
         command=listbox.yview  # Link scrollbar to listbox
     )
-    scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+    scrollbar.grid(row=1, column=1, rowspan=2, sticky=(tk.N, tk.S))
     listbox["yscrollcommand"] = scrollbar.set
+
+    # hold the information if parameters frame exist and are displayed
+    state = tk.BooleanVar(value=False)
+    languageDict = {}
+    languageFrame = None
+    altrepDict = {}
+    altrepFrame = None
+
+    def toggleParameterFrame(event):
+        # nonlocal let the two frames be created only if needed
+        nonlocal languageFrame
+        nonlocal altrepFrame
+        # reverse the boolean value if label is clicked
+        actual = not state.get()
+        if (actual):
+            if (not languageFrame):
+                altrepFrame = makeAlternativeRepresentationFrame(frame, altrepDict, "title")
+                altrepFrame.grid(row=1, column=2, sticky="nsew")
+                languageFrame = makeLanguageFrame(frame, languageDict)
+                languageFrame.grid(row=2, column=2, sticky="nsew")
+            altrepFrame.grid()
+            languageFrame.grid()
+        else:
+            altrepFrame.grid_remove()
+            languageFrame.grid_remove()
+        state.set(actual)
+    label.bind('<Double-1>', toggleParameterFrame)
+
 
     def getResources():
         tmpList = [listbox.get(index) for index in listbox.curselection()]
         if (tmpList == []):
             return None
         try:
-            resources = Resources(tmpList, None, None)
+            altrep = altrepDict["getValue"]() if state.get() else None
+            language = languageDict["getValue"]() if state.get() else None
+            resources = Resources(tmpList, altrep, language)
             return resources
         except:
             raise Exception(f"[Component {componentId}] Unable to make the resources property")

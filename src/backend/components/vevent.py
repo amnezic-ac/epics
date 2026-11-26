@@ -33,7 +33,7 @@ class Vevent(Component):
         categories: Categories = None,
         comment: [Comment] = None,
         contact: [Contact] = None,
-        resources: [Resources] = None,
+        resources: Resources = None,
         url: Url = None
         ):
         ### mandatory

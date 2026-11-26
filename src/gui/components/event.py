@@ -89,7 +89,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
     # commentFrame.grid(row=13, column=0)
 
     resourcesFrame = makeResourceFrame(frame, propertiesHolder, id_)
-    # resourcesFrame.grid(row=15, column=0)
+    resourcesFrame.grid(row=15, column=0)
     # cancel and confirm
     cancelButton = tk.Button(frame, text="Cancel")
     cancelButton.grid(row=16, column=0)
@@ -97,6 +97,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
         logging.debug(f"[Event {id_}] User clicked on confirm or modify button")
         now = datetime.now()
         try:
+            resources = propertiesHolder["getResources"]()
             event = Vevent(
                 now,
                 title=propertiesHolder["getSummary"](),
@@ -118,11 +119,11 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
                 categories=propertiesHolder["getCategories"](),
                 comment=propertiesHolder["getComment"](),
                 contact=None,
-                resources=None,
+                resources=resources,
                 url=None
             )
             logging.debug(f"[Event {id_}] User successfully created {propertiesHolder["titleEntry"].get()} event")
-            # print(event)
+            print(event)
             return event
         except:
             logging.error(f"[Event {id_}] Unable to create {id_} event")
