@@ -82,7 +82,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
     # geoFrame.grid(row=12, column=0)
         # status
     statusFrame = makeStatusFrame(frame, propertiesHolder, "event", id_)
-    statusFrame.grid(row=5, column=0)
+    # statusFrame.grid(row=5, column=0)
         # url
         # comment
     commentFrame = makeCommentFrame(frame, propertiesHolder, id_)

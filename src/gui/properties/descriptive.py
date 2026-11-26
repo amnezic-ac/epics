@@ -462,7 +462,6 @@ def makeLocationFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -
 
     return frame
 
-# FIXME: make it comply with the other functions
 def makePercentFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame :
     """
     create a frame for percent property and a lambda function to get the Percent object with propertyHolder["getValue"]()
@@ -483,27 +482,35 @@ def makePercentFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) ->
 
     frame = tk.Frame(root)
 
-    parameterFrame = tk.Frame(frame)
-    percentVar = tk.StringVar(value="")
-    tk.Label(parameterFrame, text=" %").pack(side="right")
-    latSpinbox = ttk.Spinbox(parameterFrame, from_=0, to=100, increment=1, textvariable=percentVar)
-    latSpinbox.pack(side="right")
+    label = tk.Label(frame, text="Completed at ")
+    label.grid(row=0, column=0)
 
-    state = tk.BooleanVar(value=False)
-    def toggleParameterFrame():
-        if (state.get()):
-            button.config(text="Task completed at ")
-            parameterFrame.pack(side="right")
-        else:
-            button.config(text="Completed ? ")
-            parameterFrame.pack_forget()
-    button = tk.Checkbutton(frame, text="Completed ? ", variable=state, offvalue=False, onvalue=True, command=toggleParameterFrame)
-    button.pack(side="left")
+    def checkPercent(value):
+        if (value == ""):
+            return True
+        try:
+            result = int(value)
+            return result >= 0 and result <= 100
+        except:
+            return False
 
-    propertyHolder = {
-        "state": state,
-        "value": percentVar
-    }
+    spinbox = ttk.Spinbox(
+        frame,
+        from_=0,
+        to=100,
+        wrap=True,
+        validate="key",
+        width=3,
+        validatecommand=(frame.register(checkPercent), '%P')
+    )
+    spinbox.grid(row=0, column=1)
+
+    def getPercent():
+        value = spinbox.get()
+        if (not value):
+            return None
+        return Percent(int(value))
+    propertyHolder["getPercent"] = getPercent
 
     return frame
 

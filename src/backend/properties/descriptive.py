@@ -144,12 +144,12 @@ class Location(Property):
 class Percent(Property):
 
     def __init__(self, value: int):
-        if (not (self.value >= 0 and self.value <= 100)):
+        if (not (value >= 0 and value <= 100)):
             raise Exception(f"Percentage have to be between 0 and 100 (current value: {self.value})")
         self.value = value
 
-        def __str__(self):
-            return f"PERCENT-COMPLETE:{self.value}"
+    def __str__(self):
+        return f"PERCENT-COMPLETE:{self.value}"
 
 class Priority(Property):
     # not displayed on thunderbird (for event)
