@@ -121,7 +121,11 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
         logging.debug(f"[Event {id_}] User clicked on confirm or modify button")
         now = datetime.now()
         try:
-            end = propertiesHolder["getDuration"]()
+            end = None
+            if (endMode.get() == "datetime"):
+                end = propertiesHolder["end-getDt"]()
+            else:
+                end = propertiesHolder["getDuration"]()
             event = Vevent(
                 now,
                 title=propertiesHolder["getSummary"](),
