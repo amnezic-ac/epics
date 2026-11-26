@@ -23,7 +23,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
     titleFrame.grid(row=0, column=0, sticky=(tk.W, tk.N))
 
     classificationFrame = makeClassificationFrame(frame, propertiesHolder, id_)
-    classificationFrame.grid(row=0, column=1, sticky=(tk.W, tk.N))
+    # classificationFrame.grid(row=0, column=1, sticky=(tk.W, tk.N))
 
     # start, end and duration
     dtStartFrame = makeDtFrame(frame, "start", propertiesHolder, id_)
@@ -58,19 +58,19 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
 
     # location and priority
     locationFrame = makeLocationFrame(frame, propertiesHolder, id_)
-    locationFrame.grid(row=5, column=0, sticky=[tk.W])
+    # locationFrame.grid(row=5, column=0, sticky=[tk.W])
 
     priorityFrame = makePriorityFrame(frame, propertiesHolder, id_)
-    priorityFrame.grid(row=5, column=1, sticky=[tk.W])
+    # priorityFrame.grid(row=5, column=1, sticky=[tk.W])
 
     # categories
     categoriesFrame = makeCategoriesFrame(frame, propertiesHolder, id_)
-    categoriesFrame.grid(row=6, column=0, columnspan=2, sticky=[tk.W])
+    # categoriesFrame.grid(row=6, column=0, columnspan=2, sticky=[tk.W])
 
     # organizer and attendees
     # attachment
     attachmentFrame = makeAttachmentFrame(frame, propertiesHolder, id_)
-    attachmentFrame.grid(row=7, column=0, columnspan=2, sticky=[tk.W])
+    # attachmentFrame.grid(row=7, column=0, columnspan=2, sticky=[tk.W])
 
     # description
     descriptionFrame = makeDescriptionFrame(frame, propertiesHolder, id_)
@@ -79,15 +79,17 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
         # rrule
         # transp and geo
     geoFrame = makeGeoFrame(frame, propertiesHolder, id_)
-    geoFrame.grid(row=12, column=0)
+    # geoFrame.grid(row=12, column=0)
         # status
+    statusFrame = makeStatusFrame(frame, propertiesHolder, "event", id_)
+    statusFrame.grid(row=5, column=0)
         # url
         # comment
     commentFrame = makeCommentFrame(frame, propertiesHolder, id_)
-    commentFrame.grid(row=13, column=0)
+    # commentFrame.grid(row=13, column=0)
 
     resourcesFrame = makeResourceFrame(frame, propertiesHolder, id_)
-    resourcesFrame.grid(row=15, column=0)
+    # resourcesFrame.grid(row=15, column=0)
     # cancel and confirm
     cancelButton = tk.Button(frame, text="Cancel")
     cancelButton.grid(row=16, column=0)
@@ -95,43 +97,32 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
         logging.debug(f"[Event {id_}] User clicked on confirm or modify button")
         now = datetime.now()
         try:
-            title = propertiesHolder["getSummary"]()
-            dtstart = propertiesHolder["start-getDt"]()
-            dtend = propertiesHolder["end-getDt"]()
-            classification = propertiesHolder["getClassification"]()
-            description = propertiesHolder["getDescription"]()
-            geo=propertiesHolder["getGeo"]()
-            location =propertiesHolder["getLocation"]()
-            priority = propertiesHolder["getPriority"]()
-            attach = propertiesHolder["getAttachment"]()
-            categories = propertiesHolder["getCategories"]()
-            comment = propertiesHolder["getComment"]()
             event = Vevent(
                 now,
-                title=title,
-                dtstart=dtstart,
-                end=dtend,
-                classification=classification,
+                title=propertiesHolder["getSummary"](),
+                dtstart=propertiesHolder["start-getDt"](),
+                end=propertiesHolder["end-getDt"](),
+                classification=propertiesHolder["getClassification"](),
                 created=now,
-                description=description,
-                geo=geo,
+                description=propertiesHolder["getDescription"](),
+                geo=propertiesHolder["getGeo"](),
                 lastmod=now,
-                location=location,
+                location=propertiesHolder["getLocation"](),
                 organizer=None,
-                priority=priority,
+                priority=propertiesHolder["getPriority"](),
                 seq=None,
-                status=None,
+                status=propertiesHolder["getStatus"](),
                 transp=None,
-                attach=attach,
+                attach=propertiesHolder["getAttachment"](),
                 attendee=None,
-                categories=categories,
-                comment=comment,
+                categories=propertiesHolder["getCategories"](),
+                comment=propertiesHolder["getComment"](),
                 contact=None,
                 resources=None,
                 url=None
             )
             logging.debug(f"[Event {id_}] User successfully created {propertiesHolder["titleEntry"].get()} event")
-            print(event)
+            # print(event)
             return event
         except:
             logging.error(f"[Event {id_}] Unable to create {id_} event")

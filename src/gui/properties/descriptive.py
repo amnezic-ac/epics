@@ -606,7 +606,7 @@ def makeResourceFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -
 
     return frame
 
-def makeStatusFrame(root: tk.Frame, propertyHolder: dict, componentType: str) -> tk.Frame:
+def makeStatusFrame(root: tk.Frame, propertyHolder: dict, componentType: str, componentId: uuid) -> tk.Frame:
     """
     create a frame for status property and a lambda function to get the Status object with propertyHolder["getValue"]()
 
@@ -623,44 +623,36 @@ def makeStatusFrame(root: tk.Frame, propertyHolder: dict, componentType: str) ->
     -------
     - tk.Frame: the newly created status frame (still needs to be grided)
     """
+    if (componentType not in ["event", "journal", "todo"]):
+        logging.error(f"[Component {componentId}] {componentType} is not a valid component, please choose between event, todo and journal.")
+        raise Exception(f"[Component {componentId}] {componentType} is not a valid component, please choose between event, todo and journal.")
 
     frame = tk.Frame(root)
 
-    label = ttk.Label(frame, text="Status ?")
+    label = tk.Label(frame, text="Status: ")
     label.grid(row=0, column=0)
-    state = tk.BooleanVar(value=False)
-    def showStatus(event):
-        tmp = not state.get()
-        if (tmp):
-            statusCombobox.grid(row=1, column=0)
-        else:
-            statusCombobox.grid_remove()
-        state.set(tmp)
-    label.bind('<Double-1>', showStatus)
 
-    value = tk.StringVar(value="")
-    statusCombobox = ttk.Combobox(
+    combobox = ttk.Combobox(
         frame,
         values=configuration["status"][f"{componentType}"],
-        state=["readonly"],
-        textvariable=value,
+        state=["readonly"]
     )
     # avoid the selected item to be blue highlighted
     combobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
-    statusCombobox.grid(row=0, column=0)
-    statusCombobox.grid_remove()
+    combobox.grid(row=0, column=1)
 
     def getStatus():
-        if (not state.get() or not value.get()):
-            return None
         try:
-            tmp = Status(value.get())
-            logging.debug(f"Status successfully created") 
-            return tmp
+            value = combobox.get()
+            if (not value or not value.strip()):
+                return None
+            status = Status(value.strip())
+            print(status)
+            return status
         except:
-            logging.debug(f"Unable to create {state.get()} status")
+            logging.debug(f"[Component {componentId}] Unable to create status object")
             return None
-    propertyHolder["getSummary"] = getStatus
+    propertyHolder["getStatus"] = getStatus
 
     return frame
 

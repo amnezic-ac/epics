@@ -1059,7 +1059,7 @@
             "room 405"
         ]
     },
-    "partstat": {
+    "status": {
         "height": 4,
         "event": [
             "TENTATIVE",
