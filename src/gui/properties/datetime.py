@@ -124,7 +124,7 @@ def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame
         secondSpinbox.grid(row=0, column=7)
         secondLabel.grid(row=0, column=8)
         state.set(value=True)
-    valueHolder["addTime"] = addTime
+    valueHolder[f"{typename}-addTime"] = addTime
     def removeTime():
         timelabel.grid_remove()
         hourSpinbox.grid_remove()
@@ -134,7 +134,7 @@ def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame
         secondSpinbox.grid_remove()
         secondLabel.grid_remove()
         state.set(value=False)
-    valueHolder["removeTime"] = removeTime
+    valueHolder[f"{typename}-removeTime"] = removeTime
 
 
     def getDT():
@@ -152,7 +152,7 @@ def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame
         except:
             logging.error(f"[Component {componentId}] Unable to create the {typename} timestamp")
             return None
-    valueHolder["getValue"] = getDT
+    valueHolder[f"{typename}-getDt"] = getDT
 
     return frame
 

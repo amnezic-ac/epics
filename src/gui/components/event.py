@@ -14,86 +14,79 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
     id_ = uuid.uuid4()
     logging.debug(f"[Event {id_}] User opened a new event frame from {calId} calendar")
     frame = tk.Frame(root)
+    propertiesHolder = {}
 
     # title and classification
-    titleHolder = {}
-    titleFrame = makeSummaryFrame(frame, titleHolder, id_)
+    titleFrame = makeSummaryFrame(frame, propertiesHolder, id_)
     # to be able to display the title in real time
-    eventHolder["titleEntry"] = titleHolder["titleEntry"]
+    eventHolder["titleEntry"] = propertiesHolder["titleEntry"]
     titleFrame.grid(row=0, column=0, sticky=(tk.W, tk.N))
 
-    classificationHolder = {}
-    classificationFrame = makeClassificationFrame(frame, classificationHolder, id_)
+    classificationFrame = makeClassificationFrame(frame, propertiesHolder, id_)
     classificationFrame.grid(row=0, column=1, sticky=(tk.W, tk.N))
 
     # start, end and duration
-    dtStartHolder = {}
-    dtStartFrame = makeDtFrame(frame, "start", dtStartHolder, id_)
+    dtStartFrame = makeDtFrame(frame, "start", propertiesHolder, id_)
     dtStartFrame.grid(row=1, rowspan=2, column=0, sticky=[tk.W])
 
-    dtEndHolder = {}
-    dtEndFrame = makeDtFrame(frame, "end", dtEndHolder, id_)
+    dtEndFrame = makeDtFrame(frame, "end", propertiesHolder, id_)
     dtEndFrame.grid(row=1, rowspan=2, column=1, sticky=[tk.W])
 
     timestate = tk.BooleanVar(value=configuration["general"]["timestate"])
     timestateText = tk.StringVar(value="Remove time")
     if (timestate.get()):
-        dtStartHolder["addTime"]()
-        dtEndHolder["addTime"]() 
+        propertiesHolder["start-addTime"]()
+        propertiesHolder["end-addTime"]() 
     else:
-        dtStartHolder["removeTime"]()
-        dtEndHolder["removeTime"]()
+        propertiesHolder["start-removeTime"]()
+        propertiesHolder["end-removeTime"]()
         timestateText.set("Include time")
 
     def toggleTime():
         actual = not timestate.get()
         if (actual):
-            dtStartHolder["addTime"]()
-            dtEndHolder["addTime"]() 
+            propertiesHolder["start-addTime"]()
+            propertiesHolder["end-addTime"]() 
             timestateText.set("Remove time")
         else:
-            dtStartHolder["removeTime"]()
-            dtEndHolder["removeTime"]()
+            propertiesHolder["start-removeTime"]()
+            propertiesHolder["end-removeTime"]()
             timestateText.set("Include time")
         timestate.set(actual)
     timeButton = tk.Button(frame, textvariable=timestateText, command=toggleTime)
     timeButton.grid(row=4, column=0, columnspan=2)
 
     # location and priority
-    locationHolder = {}
-    locationFrame = makeLocationFrame(frame, locationHolder, id_)
+    locationFrame = makeLocationFrame(frame, propertiesHolder, id_)
     locationFrame.grid(row=5, column=0, sticky=[tk.W])
 
-    priorityHolder = {}
-    priorityFrame = makePriorityFrame(frame, priorityHolder, id_)
+    priorityFrame = makePriorityFrame(frame, propertiesHolder, id_)
     priorityFrame.grid(row=5, column=1, sticky=[tk.W])
 
     # categories
-    categoriesHolder = {}
-    categoriesFrame = makeCategoriesFrame(frame, categoriesHolder, id_)
+    categoriesFrame = makeCategoriesFrame(frame, propertiesHolder, id_)
     categoriesFrame.grid(row=6, column=0, columnspan=2, sticky=[tk.W])
 
     # organizer and attendees
     # attachment
-    attachmentHolder = {}
-    attachmentFrame = makeAttachmentFrame(frame, attachmentHolder, id_)
+    attachmentFrame = makeAttachmentFrame(frame, propertiesHolder, id_)
     attachmentFrame.grid(row=7, column=0, columnspan=2, sticky=[tk.W])
 
     # description
-    descriptionHolder = {}
-    descriptionFrame = makeDescriptionFrame(frame, descriptionHolder, id_)
-    descriptionFrame.grid(row=8, column=0, columnspan=2, sticky="nsew")
+    descriptionFrame = makeDescriptionFrame(frame, propertiesHolder, id_)
+    # descriptionFrame.grid(row=8, column=0, columnspan=2, sticky=(tk.W))
     # optional
         # rrule
         # transp and geo
-    geoHolder = {}
-    geoFrame = makeGeoFrame(frame, geoHolder)
+    geoFrame = makeGeoFrame(frame, propertiesHolder, id_)
     geoFrame.grid(row=12, column=0)
         # status
         # url
         # comment
-    resourcesHolder = {}
-    resourcesFrame = makeResourceFrame(frame, resourcesHolder, id_)
+    commentFrame = makeCommentFrame(frame, propertiesHolder, id_)
+    commentFrame.grid(row=13, column=0)
+
+    resourcesFrame = makeResourceFrame(frame, propertiesHolder, id_)
     resourcesFrame.grid(row=15, column=0)
     # cancel and confirm
     cancelButton = tk.Button(frame, text="Cancel")
@@ -102,32 +95,43 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
         logging.debug(f"[Event {id_}] User clicked on confirm or modify button")
         now = datetime.now()
         try:
+            title = propertiesHolder["getSummary"]()
+            dtstart = propertiesHolder["start-getDt"]()
+            dtend = propertiesHolder["end-getDt"]()
+            classification = propertiesHolder["getClassification"]()
+            description = propertiesHolder["getDescription"]()
+            geo=propertiesHolder["getGeo"]()
+            location =propertiesHolder["getLocation"]()
+            priority = propertiesHolder["getPriority"]()
+            attach = propertiesHolder["getAttachment"]()
+            categories = propertiesHolder["getCategories"]()
+            comment = propertiesHolder["getComment"]()
             event = Vevent(
                 now,
-                dtstart=dtStartHolder["getValue"](),
-                end=dtEndHolder["getValue"](),
-                classification=classificationHolder["getValue"](),
+                title=title,
+                dtstart=dtstart,
+                end=dtend,
+                classification=classification,
                 created=now,
-                description=descriptionHolder["getValue"](),
-                geo=geoHolder["getValue"](),
+                description=description,
+                geo=geo,
                 lastmod=now,
-                location=locationHolder["getValue"](),
+                location=location,
                 organizer=None,
-                priority=priorityHolder["getValue"](),
+                priority=priority,
                 seq=None,
                 status=None,
-                title=titleHolder["getValue"](),
                 transp=None,
-                attach=attachmentHolder["getValue"](),
+                attach=attach,
                 attendee=None,
-                categories=categoriesHolder["getValue"](),
-                comment=None,
+                categories=categories,
+                comment=comment,
                 contact=None,
                 resources=None,
                 url=None
             )
-            logging.debug(f"[Event {id_}] User successfully created {titleHolder["getValue"]()} event")
-            # print(event)
+            logging.debug(f"[Event {id_}] User successfully created {propertiesHolder["titleEntry"].get()} event")
+            print(event)
             return event
         except:
             logging.error(f"[Event {id_}] Unable to create {id_} event")

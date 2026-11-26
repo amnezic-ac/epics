@@ -18,7 +18,7 @@ NOTE: for every function
 # TODO: put every property object creation in a try catch scope
 # TODO: check that everything is logged well
 
-def makeAttachmentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame :
+def makeAttachmentFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame :
     """
     create a frame for attachment property and a lambda function to get the attachment object
 
@@ -26,7 +26,7 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) ->
     ------
     - root: tk.Frame
         frame in which the newly created frame will be contained
-    - valueHolder: dict
+    - propertyHolder: dict
         dictionnary that will hold a lambda function which returns the attachment object from the user input, None if any error occured
     - componentId: uuid
         ID of the parent component
@@ -59,7 +59,7 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) ->
     button = tk.Checkbutton(frame, text="Attachment ?", variable=state, offvalue=False, onvalue=True, command=toggleParameterFrame)
     button.grid(row=0, column=0)
 
-    valueHolder["state"] = state
+    propertyHolder["state"] = state
     def getAttachment():
         try:
             tmp = None
@@ -69,11 +69,11 @@ def makeAttachmentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) ->
         except:
             logging.warn(f"[Component {id_}] Failed to create attachement")
             return None
-    valueHolder["getValue"] = getAttachment
+    propertyHolder["getAttachment"] = getAttachment
 
     return frame
 
-def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame :
+def makeCategoriesFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame :
     """
     create a frame for categories property and a lambda function to get the Categories object
 
@@ -81,7 +81,7 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) ->
     ------
     - root: tk.Frame
         frame in which the newly created frame will be contained
-    - valueHolder: dict
+    - propertyHolder: dict
         dictionnary that will hold a lambda function which returns the Categories object from the user input, None if any error occured
     - componentId: uuid
         ID of the parent component
@@ -113,11 +113,11 @@ def makeCategoriesFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) ->
         except:
             logging.warn(f"[Component {componentId}] Unable to create categories")
             return None
-    valueHolder["getValue"] = getCategories
+    propertyHolder["getCategories"] = getCategories
 
     return frame
 
-def makeClassificationFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
+def makeClassificationFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame:
     """
     create a frame for classification property and a lambda function to get the Classification object
 
@@ -125,7 +125,7 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, componentId: uuid
     ------
     - root: tk.Frame
         frame in which the newly created frame will be contained
-    - valueHolder: dict
+    - propertyHolder: dict
         dictionnary that will hold a lambda function which returns the Classification object from the user input, None if any error occured
     - componentId: uuid
         ID of the parent component
@@ -155,13 +155,16 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, componentId: uuid
     combobox.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
     def getClassification():
-        value = combobox.get()
-        if (not value):
-            return None
-        if (not value.strip() or value == placeholder):
-            return None
-        return Classification(value.strip())
-    valueHolder["getValue"] = getClassification
+        try:
+            value = combobox.get()
+            if (not value):
+                return None
+            if (not value.strip() or value == placeholder):
+                return None
+            return Classification(value.strip())
+        except:
+            logging.debug(f"[Component {componentId}] Unable to create the classification object")
+    propertyHolder["getClassification"] = getClassification
 
     entryValue = tk.StringVar(value="")
     entry = ttk.Entry(frame, textvariable=entryValue)
@@ -185,15 +188,15 @@ def makeClassificationFrame(root: tk.Frame, valueHolder: dict, componentId: uuid
 
 # TODO: check if it works
 # TODO: add logging
-def makeCommentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
+def makeCommentFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame:
     """
-    create a frame for comment property and a lambda function to get the Comment object with valueHolder["getValue"]()
+    create a frame for comment property and a lambda function to get the Comment object with propertyHolder["getValue"]()
 
     Params:
     ------
     - root: tk.Frame
         frame in which the newly created frame will be contained
-    - valueHolder: dict
+    - propertyHolder: dict
         dictionnary that will hold a lambda function which returns the Comment object from the user input, None if any error occured
     - componentId: uuid
         ID of the parent component
@@ -204,55 +207,68 @@ def makeCommentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk
     """
 
     frame = tk.Frame(root)
-    frame.rowconfigure(0, weight=1)
-    frame.rowconfigure(1, weight=1)
-    frame.columnconfigure(0, weight=1)
     frame.columnconfigure(1, weight=1)
 
+    label = tk.Label(frame, text="Comment: ")
+    label.grid(row=0, column=0)
+
     textWidget = tk.Text(frame)
-    textWidget.grid(row=0, rowspan=2, column=0)
+    textWidget.grid(row=0, column=1)
 
-    altrepEntry = ttk.Entry(frame)
-    altrepEntry.grid(row=0, column=1)
+    # hold the information if parameters frame exist and are displayed
+    state = tk.BooleanVar(value=False)
+    languageDict = {}
+    languageFrame = None
+    altrepDict = {}
+    altrepFrame = None
 
-    languageCombobox = ttk.Combobox(
-        frame,
-        values=[value[1] for value in configuration["language"]["choices"]],
-        height=10,
-        state=["readonly"]
-    )
-    # avoid selected item to be blue highlighted
-    languageCombobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
-    languageCombobox.grid(row=1, column=1)
+    def toggleParameterFrame(event):
+        # nonlocal let the two frames be created only if needed
+        nonlocal languageFrame
+        nonlocal altrepFrame
+        # reverse the boolean value if label is clicked
+        actual = not state.get()
+        if (actual):
+            if (not languageFrame):
+                altrepFrame = makeAlternativeRepresentationFrame(frame, altrepDict, "comment")
+                altrepFrame.grid(row=1, column=1, sticky="nsew")
+                languageFrame = makeLanguageFrame(frame, languageDict)
+                languageFrame.grid(row=2, column=1, sticky="nsew")
+            altrepFrame.grid()
+            languageFrame.grid()
+        else:
+            altrepFrame.grid_remove()
+            languageFrame.grid_remove()
+        state.set(actual)
+    label.bind('<Double-1>', toggleParameterFrame)
+ 
 
     def getComment():
-        text = textWidget.get('1.0', 'end').strip()
-        if (not text):
+        try:
+            value = textWidget.get('1.0', 'end')
+            if (not value or not value.strip()):
+                return None
+            value = value.strip()
+            altrep = altrepDict["getValue"]() if state.get() else None
+            language = languageDict["getValue"]() if state.get() else None
+            return Summary(value, altrep, language)
+        except:
+            logging.debug(f"[Component {componentId}] Unable to create comment object")
             return None
-
-        language = None
-        for [key, value] in configuration["language"]["choices"]:
-            if (value == languageCombobox.get()):
-                language = key
-                break
-        altrep = altrepEntry.get()
-        truc = None
-        truc = Comment(text, altrep, language)
-        return truc
-    valueHolder["getValue"] = getComment
+    propertyHolder["getComment"] = getComment
 
     return frame
 
 # FIXME: when resized, the second column could disappear below the first one
-def makeDescriptionFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
+def makeDescriptionFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame:
     """
-    create a frame for description property and a lambda function to get the Description object with valueHolder["getValue"]()
+    create a frame for description property and a lambda function to get the Description object with propertyHolder["getValue"]()
 
     Params:
     ------
     - root: tk.Frame
         frame in which the newly created frame will be contained
-    - valueHolder: dict
+    - propertyHolder: dict
         dictionnary that will hold a lambda function which returns the Description object from the user input, None if any error occured
     - componentId: uuid
         ID of the parent component
@@ -284,33 +300,37 @@ def makeDescriptionFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -
     languageCombobox.grid(row=1, column=1)
 
     def getDescription():
-        text = textWidget.get('1.0', 'end').strip()
-        if (not text):
-            return None
+        try:
+            text = textWidget.get('1.0', 'end').strip()
+            if (not text):
+                return None
 
-        language = None
-        text = text.strip()
-        for [key, value] in configuration["language"]["choices"]:
-            if (value == languageCombobox.get()):
-                language = key
-                break
-        altrep = altrepEntry.get()
-        description = None
-        description = Description(text, altrep, language)
-        return description
-    valueHolder["getValue"] = getDescription
+            language = None
+            text = text.strip()
+            for [key, value] in configuration["language"]["choices"]:
+                if (value == languageCombobox.get()):
+                    language = key
+                    break
+            altrep = altrepEntry.get()
+            description = None
+            description = Description(text, altrep, language)
+            return description
+        except:
+            logging.debug(f"[Component {componentId}] Unable to create description object")
+            return None
+    propertyHolder["getDescription"] = getDescription
 
     return frame
 
-def makeGeoFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+def makeGeoFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame:
     """
-    create a frame for geo property and a lambda function to get the Geo object with valueHolder["getValue"]()
+    create a frame for geo property and a lambda function to get the Geo object with propertyHolder["getValue"]()
 
     Params:
     ------
     - root: tk.Frame
         frame in which the newly created frame will be contained
-    - valueHolder: dict
+    - propertyHolder: dict
         dictionnary that will hold a lambda function which returns the Geo object from the user input, None if any error occured
     - componentId: uuid
         ID of the parent component
@@ -356,31 +376,31 @@ def makeGeoFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
     def getGeo():
         try:
             latText = latSpinbox.get()
-            if (not checkLat(latText)):
+            if (latText == "" or not checkLat(latText)):
                 return None
             longText = longSpinbox.get()
-            if (not checkLong(longText)):
+            if (longText == "" or not checkLong(longText)):
                 return None
             lat = float(latText)
             long = float(longText)
             tmp = Geo(lat, long)
             return tmp
         except:
-            logging.error(f"Unable to make a geographical coordinates with {latVar.get()} and {longVar.get()}")
+            logging.error(f"[Component {componentId}] Unable to make geo object")
             return None
-    valueHolder["getValue"] = getGeo
+    propertyHolder["getGeo"] = getGeo
 
     return frame
 
-def makeLocationFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
+def makeLocationFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame:
     """
-    create a frame for location property and a lambda function to get the Location object with valueHolder["getValue"]()
+    create a frame for location property and a lambda function to get the Location object with propertyHolder["getValue"]()
 
     Params:
     ------
     - root: tk.Frame
         frame in which the newly created frame will be contained
-    - valueHolder: dict
+    - propertyHolder: dict
         dictionnary that will hold a lambda function which returns the Location object from the user input, None if any error occured
     - componentId: uuid
         ID of the parent component
@@ -427,28 +447,31 @@ def makeLocationFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> t
     label.bind('<Double-1>', toggleParameterFrame)
 
     def getLocation():
-        if (not entry.get()):
-            return None
-        if (not entry.get().strip()):
-            return None
-        value = entry.get().strip()
-        altrep = altrepDict["getValue"]() if state.get() else None
-        language = languageDict["getValue"]() if state.get() else None
-        return Location(value, altrep, language)
-    valueHolder["getValue"] = getLocation
+        try:
+            if (not entry.get()):
+                return None
+            if (not entry.get().strip()):
+                return None
+            value = entry.get().strip()
+            altrep = altrepDict["getValue"]() if state.get() else None
+            language = languageDict["getValue"]() if state.get() else None
+            return Location(value, altrep, language)
+        except:
+            logging.debug(f"[Component {componentId}] Unable to create location object")
+    propertyHolder["getLocation"] = getLocation
 
     return frame
 
 # FIXME: make it comply with the other functions
-def makePercentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame :
+def makePercentFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame :
     """
-    create a frame for percent property and a lambda function to get the Percent object with valueHolder["getValue"]()
+    create a frame for percent property and a lambda function to get the Percent object with propertyHolder["getValue"]()
 
     Params:
     ------
     - root: tk.Frame
         frame in which the newly created frame will be contained
-    - valueHolder: dict
+    - propertyHolder: dict
         dictionnary that will hold a lambda function which returns the Percent object from the user input, None if any error occured
     - componentId: uuid
         ID of the parent component
@@ -477,22 +500,22 @@ def makePercentFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk
     button = tk.Checkbutton(frame, text="Completed ? ", variable=state, offvalue=False, onvalue=True, command=toggleParameterFrame)
     button.pack(side="left")
 
-    valueHolder = {
+    propertyHolder = {
         "state": state,
         "value": percentVar
     }
 
     return frame
 
-def makePriorityFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
+def makePriorityFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame:
     """
-    create a frame for priority property and a lambda function to get the Priority object with valueHolder["getValue"]()
+    create a frame for priority property and a lambda function to get the Priority object with propertyHolder["getValue"]()
 
     Params:
     ------
     - root: tk.Frame
         frame in which the newly created frame will be contained
-    - valueHolder: dict
+    - propertyHolder: dict
         dictionnary that will hold a lambda function which returns the Priority object from the user input, None if any error occured
     - componentId: uuid
         ID of the parent component
@@ -527,19 +550,19 @@ def makePriorityFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> t
         except:
             logging.error(f"[Component {componentId}] Unable to create priority")
             return None
-    valueHolder["getValue"] = getPriority
+    propertyHolder["getPriority"] = getPriority
 
     return frame
 
-def makeResourceFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
+def makeResourceFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame:
     """
-    create a frame for resources property and a lambda function to get the Resources object with valueHolder["getValue"]()
+    create a frame for resources property and a lambda function to get the Resources object with propertyHolder["getValue"]()
 
     Params:
     ------
     - root: tk.Frame
         frame in which the newly created frame will be contained
-    - valueHolder: dict
+    - propertyHolder: dict
         dictionnary that will hold a lambda function which returns the Resources object from the user input, None if any error occured
     - componentId: uuid
         ID of the parent component
@@ -579,19 +602,19 @@ def makeResourceFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> t
             return resources
         except:
             raise Exception(f"[Component {componentId}] Unable to make the resources property")
-    valueHolder["getValue"] = getResources
+    propertyHolder["getResources"] = getResources
 
     return frame
 
-def makeStatusFrame(root: tk.Frame, valueHolder: dict, componentType: str) -> tk.Frame:
+def makeStatusFrame(root: tk.Frame, propertyHolder: dict, componentType: str) -> tk.Frame:
     """
-    create a frame for status property and a lambda function to get the Status object with valueHolder["getValue"]()
+    create a frame for status property and a lambda function to get the Status object with propertyHolder["getValue"]()
 
     Params:
     ------
     - root: tk.Frame
         frame in which the newly created frame will be contained
-    - valueHolder: dict
+    - propertyHolder: dict
         dictionnary that will hold a lambda function which returns the Status object from the user input, None if any error occured
     - componentId: uuid
         ID of the parent component
@@ -637,19 +660,19 @@ def makeStatusFrame(root: tk.Frame, valueHolder: dict, componentType: str) -> tk
         except:
             logging.debug(f"Unable to create {state.get()} status")
             return None
-    valueHolder["getValue"] = getStatus
+    propertyHolder["getSummary"] = getStatus
 
     return frame
 
-def makeSummaryFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
+def makeSummaryFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame:
     """
-    create a frame for summary property and a lambda function to get the Summary object with valueHolder["getValue"]()
+    create a frame for summary property and a lambda function to get the Summary object with propertyHolder["getValue"]()
 
     Params:
     ------
     - root: tk.Frame
         frame in which the newly created frame will be contained
-    - valueHolder: dict
+    - propertyHolder: dict
         dictionnary that will hold a lambda function which returns the Summary object from the user input, None if any error occured
     - componentId: uuid
         ID of the parent component
@@ -696,16 +719,20 @@ def makeSummaryFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk
     label.bind('<Double-1>', toggleParameterFrame)
 
     def getSummary():
-        if (not entry.get()):
+        try:
+            if (not entry.get()):
+                return None
+            if (not entry.get().strip()):
+                return None
+            value = entry.get().strip()
+            altrep = altrepDict["getValue"]() if state.get() else None
+            language = languageDict["getValue"]() if state.get() else None
+            return Summary(value, altrep, language)
+        except:
+            logging.debug(f"[Component {componentId}] Unable to create summary object")
             return None
-        if (not entry.get().strip()):
-            return None
-        value = entry.get().strip()
-        altrep = altrepDict["getValue"]() if state.get() else None
-        language = languageDict["getValue"]() if state.get() else None
-        return Summary(value, altrep, language)
-    valueHolder["getValue"] = getSummary
+    propertyHolder["getSummary"] = getSummary
     # to be able to display the title in real time
-    valueHolder["titleEntry"] = entry
+    propertyHolder["titleEntry"] = entry
 
     return frame
