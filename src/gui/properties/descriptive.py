@@ -2,6 +2,7 @@ from src.gui.imports import *
 from TkToolTip import ToolTip
 from src.backend.properties.descriptive import Attachment, Categories, Classification, Comment, Description, Geo, Location, Percent, Priority, Resources, Status, Summary
 from src.gui.parameters import *
+import re
 
 """
 NOTE: for every function
@@ -321,45 +322,52 @@ def makeGeoFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
 
     frame = tk.Frame(root)
 
-    latVar = tk.StringVar(value=None)
-    latSpinbox = ttk.Spinbox(frame, from_=-90.000000, to=90.000000, wrap=True, increment=0.000001, textvariable=latVar)
-    latSpinbox.grid(row=1, column=0)
-    latSpinbox.grid_remove()
+    def checkLat(value):
+        return bool(re.match(r"(^(\+|-)?(([0-9]|[1-8][0-9]|(90))(\.[0-9]{,6})?|)?)$", value))
+    def checkLong(value):
+        return bool(re.match(r"^((\+|-)?(([0-9]|[1-9][0-9]|1[0-7][0-9]|180)(\.[0-9]{,6})?|)?)$", value))
+
+    latSpinbox = ttk.Spinbox(
+        frame,
+        from_=-90.000000,
+        to=90.000000,
+        wrap=True,
+        increment=0.000001,
+        validate="key",
+        validatecommand=(frame.register(checkLat), '%P')
+    )
+    latSpinbox.grid(row=1, column=1)
+
     sep = tk.Label(frame, text=" ; ")
-    sep.grid(row=1, column=1)
-    sep.grid_remove()
-    longVar = tk.StringVar(value=None)
-    longSpinbox = ttk.Spinbox(frame, from_=-180.000000, to=180.000000, wrap=True, increment=0.000001, textvariable=longVar)
+    sep.grid(row=1, column=2)
+
+    longSpinbox = ttk.Spinbox(
+        frame,
+        from_=-180.000000,
+        to=180.000000,
+        wrap=True,
+        increment=0.000001,
+        validate="key",
+        validatecommand=(frame.register(checkLong), '%P')
+    )
     longSpinbox.grid(row=1, column=3)
-    longSpinbox.grid_remove()
 
     
-    state = tk.BooleanVar(value=False)
-    def toggleGeo():
-        if (state.get()):
-            latSpinbox.grid()
-            sep.grid()
-            longSpinbox.grid()
-        else:
-            latSpinbox.grid_remove()
-            sep.grid_remove()
-            longSpinbox.grid_remove()
-            pass
-    checkbutton = ttk.Checkbutton(frame, text="Geographical position", variable=state, offvalue=False, onvalue=True, command=toggleGeo)
-    checkbutton.grid(row=0, column=0, columnspan=3, sticky=[tk.W, tk.E])
-
     def getGeo():
-        if (not state.get()):
-            return None
-        
         try:
-            lat = int(latVar.get())
-            long = int(longVar.get())
+            latText = latSpinbox.get()
+            if (not checkLat(latText)):
+                return None
+            longText = longSpinbox.get()
+            if (not checkLong(longText)):
+                return None
+            lat = float(latText)
+            long = float(longText)
             tmp = Geo(lat, long)
-            logging.debug(f"Geographical location successfully created")
             return tmp
         except:
             logging.error(f"Unable to make a geographical coordinates with {latVar.get()} and {longVar.get()}")
+            return None
     valueHolder["getValue"] = getGeo
 
     return frame

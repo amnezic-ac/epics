@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from src.backend.components.vevent import Vevent
 import uuid
 
-from src.gui.properties.descriptive import makeSummaryFrame, makeClassificationFrame, makeLocationFrame, makePriorityFrame, makeCategoriesFrame, makeAttachmentFrame, makeDescriptionFrame, makeResourceFrame
+from src.gui.properties.descriptive import *
 from src.gui.properties.datetime import makeDtFrame
 from src.gui.properties.recurrence import makeRruleFrame
 from src.gui.properties.relationship import makeAttendeeFrame, makeOrganizerFrame, makeURLFrame
@@ -86,15 +86,18 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
     # optional
         # rrule
         # transp and geo
+    geoHolder = {}
+    geoFrame = makeGeoFrame(frame, geoHolder)
+    geoFrame.grid(row=12, column=0)
         # status
         # url
         # comment
     resourcesHolder = {}
     resourcesFrame = makeResourceFrame(frame, resourcesHolder, id_)
-    resourcesFrame.grid(row=9, column=0)
+    resourcesFrame.grid(row=15, column=0)
     # cancel and confirm
     cancelButton = tk.Button(frame, text="Cancel")
-    cancelButton.grid(row=10, column=0)
+    cancelButton.grid(row=16, column=0)
     def createEvent():
         logging.debug(f"[Event {id_}] User clicked on confirm or modify button")
         now = datetime.now()
@@ -106,7 +109,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
                 classification=classificationHolder["getValue"](),
                 created=now,
                 description=descriptionHolder["getValue"](),
-                geo=None,
+                geo=geoHolder["getValue"](),
                 lastmod=now,
                 location=locationHolder["getValue"](),
                 organizer=None,
@@ -124,7 +127,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
                 url=None
             )
             logging.debug(f"[Event {id_}] User successfully created {titleHolder["getValue"]()} event")
-            print(event)
+            # print(event)
             return event
         except:
             logging.error(f"[Event {id_}] Unable to create {id_} event")
