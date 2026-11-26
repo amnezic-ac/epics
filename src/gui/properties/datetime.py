@@ -1,8 +1,8 @@
 from src.gui.imports import *
 from datetime import date, datetime
 import tkcalendar as tkc
-from src.backend.properties.datetime import Transparency, Duration
-from src.backend.datatypes import MyDateTime
+from src.backend.properties.datetime import *
+from src.backend.datatypes import *
 from TkToolTip import ToolTip
 
 def makeDurationFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame:
@@ -272,5 +272,88 @@ def makeTranspFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.
             logging.error(f"Unable to create transp")
             return None
     valueHolder["getValue"] = getTransp
+
+    return frame
+
+def makeFreeBusyFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame:
+    frame = tk.Frame(root)
+
+    propertiesHolder = {}
+
+    dtStartFrame = makeDtFrame(frame, "start", propertiesHolder, componentId)
+    dtStartFrame.grid(row=0, rowspan=2, column=0, sticky=[tk.W, tk.N])
+
+    dtEndFrame = makeDtFrame(frame, "end", propertiesHolder, componentId)
+    dtEndFrame.grid(row=0, column=3, sticky=[tk.W])
+
+    durationFrame = makeDurationFrame(frame, propertiesHolder, componentId)
+    durationFrame.grid(row=1, column=3)
+
+    # let the user choose between datetime and duration
+    endMode = tk.StringVar(value=configuration["general"]["endtype"])
+    def toggleEnd():
+        if (endMode.get() == "datetime"):
+            durationFrame.grid_remove()
+            dtEndFrame.grid()
+        else:
+            durationFrame.grid()
+            dtEndFrame.grid_remove()
+    toggleEnd()
+
+    dtendButton = ttk.Radiobutton(frame, text="to ", value="datetime", variable=endMode, command=toggleEnd)
+    dtendButton.grid(row=0, column=2)
+    durationButton = ttk.Radiobutton(frame, text="for ", value="duration", variable=endMode, command=toggleEnd)
+    durationButton.grid(row=1, column=2)
+
+
+    timestate = tk.BooleanVar(value=configuration["general"]["timestate"])
+    timestateText = tk.StringVar(value="Remove time")
+    def toggleTime():
+        actual = not timestate.get()
+        if (actual):
+            propertiesHolder["start-addTime"]()
+            propertiesHolder["end-addTime"]() 
+            propertiesHolder["addTime"]()
+            timestateText.set("Remove time")
+        else:
+            propertiesHolder["start-removeTime"]()
+            propertiesHolder["end-removeTime"]()
+            propertiesHolder["removeTime"]()
+            timestateText.set("Include time")
+        timestate.set(actual)
+    toggleTime()
+
+    timeButton = tk.Button(frame, textvariable=timestateText, command=toggleTime)
+    timeButton.grid(row=3, column=0, columnspan=2)
+
+    combobox = ttk.Combobox(
+        frame,
+        state="readonly",
+        values=configuration["fbttype"]["choices"]
+    )
+    combobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
+    combobox.grid(row=3, column=3)
+
+    def getPeriod():
+        start = propertiesHolder["start-getDt"]()
+        end = None
+        if (timestate.get()):
+            end = propertiesHolder["end-getDt"]()
+        else:
+            end = propertiesHolder["getDuration"]()
+        
+        if (not start or not end):
+            return None
+
+        return Period(start, end)
+
+    def getFreeBusy():
+        period = getPeriod()
+        if (not period):
+            return None
+        tmp = combobox.get()
+
+        return Freebusytime(period, combobox.get())
+    propertyHolder["getFreeBusy"] = getFreeBusy
 
     return frame

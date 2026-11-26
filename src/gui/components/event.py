@@ -54,16 +54,6 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
 
     timestate = tk.BooleanVar(value=configuration["general"]["timestate"])
     timestateText = tk.StringVar(value="Remove time")
-    if (timestate.get()):
-        propertiesHolder["start-addTime"]()
-        propertiesHolder["end-addTime"]() 
-        propertiesHolder["addTime"]()
-    else:
-        propertiesHolder["start-removeTime"]()
-        propertiesHolder["end-removeTime"]()
-        propertiesHolder["removeTime"]()
-        timestateText.set("Include time")
-
     def toggleTime():
         actual = not timestate.get()
         if (actual):
@@ -77,6 +67,8 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
             propertiesHolder["removeTime"]()
             timestateText.set("Include time")
         timestate.set(actual)
+    toggleTime()
+
     timeButton = tk.Button(frame, textvariable=timestateText, command=toggleTime)
     timeButton.grid(row=4, column=0, columnspan=2)
 
@@ -114,6 +106,9 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
     commentFrame = makeCommentFrame(frame, propertiesHolder, id_)
     # commentFrame.grid(row=13, column=0)
 
+    fbtFrame = makeFreeBusyFrame(frame, propertiesHolder, id_)
+    fbtFrame.grid(row=13, column=0, columnspan=3)
+
     resourcesFrame = makeResourceFrame(frame, propertiesHolder, id_)
     # resourcesFrame.grid(row=15, column=0)
     # cancel and confirm
@@ -129,6 +124,8 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
             else:
                 end = propertiesHolder["getDuration"]()
 
+            test = propertiesHolder["getFreeBusy"]()
+            print(test)
 
             event = Vevent(
                 now,

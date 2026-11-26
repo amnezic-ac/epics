@@ -119,7 +119,7 @@ class Fbtype(Parameter):
         self.value = value.strip().upper()
 
     def __str__(self):
-        return f"FBTYPE:{self.value}"
+        return f"FBTYPE={self.value}"
 
 class Language(Parameter):
     def __init__(self, key: str):

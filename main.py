@@ -4,6 +4,8 @@ from src.gui.components import calendar
 from src.utils import exportConfigToJSONFile
 
 # for testing only
+from src.gui.properties.descriptive import makeResourceFrame
+from uuid import uuid4
 ##################
 
 def main():
@@ -15,6 +17,7 @@ def main():
 
 
     dico = {}
+    # frame = makeResourceFrame(root, dico, uuid4())
     frame = calendar.makeCalendarFrame(root, dico)
     frame.grid(row=0, column=0, sticky="nsew")
     root.mainloop()

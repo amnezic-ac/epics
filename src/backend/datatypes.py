@@ -266,3 +266,25 @@ class Rrule():
             result += f";"
 
         return result[:-1]
+
+class Period():
+    def __init__(self, dtstart: MyDateTime, end: DurationType|MyDateTime):
+        # TODO: find a way to get the UTC offset from dtstart
+        self.start = dtstart.value
+        self.end = end.value
+        self.offset = self.start.utcoffset()
+
+    def __str__(self):
+        result = f"{self.start.value.strftime("%Y%m%dT%H%M%S")}Z"
+        if (self.offset):
+            result += f"{self.offset}"
+        result += "/"
+
+        if (type(self.end) is datetime):
+            result += f"{self.end.value.strftime("%Y%m%dT%H%M%S")}Z"
+            if (self.offset):
+                result += f"{offset}"
+        else:
+            result += f"{self.end}"
+
+        return result

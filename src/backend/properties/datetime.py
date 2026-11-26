@@ -1,9 +1,9 @@
 from src.backend.properties.property import *
-
-DEFAULT_DURATION_HOUR = configuration["duration"]["default_hour_duration"]
+from src.backend.datatypes import DurationType
+from src.backend.parameters import Fbtype
 
 class Duration(Property):
-    def __init__(self, week: int = 0, day: int = 0, hour: int = DEFAULT_DURATION_HOUR, minute: int = 0, second: int = 0):
+    def __init__(self, week: int = 0, day: int = 0, hour: int = 2, minute: int = 0, second: int = 0):
         self.value = DurationType(week, day, hour, minute, second)
 
     def __str__(self):
@@ -21,9 +21,9 @@ class Transparency(Property):
         return f"TRANSP:{self.value}"
 
 class Freebusytime(Property):
-    def __init__(self, status: str = "BUSY", week: int = 0, day: int = 0, hour: int = DEFAULT_DURATION_HOUR, minute: int = 0, second: int = 0):
-        self.value = Duration(week, day, hour, minute, second)
+    def __init__(self, period: Period, status: str):
+        self.period = period
         self.status = Fbtype(status)
 
     def __str__(self):
-        return f"DURATION;{str(self.status)}:{str(self.value)}"
+        return f"DURATION;{self.status}:{str(self.period)}"
