@@ -133,7 +133,7 @@ def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame
     if (typename not in ["start", "end"]):
         logging.error(f"[Component {componentId}] {typename} is not a valid typename value for datime frame creation (should be \"start\" or \"end\")")
 
-    labeltext = "From" if typename == "start" else "to"
+    labeltext = "From" if typename == "start" else ""
     label = tk.Label(frame, text=labeltext)
     label.grid(row=0, column=0)
 

@@ -2,7 +2,8 @@
     "general": {
         "width": 90,
         "log-file": "log.txt",
-        "timestate": false
+        "timestate": false,
+        "endtype": "datetime"
     },
     "categories": {
         "choices": [

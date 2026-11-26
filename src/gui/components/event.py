@@ -27,13 +27,30 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
 
     # start, end and duration
     dtStartFrame = makeDtFrame(frame, "start", propertiesHolder, id_)
-    dtStartFrame.grid(row=1, rowspan=2, column=0, sticky=[tk.W])
+    dtStartFrame.grid(row=1, rowspan=2, column=0, sticky=[tk.W, tk.N])
 
     dtEndFrame = makeDtFrame(frame, "end", propertiesHolder, id_)
-    dtEndFrame.grid(row=1, rowspan=2, column=1, sticky=[tk.W])
+    dtEndFrame.grid(row=1, column=3, sticky=[tk.W])
 
     durationFrame = makeDurationFrame(frame, propertiesHolder, id_)
-    durationFrame.grid(row=3, column=0)
+    durationFrame.grid(row=2, column=3)
+
+    # let the user choose between datetime and duration
+    endMode = tk.StringVar(value=configuration["general"]["endtype"])
+    def toggleEnd():
+        if (endMode.get() == "datetime"):
+            durationFrame.grid_remove()
+            dtEndFrame.grid()
+        else:
+            durationFrame.grid()
+            dtEndFrame.grid_remove()
+    toggleEnd()
+
+    dtendButton = ttk.Radiobutton(frame, text="to ", value="datetime", variable=endMode, command=toggleEnd)
+    dtendButton.grid(row=1, column=2)
+    durationButton = ttk.Radiobutton(frame, text="for ", value="duration", variable=endMode, command=toggleEnd)
+    durationButton.grid(row=2, column=2)
+
 
     timestate = tk.BooleanVar(value=configuration["general"]["timestate"])
     timestateText = tk.StringVar(value="Remove time")
