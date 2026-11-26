@@ -4,7 +4,7 @@ from src.backend.components.vevent import Vevent
 import uuid
 
 from src.gui.properties.descriptive import *
-from src.gui.properties.datetime import makeDtFrame
+from src.gui.properties.datetime import makeDtFrame, makeDurationFrame
 from src.gui.properties.recurrence import makeRruleFrame
 from src.gui.properties.relationship import makeAttendeeFrame, makeOrganizerFrame, makeURLFrame
 from src.backend.datatypes import MyDateTime
@@ -32,14 +32,19 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
     dtEndFrame = makeDtFrame(frame, "end", propertiesHolder, id_)
     dtEndFrame.grid(row=1, rowspan=2, column=1, sticky=[tk.W])
 
+    durationFrame = makeDurationFrame(frame, propertiesHolder, id_)
+    durationFrame.grid(row=3, column=0)
+
     timestate = tk.BooleanVar(value=configuration["general"]["timestate"])
     timestateText = tk.StringVar(value="Remove time")
     if (timestate.get()):
         propertiesHolder["start-addTime"]()
         propertiesHolder["end-addTime"]() 
+        propertiesHolder["addTime"]()
     else:
         propertiesHolder["start-removeTime"]()
         propertiesHolder["end-removeTime"]()
+        propertiesHolder["removeTime"]()
         timestateText.set("Include time")
 
     def toggleTime():
@@ -47,10 +52,12 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
         if (actual):
             propertiesHolder["start-addTime"]()
             propertiesHolder["end-addTime"]() 
+            propertiesHolder["addTime"]()
             timestateText.set("Remove time")
         else:
             propertiesHolder["start-removeTime"]()
             propertiesHolder["end-removeTime"]()
+            propertiesHolder["removeTime"]()
             timestateText.set("Include time")
         timestate.set(actual)
     timeButton = tk.Button(frame, textvariable=timestateText, command=toggleTime)
@@ -89,7 +96,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
     # commentFrame.grid(row=13, column=0)
 
     resourcesFrame = makeResourceFrame(frame, propertiesHolder, id_)
-    resourcesFrame.grid(row=15, column=0)
+    # resourcesFrame.grid(row=15, column=0)
     # cancel and confirm
     cancelButton = tk.Button(frame, text="Cancel")
     cancelButton.grid(row=16, column=0)
@@ -97,12 +104,12 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
         logging.debug(f"[Event {id_}] User clicked on confirm or modify button")
         now = datetime.now()
         try:
-            resources = propertiesHolder["getResources"]()
+            end = propertiesHolder["getDuration"]()
             event = Vevent(
                 now,
                 title=propertiesHolder["getSummary"](),
                 dtstart=propertiesHolder["start-getDt"](),
-                end=propertiesHolder["end-getDt"](),
+                end=end,
                 classification=propertiesHolder["getClassification"](),
                 created=now,
                 description=propertiesHolder["getDescription"](),
@@ -119,7 +126,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
                 categories=propertiesHolder["getCategories"](),
                 comment=propertiesHolder["getComment"](),
                 contact=None,
-                resources=resources,
+                resources=propertiesHolder["getResources"](),
                 url=None
             )
             logging.debug(f"[Event {id_}] User successfully created {propertiesHolder["titleEntry"].get()} event")

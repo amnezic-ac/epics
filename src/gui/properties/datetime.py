@@ -4,40 +4,126 @@ import tkcalendar as tkc
 from src.backend.properties.datetime import Transparency, Duration
 from src.backend.datatypes import MyDateTime
 
-# TODO
-def makeDurationFrame(root):
+def makeDurationFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame:
     frame = tk.Frame(root)
 
-    week = tk.StringVar(value="0")
-    weekEntry = tk.Spinbox(frame, textvariable=week, width=3, from_=0, wrap=True, justify=tk.RIGHT)
-    weekEntry.pack(side="left")
-    tk.Label(frame, text=configuration["duration"]["week-text"]).pack(side="left")
-    day = tk.StringVar(value="")
-    dayEntry = tk.Spinbox(frame, textvariable=day, width=2, from_=0, to=31, wrap=True, justify=tk.RIGHT)
-    dayEntry.pack(side="left")
-    tk.Label(frame, text=configuration["duration"]["day-text"]).pack(side="left")
-    hour = tk.StringVar(value="")
-    hourEntry = tk.Spinbox(frame, textvariable=hour, width=2, from_=0, to=23, wrap=True, justify=tk.RIGHT)
-    hourEntry.pack(side="left")
-    tk.Label(frame, text=configuration["duration"]["hour-text"]).pack(side="left")
-    minute = tk.StringVar(value="")
-    minuteEntry = tk.Spinbox(frame, textvariable=minute, width=2, from_=0, to=59, wrap=True, justify=tk.RIGHT)
-    minuteEntry.pack(side="left")
-    tk.Label(frame, text=configuration["duration"]["minute-text"]).pack(side="left")
-    second = tk.StringVar(value="")
-    secondEntry = tk.Spinbox(frame, textvariable=second, width=2, from_=0, to=59, wrap=True, justify=tk.RIGHT)
-    secondEntry.pack(side="left")
-    tk.Label(frame, text=configuration["duration"]["second-text"]).pack(side="left")
+    label = tk.Label(frame, text="Duration: ")
+    label.grid(row=0, column=0)
 
-    valueHolder = {
-        "week": week,
-        "day": day,
-        "hour": hour,
-        "minute": minute,
-        "second": second
-    }
+    def checkInput(value: str, scale: str) -> bool:
+        if (value.strip() == ""):
+            return True
+        numericalValue = None
+        try:
+            numericalValue = int(value)
+            return numericalValue >= 0 and numericalValue <= configuration["duration"][f"{scale}-max"]
+        except:
+            return False
 
-    return frame, valueHolder
+    weekSpinbox = ttk.Spinbox(
+        frame,
+        from_=0,
+        to=configuration["duration"]["week-max"],
+        width=2,
+        wrap=True,
+        validate="key",
+        validatecommand=(frame.register(checkInput), "%P", "week")
+    )
+    weekSpinbox.grid(row=0, column=1)
+    weekLabel = tk.Label(frame, text=configuration["duration"]["week-text"])
+    weekLabel.grid(row=0, column=2)
+    daySpinbox = ttk.Spinbox(
+        frame,
+        from_=0,
+        to=configuration["duration"]["day-max"],
+        width=2,
+        wrap=True,
+        validate="key",
+        validatecommand=(frame.register(checkInput), "%P", "day")
+    )
+    daySpinbox.grid(row=0, column=3)
+    dayLabel = tk.Label(frame, text=configuration["duration"]["day-text"])
+    dayLabel.grid(row=0, column=4)
+    hourSpinbox = ttk.Spinbox(
+        frame,
+        from_=0,
+        to=configuration["duration"]["hour-max"],
+        width=2,
+        wrap=True,
+        validate="key",
+        validatecommand=(frame.register(checkInput), "%P", "hour")
+    )
+    hourSpinbox.grid(row=0, column=5)
+    hourLabel = tk.Label(frame, text=configuration["duration"]["hour-text"])
+    hourLabel.grid(row=0, column=6)
+    minuteSpinbox = ttk.Spinbox(
+        frame,
+        from_=0,
+        to=configuration["duration"]["minute-max"],
+        width=2,
+        wrap=True,
+        validate="key",
+        validatecommand=(frame.register(checkInput), "%P", "minute")
+    )
+    minuteSpinbox.grid(row=0, column=7)
+    minuteLabel = tk.Label(frame, text=configuration["duration"]["minute-text"])
+    minuteLabel.grid(row=0, column=8)
+    secondSpinbox = ttk.Spinbox(
+        frame,
+        from_=0,
+        to=configuration["duration"]["second-max"],
+        width=2,
+        wrap=True,
+        validate="key",
+        validatecommand=(frame.register(checkInput), "%P", "second")
+    )
+    secondSpinbox.grid(row=0, column=9)
+    secondLabel = tk.Label(frame, text=configuration["duration"]["second-text"])
+    secondLabel.grid(row=0, column=10)
+
+    def addTime():
+        hourSpinbox.grid()
+        hourLabel.grid()
+        minuteSpinbox.grid()
+        minuteLabel.grid()
+        secondSpinbox.grid()
+        secondLabel.grid()
+    propertyHolder["addTime"] = addTime
+    
+    def removeTime():
+        hourSpinbox.grid_remove()
+        hourLabel.grid_remove()
+        minuteSpinbox.grid_remove()
+        minuteLabel.grid_remove()
+        secondSpinbox.grid_remove()
+        secondLabel.grid_remove()
+    propertyHolder["removeTime"] = removeTime
+
+    def getDuration():
+        week = weekSpinbox.get()
+        day = daySpinbox.get()
+        hour = hourSpinbox.get()
+        minute = minuteSpinbox.get()
+        second = secondSpinbox.get()
+
+        if ([week, day, hour, minute, second] == [""] * 5):
+            return None
+
+        try:
+            duration = Duration(
+                int(week) if week != "" else 0,
+                int(day) if day != "" else 0,
+                int(hour) if hour != "" else 0,
+                int(minute) if minute != "" else 0,
+                int(second) if second != "" else 0
+            )
+            return duration
+        except:
+            logging.debug(f"[Component {componentId}] Unable to create duration object")
+            return None
+    propertyHolder["getDuration"] = getDuration
+
+    return frame
 
 # TODO: put default value for start are now and for end its start + default duration
 def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame:

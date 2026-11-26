@@ -31,9 +31,9 @@ class Uri():
         return self.value
 
 class DurationType():
-    def __init__(self, week: int, day: int, hour: int, minute: int, second: int):
+    def __init__(self, week: int = 0, day: int = 1, hour: int = 0, minute: int = 0, second: int = 0):
         for variable in [week, day, hour, minute, second]:
-            if (not (variable >= 0)):
+            if (variable < 0):
                 raise Exception(f"A duration can't be {variable} {variable.__getattribute__.__name__}, needs to be positive.")
 
         self.week = week
@@ -43,19 +43,24 @@ class DurationType():
         self.second = second
 
     def __str__(self):
-        result = "P"
+        result = ""
 
-        if (self.week > 0):
-            result += f"{self.week}W"
-        if (self.day > 0):
-            result += f"{self.day}D"
-        if (self.hour > 0 or self.minute > 0 or self.second > 0):
+        if (not self.positive):
+            result += "-"
+
+        result += "P"
+        if (self.week != 0 and self.day != 0):
+            if (self.week != 0):
+                result += f"{self.week}W"
+            if (self.day != 0):
+                result += f"{self.day}D"
+        if (self.hour != 0 and self.minute != 0 and self.second != 0):
             result += "T"
-            if (self.hour > 0):
+            if (self.hour != 0):
                 result += f"{self.hour}H"
-            if (self.minute > 0):
+            if (self.minute != 0):
                 result += f"{self.minute}M"
-            if (self.second > 0):
+            if (self.second != 0):
                 result += f"{self.second}S"
         
         return result

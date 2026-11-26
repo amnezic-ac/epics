@@ -46,7 +46,11 @@ class Vevent(Component):
         if (type(end) is MyDateTime):
             self.dtend = end
         if (type(end) is Duration):
-            self.dtend = self.dtstart + timedelta(weeks=end.value.week, days=end.value.day, hours=end.value.hour, minutes=end.value.minute, seconds=end.value.second)
+            self.dtend = MyDateTime(
+                self.dtstart.value + timedelta(weeks=end.value.week, days=end.value.day, hours=end.value.hour, minutes=end.value.minute, seconds=end.value.second),
+                dttype="end",
+                gotTime=dtstart.gotTime
+            )
 
         ### once maximum
         self.classification = classification

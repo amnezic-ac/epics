@@ -1080,10 +1080,15 @@
     },
     "duration": {
         "week-text": "w ",
+        "week-max": 52,
         "day-text": "d ",
+        "day-max": 31,
         "hour-text": "h ",
+        "hour-max": 24,
         "minute-text": "m ",
+        "minute-max": 60,
         "second-text": "s ",
+        "second-max": 60,
         "default_hour_duration": 2
     },
     "transparency": {
