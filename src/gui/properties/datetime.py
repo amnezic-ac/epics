@@ -3,6 +3,7 @@ from datetime import date, datetime
 import tkcalendar as tkc
 from src.backend.properties.datetime import Transparency, Duration
 from src.backend.datatypes import MyDateTime
+from TkToolTip import ToolTip
 
 def makeDurationFrame(root: tk.Frame, propertyHolder: dict, componentId: uuid) -> tk.Frame:
     frame = tk.Frame(root)
@@ -130,8 +131,8 @@ def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame
     frame = tk.Frame(root)
     timestamp = datetime.now()
 
-    if (typename not in ["start", "end"]):
-        logging.error(f"[Component {componentId}] {typename} is not a valid typename value for datime frame creation (should be \"start\" or \"end\")")
+    if (typename not in ["start", "end", "created", "completed", "due"]):
+        logging.error(f"[Component {componentId}] {typename} is not a valid typename value for datime frame creation (should be \"start\", \"end\", \"created\", \"completed\" or \"due\")")
 
     labeltext = "From" if typename == "start" else ""
     label = tk.Label(frame, text=labeltext)
@@ -242,29 +243,30 @@ def makeDtFrame(root, typename: str, valueHolder: dict, componentId) -> tk.Frame
 
     return frame
 
-def makeTranspFrame(root: tk.Frame, valueHolder: dict) -> tk.Frame:
+def makeTranspFrame(root: tk.Frame, valueHolder: dict, componentId: uuid) -> tk.Frame:
     frame = tk.Frame(root)
 
-    value = tk.StringVar(value=configuration["choices"][0])
-    transpCombobox = ttk.Combobox(
+    label = tk.Label(frame, text="Transparency: ")
+    label.grid(row=0, column=0)
+
+    value = tk.StringVar(value=configuration["transparency"]["choices"][0])
+    combobox = ttk.Combobox(
         frame,
-        values=configuration["tranparency"]["choices"],
+        values=configuration["transparency"]["choices"],
         state=["readonly"],
-        textvariable=value
     )
     # avoid the selected item to be blue highlighted
     combobox.bind('<<ComboboxSelected>>', lambda e: e.widget.selection_clear())
-    transpCombobox.grid()
+    combobox.grid(row=0, column=1)
 
-    ToolTip(transpCombobox, msg="Tells if the event should block overlapping events")
+    ToolTip(label, msg="Tells if the event should block overlapping events")
 
     def getTransp():
-        if (not value.get()):
+        value = combobox.get()
+        if (not value or not value.strip()):
             return None
-        
         try:
-            tmp = Transparency(value.get())
-            logging.debug(f"Transp successfully created")
+            tmp = Transparency(value.strip())
             return tmp
         except:
             logging.error(f"Unable to create transp")

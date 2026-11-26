@@ -83,8 +83,6 @@ class MyDateTime():
                 result += "DTSTART"
             case "end":
                 result += "DTEND"
-            case "created":
-                result += "CREATED"
             case _:
                 result += f"{self.dttype.upper()}"
 

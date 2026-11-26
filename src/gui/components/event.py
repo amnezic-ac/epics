@@ -4,7 +4,7 @@ from src.backend.components.vevent import Vevent
 import uuid
 
 from src.gui.properties.descriptive import *
-from src.gui.properties.datetime import makeDtFrame, makeDurationFrame
+from src.gui.properties.datetime import *
 from src.gui.properties.recurrence import makeRruleFrame
 from src.gui.properties.relationship import makeAttendeeFrame, makeOrganizerFrame, makeURLFrame
 from src.backend.datatypes import MyDateTime
@@ -102,6 +102,8 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
     # optional
         # rrule
         # transp and geo
+    transpFrame = makeTranspFrame(frame, propertiesHolder, id_)
+    transpFrame.grid(row=10, column=0)
     geoFrame = makeGeoFrame(frame, propertiesHolder, id_)
     # geoFrame.grid(row=12, column=0)
         # status
@@ -126,6 +128,8 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
                 end = propertiesHolder["end-getDt"]()
             else:
                 end = propertiesHolder["getDuration"]()
+
+
             event = Vevent(
                 now,
                 title=propertiesHolder["getSummary"](),
@@ -141,7 +145,7 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
                 priority=propertiesHolder["getPriority"](),
                 seq=None,
                 status=propertiesHolder["getStatus"](),
-                transp=None,
+                transp=propertiesHolder["getTransp"](),
                 attach=propertiesHolder["getAttachment"](),
                 attendee=None,
                 categories=propertiesHolder["getCategories"](),
