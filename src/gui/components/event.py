@@ -124,9 +124,6 @@ def makeEventFrame(root: tk.Frame, eventHolder: dict, calId: uuid) -> tk.Frame:
             else:
                 end = propertiesHolder["getDuration"]()
 
-            test = propertiesHolder["getFreeBusy"]()
-            print(test)
-
             event = Vevent(
                 now,
                 title=propertiesHolder["getSummary"](),

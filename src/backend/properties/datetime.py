@@ -26,4 +26,4 @@ class Freebusytime(Property):
         self.status = Fbtype(status)
 
     def __str__(self):
-        return f"DURATION;{self.status}:{str(self.period)}"
+        return f"FREEBUSY;{self.status}:{str(self.period)}"

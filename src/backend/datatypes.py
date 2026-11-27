@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum, auto
 import re
 from src.utils import zoneinfo, tz
@@ -269,21 +269,33 @@ class Rrule():
 
 class Period():
     def __init__(self, dtstart: MyDateTime, end: DurationType|MyDateTime):
-        # TODO: find a way to get the UTC offset from dtstart
-        self.start = dtstart.value
-        self.end = end.value
-        self.offset = self.start.utcoffset()
+        # NOTE: start and end (if datetime) have to be expressed in UTC time
+        self.start = datetime(
+            year = dtstart.value.year,
+            month = dtstart.value.month,
+            day = dtstart.value.day,
+            hour = dtstart.value.hour,
+            minute = dtstart.value.minute,
+            second = dtstart.value.second,
+            tzinfo = tz
+        ).astimezone(timezone.utc)
+        self.end = end
+        if (type(end) == MyDateTime):
+            self.end = datetime(
+                year = end.value.year,
+                month = end.value.month,
+                day = end.value.day,
+                hour = end.value.hour,
+                minute = end.value.minute,
+                second = end.value.second,
+                tzinfo = tz
+            ).astimezone(timezone.utc)
 
     def __str__(self):
-        result = f"{self.start.value.strftime("%Y%m%dT%H%M%S")}Z"
-        if (self.offset):
-            result += f"{self.offset}"
-        result += "/"
+        result = f"{self.start.strftime("%Y%m%dT%H%M%SZ")}/"
 
         if (type(self.end) is datetime):
-            result += f"{self.end.value.strftime("%Y%m%dT%H%M%S")}Z"
-            if (self.offset):
-                result += f"{offset}"
+            result += f"{self.end.strftime("%Y%m%dT%H%M%SZ")}"
         else:
             result += f"{self.end}"
 
